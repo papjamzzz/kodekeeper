@@ -1,0 +1,1135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KodeKeeper</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ── Reset & Base ──────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:           #09090d;
+  --surface:      #0f1018;
+  --surface2:     #14161f;
+  --surface3:     #1a1d28;
+  --border:       #1f2235;
+  --border2:      #272b3e;
+
+  /* Organic warm palette */
+  --green:        #7ecb52;
+  --green-glow:   rgba(126,203,82,0.18);
+  --green-dim:    #2d4f1a;
+  --red:          #ff5c38;
+  --red-glow:     rgba(255,92,56,0.18);
+  --red-dim:      #5c1f0f;
+  --orange:       #ff8c3a;
+  --orange-glow:  rgba(255,140,58,0.22);
+  --orange-dim:   #6b3610;
+  --blue:         #5ba3ff;
+  --blue-glow:    rgba(91,163,255,0.18);
+  --yellow:       #f5c842;
+  --purple:       #b06fff;
+
+  --text:         #d8dcec;
+  --text-dim:     #6b7591;
+  --text-muted:   #333750;
+  --label:        #8892aa;
+
+  --font-ui:   'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  --radius:  6px;
+  --radius-lg: 10px;
+}
+
+html, body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── Scrollbar ─────────────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+/* ── Layout ────────────────────────────────────────────────────────────────── */
+.rack {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 20px 20px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* ── Rack module card ──────────────────────────────────────────────────────── */
+.module {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  position: relative;
+}
+
+.module::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border2), transparent);
+}
+
+.module-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 16px;
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.module-header .mod-title { color: var(--label); }
+.module-body { padding: 16px; }
+
+/* ── Nameplate (top bar) ───────────────────────────────────────────────────── */
+.nameplate {
+  background: linear-gradient(135deg, #0d0f1a 0%, #111420 50%, #0d0f1a 100%);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-lg);
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.nameplate::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, var(--border2) 30%, var(--orange) 50%, var(--border2) 70%, transparent 100%);
+  opacity: 0.5;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand-logo {
+  width: 36px; height: 36px;
+  background: var(--surface3);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+}
+
+.brand-name {
+  display: flex; flex-direction: column;
+}
+
+.brand-name .main {
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  background: linear-gradient(90deg, var(--text) 0%, var(--text-dim) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.brand-name .sub {
+  font-size: 9px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-top: 1px;
+}
+
+/* Power button */
+.power-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--surface3);
+  border: 1px solid var(--border2);
+  border-radius: 20px;
+  padding: 6px 14px 6px 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+  user-select: none;
+}
+
+.power-btn:hover { border-color: var(--orange); }
+
+.power-led {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--orange-dim);
+  box-shadow: none;
+  transition: all 0.3s;
+  flex-shrink: 0;
+}
+
+.power-led.on {
+  background: var(--orange);
+  box-shadow: 0 0 8px var(--orange), 0 0 16px rgba(255,140,58,0.4);
+}
+
+.power-btn .btn-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+/* Nameplate readouts */
+.np-readouts {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-left: auto;
+}
+
+.np-readout {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.np-readout .val {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.np-readout .lbl {
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.np-divider {
+  width: 1px;
+  height: 28px;
+  background: var(--border);
+}
+
+/* ── Three-column row ──────────────────────────────────────────────────────── */
+.row-3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 14px;
+}
+
+/* ── Context oscilloscope ──────────────────────────────────────────────────── */
+.osc-wrap {
+  position: relative;
+  height: 100px;
+  background: #06070c;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+canvas#osc {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.osc-readout {
+  position: absolute;
+  bottom: 8px; right: 10px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--green);
+  text-shadow: 0 0 8px var(--green);
+}
+
+.osc-pct {
+  position: absolute;
+  top: 8px; left: 10px;
+  font-family: var(--font-mono);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--green);
+  text-shadow: 0 0 12px var(--green);
+  line-height: 1;
+}
+
+.osc-pct .pct-sign {
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+.ctx-meta {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+  font-size: 10px;
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+}
+
+/* ── VU Meters ─────────────────────────────────────────────────────────────── */
+.vu-panel {
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-end;
+  gap: 10px;
+  height: 100px;
+  padding: 0 4px;
+}
+
+.vu-meter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+}
+
+.vu-bar-wrap {
+  flex: 1;
+  width: 100%;
+  background: #06070c;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+  min-height: 68px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.vu-bar {
+  width: 100%;
+  transition: height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  border-radius: 2px 2px 0 0;
+}
+
+.vu-bar.day  { background: linear-gradient(to top, var(--green-dim), var(--green)); }
+.vu-bar.week { background: linear-gradient(to top, #1a3f6e, var(--blue)); }
+.vu-bar.month{ background: linear-gradient(to top, var(--orange-dim), var(--orange)); }
+
+/* Peak hold tick */
+.vu-peak {
+  position: absolute;
+  width: 100%;
+  height: 2px;
+  background: #fff;
+  opacity: 0.5;
+  transition: bottom 0.1s;
+  bottom: 0;
+}
+
+.vu-val {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-dim);
+  text-align: center;
+  line-height: 1;
+}
+
+.vu-lbl {
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+/* ── Cost Tracker ──────────────────────────────────────────────────────────── */
+.cost-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 4px;
+}
+
+.cost-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cost-period {
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  width: 38px;
+  flex-shrink: 0;
+}
+
+.cost-bar-wrap {
+  flex: 1;
+  height: 4px;
+  background: var(--surface3);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.cost-bar {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.cost-bar.day   { background: var(--green); box-shadow: 0 0 6px var(--green-glow); }
+.cost-bar.week  { background: var(--blue);  box-shadow: 0 0 6px var(--blue-glow); }
+.cost-bar.month { background: var(--orange); box-shadow: 0 0 6px var(--orange-glow); }
+
+.cost-val {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  text-align: right;
+  width: 52px;
+  flex-shrink: 0;
+}
+
+.cost-tokens {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-muted);
+  text-align: right;
+  width: 44px;
+  flex-shrink: 0;
+}
+
+/* ── Project Patch Bay ─────────────────────────────────────────────────────── */
+.patch-bay {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 10px;
+}
+
+.patch-node {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  position: relative;
+  overflow: hidden;
+}
+
+.patch-node:hover {
+  border-color: var(--border2);
+  background: var(--surface3);
+  transform: translateY(-1px);
+}
+
+.patch-node.online { border-color: var(--green-dim); }
+.patch-node.online:hover { border-color: var(--green); }
+
+.patch-node::after {
+  content: '';
+  position: absolute;
+  top: 0; right: 0;
+  width: 3px;
+  height: 100%;
+  background: var(--surface3);
+  transition: background 0.2s;
+}
+
+.patch-node.online::after { background: var(--green); box-shadow: 0 0 8px var(--green-glow); }
+.patch-node.offline::after { background: var(--surface3); }
+
+.patch-led {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.patch-node.online  .patch-led { background: var(--green); box-shadow: 0 0 6px var(--green); }
+.patch-node.offline .patch-led { background: var(--text-muted); }
+
+.patch-top {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.patch-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.patch-port {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+.patch-git {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text-dim);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.patch-git .branch {
+  color: var(--purple);
+}
+
+.patch-git .dirty {
+  color: var(--yellow);
+}
+
+.patch-git .clean {
+  color: var(--green);
+}
+
+/* ── Git Rack ──────────────────────────────────────────────────────────────── */
+.git-rack {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.git-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 12px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  transition: border-color 0.2s;
+}
+
+.git-row:hover { border-color: var(--border2); }
+
+.git-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.git-dot.clean  { background: var(--green); box-shadow: 0 0 6px var(--green); }
+.git-dot.dirty  { background: var(--yellow); box-shadow: 0 0 6px var(--yellow); }
+.git-dot.nodata { background: var(--text-muted); }
+
+.git-name {
+  font-weight: 600;
+  font-size: 12px;
+  width: 150px;
+  flex-shrink: 0;
+}
+
+.git-branch {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--purple);
+}
+
+.git-status-label {
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+.git-status-label.clean  { background: var(--green-dim);  color: var(--green);  }
+.git-status-label.dirty  { background: rgba(245,200,66,0.12); color: var(--yellow); }
+.git-status-label.nodata { background: var(--surface3);   color: var(--text-muted); }
+
+.git-last {
+  margin-left: auto;
+  font-size: 10px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+
+/* ── Context health states ─────────────────────────────────────────────────── */
+.health-ok     { color: var(--green); }
+.health-mid    { color: var(--yellow); }
+.health-warn   { color: var(--orange); }
+.health-danger { color: var(--red); }
+
+/* ── Segment display (model readout) ──────────────────────────────────────── */
+.seg-display {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--orange);
+  background: #06070c;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 4px 10px;
+  letter-spacing: 1px;
+  text-shadow: 0 0 8px var(--orange);
+}
+
+/* ── Utility ───────────────────────────────────────────────────────────────── */
+.flex-center { display: flex; align-items: center; justify-content: center; }
+.flex { display: flex; align-items: center; }
+.gap-6 { gap: 6px; }
+.gap-8 { gap: 8px; }
+.mono { font-family: var(--font-mono); }
+.text-dim { color: var(--text-dim); }
+.text-muted { color: var(--text-muted); }
+
+.screw {
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, var(--surface3), var(--border));
+  border: 1px solid var(--text-muted);
+  opacity: 0.4;
+  flex-shrink: 0;
+}
+
+/* ── Spinner ───────────────────────────────────────────────────────────────── */
+@keyframes spin { to { transform: rotate(360deg); } }
+.spinner {
+  width: 12px; height: 12px;
+  border: 2px solid var(--border2);
+  border-top-color: var(--orange);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+/* ── Tooltip ───────────────────────────────────────────────────────────────── */
+[data-tip] { position: relative; cursor: default; }
+[data-tip]::after {
+  content: attr(data-tip);
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--surface3);
+  border: 1px solid var(--border2);
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 10px;
+  white-space: nowrap;
+  color: var(--text);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s;
+  z-index: 100;
+}
+[data-tip]:hover::after { opacity: 1; }
+
+/* ── Module label pill ─────────────────────────────────────────────────────── */
+.pill {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 10px;
+  border: 1px solid;
+}
+
+.pill-orange { background: var(--orange-dim); color: var(--orange); border-color: rgba(255,140,58,0.3); }
+.pill-green  { background: var(--green-dim);  color: var(--green);  border-color: rgba(126,203,82,0.3); }
+.pill-blue   { background: rgba(91,163,255,0.1); color: var(--blue); border-color: rgba(91,163,255,0.3); }
+.pill-red    { background: var(--red-dim);    color: var(--red);    border-color: rgba(255,92,56,0.3); }
+</style>
+</head>
+<body>
+
+<div class="rack">
+
+  <!-- ── Nameplate ──────────────────────────────────────────────────────── -->
+  <div class="nameplate">
+    <div class="brand">
+      <div class="brand-logo">🎛</div>
+      <div class="brand-name">
+        <span class="main">KodeKeeper</span>
+        <span class="sub">Claude Code Mission Control</span>
+      </div>
+    </div>
+
+    <div class="screw"></div>
+
+    <!-- Auto-open power button -->
+    <div class="power-btn" id="powerBtn" onclick="toggleAutoOpen()">
+      <div class="power-led" id="powerLed"></div>
+      <span class="btn-label" id="powerLabel">AUTO-OPEN</span>
+    </div>
+
+    <div class="np-divider"></div>
+
+    <div class="np-readouts">
+      <div class="np-readout">
+        <span class="val seg-display" id="npModel">—</span>
+        <span class="lbl">Model</span>
+      </div>
+      <div class="np-readout">
+        <span class="val mono" id="npSession" style="font-size:13px">—</span>
+        <span class="lbl">Session</span>
+      </div>
+      <div class="np-readout">
+        <span class="val mono" id="npTime" style="font-size:16px;color:var(--text-dim)">—</span>
+        <span class="lbl">Local Time</span>
+      </div>
+    </div>
+
+    <div class="screw"></div>
+  </div>
+
+  <!-- ── Row 1: Context / VU / Cost ─────────────────────────────────────── -->
+  <div class="row-3">
+
+    <!-- Context Oscilloscope -->
+    <div class="module">
+      <div class="module-header">
+        <div class="screw"></div>
+        <span class="mod-title">Context Oscilloscope</span>
+        <span class="pill pill-green" id="ctxHealthPill">OK</span>
+      </div>
+      <div class="module-body">
+        <div class="osc-wrap">
+          <canvas id="osc"></canvas>
+          <div class="osc-pct" id="oscPct">
+            <span id="oscPctVal">—</span><span class="pct-sign">%</span>
+          </div>
+          <div class="osc-readout" id="oscFree">— free</div>
+        </div>
+        <div class="ctx-meta">
+          <span>context window</span>
+          <span id="ctxModelLbl">—</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- VU Meters -->
+    <div class="module">
+      <div class="module-header">
+        <div class="screw"></div>
+        <span class="mod-title">Usage VU Meters</span>
+        <span class="pill pill-blue">Tokens</span>
+      </div>
+      <div class="module-body">
+        <div class="vu-panel">
+          <div class="vu-meter">
+            <div class="vu-val" id="vuDayVal">—</div>
+            <div class="vu-bar-wrap">
+              <div class="vu-bar day" id="vuDayBar" style="height:0%"></div>
+              <div class="vu-peak" id="vuDayPeak"></div>
+            </div>
+            <div class="vu-lbl">Day</div>
+          </div>
+          <div class="vu-meter">
+            <div class="vu-val" id="vuWkVal">—</div>
+            <div class="vu-bar-wrap">
+              <div class="vu-bar week" id="vuWkBar" style="height:0%"></div>
+              <div class="vu-peak" id="vuWkPeak"></div>
+            </div>
+            <div class="vu-lbl">Week</div>
+          </div>
+          <div class="vu-meter">
+            <div class="vu-val" id="vuMoVal">—</div>
+            <div class="vu-bar-wrap">
+              <div class="vu-bar month" id="vuMoBar" style="height:0%"></div>
+              <div class="vu-peak" id="vuMoPeak"></div>
+            </div>
+            <div class="vu-lbl">Month</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cost Tracker -->
+    <div class="module">
+      <div class="module-header">
+        <div class="screw"></div>
+        <span class="mod-title">Cost Tracker</span>
+        <span class="pill pill-orange">USD</span>
+      </div>
+      <div class="module-body" style="padding-top:12px">
+        <div class="cost-rows">
+          <div class="cost-row">
+            <span class="cost-period">Today</span>
+            <div class="cost-bar-wrap"><div class="cost-bar day" id="costDayBar" style="width:0%"></div></div>
+            <span class="cost-tokens" id="costDayTok">—</span>
+            <span class="cost-val" id="costDayVal">$—</span>
+          </div>
+          <div class="cost-row">
+            <span class="cost-period">Week</span>
+            <div class="cost-bar-wrap"><div class="cost-bar week" id="costWkBar" style="width:0%"></div></div>
+            <span class="cost-tokens" id="costWkTok">—</span>
+            <span class="cost-val" id="costWkVal">$—</span>
+          </div>
+          <div class="cost-row">
+            <span class="cost-period">Month</span>
+            <div class="cost-bar-wrap"><div class="cost-bar month" id="costMoBar" style="width:0%"></div></div>
+            <span class="cost-tokens" id="costMoTok">—</span>
+            <span class="cost-val" id="costMoVal">$—</span>
+          </div>
+        </div>
+        <div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--border);font-size:10px;color:var(--text-muted);font-family:var(--font-mono)">
+          Sonnet 4.6 · $3/M in · $15/M out
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── Project Patch Bay ──────────────────────────────────────────────── -->
+  <div class="module">
+    <div class="module-header">
+      <div class="screw"></div>
+      <span class="mod-title">Project Patch Bay</span>
+      <span id="patchOnlineCount" class="pill pill-green">0 online</span>
+      <div class="screw" style="margin-left:auto"></div>
+    </div>
+    <div class="module-body">
+      <div class="patch-bay" id="patchBay">
+        <div class="flex-center" style="height:60px;color:var(--text-muted);grid-column:1/-1">
+          <div class="spinner"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Git Status Rack ────────────────────────────────────────────────── -->
+  <div class="module">
+    <div class="module-header">
+      <div class="screw"></div>
+      <span class="mod-title">Git Status Rack</span>
+      <div class="screw" style="margin-left:auto"></div>
+    </div>
+    <div class="module-body">
+      <div class="git-rack" id="gitRack">
+        <div class="flex-center" style="height:40px;color:var(--text-muted)">
+          <div class="spinner"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /rack -->
+
+<script>
+// ── State ─────────────────────────────────────────────────────────────────────
+
+let autoOpen = true;
+let oscHistory = [];
+let vuPeaks   = { day: 0, week: 0, month: 0 };
+let vuPeakTimers = { day: null, week: null, month: null };
+
+// ── Utilities ─────────────────────────────────────────────────────────────────
+
+const fmtK = n => {
+  n = parseInt(n) || 0;
+  if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + 'M';
+  if (n >= 1_000)     return Math.round(n / 1_000) + 'k';
+  return String(n);
+};
+
+const fmtCost = v => {
+  const n = parseFloat(v) || 0;
+  if (n === 0) return '$0.00';
+  if (n < 0.01) return '<$0.01';
+  return '$' + n.toFixed(2);
+};
+
+const fmtMins = m => {
+  if (!m && m !== 0) return '—';
+  if (m < 60) return m + 'm';
+  const h = Math.floor(m / 60), r = m % 60;
+  return h + 'h ' + (r > 0 ? r + 'm' : '');
+};
+
+// ── Oscilloscope ──────────────────────────────────────────────────────────────
+
+const canvas = document.getElementById('osc');
+const ctx2d  = canvas.getContext('2d');
+
+function drawOsc(history, pct) {
+  const W = canvas.offsetWidth  * window.devicePixelRatio;
+  const H = canvas.offsetHeight * window.devicePixelRatio;
+  canvas.width  = W;
+  canvas.height = H;
+
+  ctx2d.clearRect(0, 0, W, H);
+
+  // Background grid
+  ctx2d.strokeStyle = 'rgba(126,203,82,0.06)';
+  ctx2d.lineWidth = 1;
+  for (let x = 0; x < W; x += W / 8) {
+    ctx2d.beginPath(); ctx2d.moveTo(x, 0); ctx2d.lineTo(x, H); ctx2d.stroke();
+  }
+  for (let y = 0; y < H; y += H / 4) {
+    ctx2d.beginPath(); ctx2d.moveTo(0, y); ctx2d.lineTo(W, y); ctx2d.stroke();
+  }
+
+  if (!history || history.length < 2) {
+    // Flat line when no data
+    ctx2d.strokeStyle = 'rgba(126,203,82,0.3)';
+    ctx2d.lineWidth = 1.5 * window.devicePixelRatio;
+    ctx2d.beginPath();
+    ctx2d.moveTo(0, H * 0.5);
+    ctx2d.lineTo(W, H * 0.5);
+    ctx2d.stroke();
+    return;
+  }
+
+  // Color based on health
+  let lineColor, glowColor;
+  if      (pct >= 85) { lineColor = '#ff5c38'; glowColor = 'rgba(255,92,56,0.4)'; }
+  else if (pct >= 70) { lineColor = '#ff8c3a'; glowColor = 'rgba(255,140,58,0.4)'; }
+  else if (pct >= 50) { lineColor = '#f5c842'; glowColor = 'rgba(245,200,66,0.35)'; }
+  else                { lineColor = '#7ecb52'; glowColor = 'rgba(126,203,82,0.35)'; }
+
+  const pts = history.slice(-60);
+  const step = W / (pts.length - 1);
+
+  // Glow pass
+  ctx2d.shadowBlur = 8 * window.devicePixelRatio;
+  ctx2d.shadowColor = glowColor;
+  ctx2d.strokeStyle = lineColor;
+  ctx2d.lineWidth = 1.5 * window.devicePixelRatio;
+  ctx2d.lineJoin = 'round';
+  ctx2d.lineCap  = 'round';
+
+  ctx2d.beginPath();
+  pts.forEach((v, i) => {
+    const x = i * step;
+    const y = H - (v / 100) * H * 0.85 - H * 0.07;
+    i === 0 ? ctx2d.moveTo(x, y) : ctx2d.lineTo(x, y);
+  });
+  ctx2d.stroke();
+
+  // Fill under curve
+  ctx2d.shadowBlur = 0;
+  const grad = ctx2d.createLinearGradient(0, 0, 0, H);
+  grad.addColorStop(0, lineColor.replace(')', ',0.25)').replace('rgb', 'rgba').replace('#', 'rgba(').replace('rgba(', '').replace(')', ''));
+  // simpler approach:
+  const fillColor = pct >= 85 ? 'rgba(255,92,56,' : pct >= 70 ? 'rgba(255,140,58,' : pct >= 50 ? 'rgba(245,200,66,' : 'rgba(126,203,82,';
+  const grad2 = ctx2d.createLinearGradient(0, 0, 0, H);
+  grad2.addColorStop(0, fillColor + '0.15)');
+  grad2.addColorStop(1, fillColor + '0.01)');
+  ctx2d.fillStyle = grad2;
+
+  ctx2d.beginPath();
+  pts.forEach((v, i) => {
+    const x = i * step;
+    const y = H - (v / 100) * H * 0.85 - H * 0.07;
+    i === 0 ? ctx2d.moveTo(x, y) : ctx2d.lineTo(x, y);
+  });
+  ctx2d.lineTo((pts.length - 1) * step, H);
+  ctx2d.lineTo(0, H);
+  ctx2d.closePath();
+  ctx2d.fill();
+}
+
+// ── VU Meters ─────────────────────────────────────────────────────────────────
+
+function setVU(id, val, max) {
+  const pct = Math.min(100, (val / max) * 100);
+  document.getElementById('vu' + id + 'Bar').style.height = pct + '%';
+  document.getElementById('vu' + id + 'Val').textContent  = fmtK(val);
+
+  // Peak hold
+  const key = id.toLowerCase();
+  if (pct > vuPeaks[key]) {
+    vuPeaks[key] = pct;
+    document.getElementById('vu' + id + 'Peak').style.bottom = pct + '%';
+    clearTimeout(vuPeakTimers[key]);
+    vuPeakTimers[key] = setTimeout(() => {
+      vuPeaks[key] = 0;
+      document.getElementById('vu' + id + 'Peak').style.bottom = '0%';
+    }, 3000);
+  }
+}
+
+// ── Patch Bay ─────────────────────────────────────────────────────────────────
+
+function renderPatchBay(projects) {
+  const bay     = document.getElementById('patchBay');
+  const online  = projects.filter(p => p.online).length;
+  document.getElementById('patchOnlineCount').textContent = online + ' online';
+  document.getElementById('patchOnlineCount').className   = 'pill ' + (online > 0 ? 'pill-green' : 'pill-red');
+
+  bay.innerHTML = projects.map(p => {
+    const cls   = p.online ? 'online' : 'offline';
+    const href  = p.online ? `http://localhost:${p.port}` : '#';
+    const gitStr = p.git
+      ? `<span class="branch">⎇ ${p.git.branch}</span> <span class="${p.git.clean ? 'clean' : 'dirty'}">${p.git.clean ? '✓' : '●'}</span>`
+      : `<span style="color:var(--text-muted)">no repo</span>`;
+    return `
+      <a class="patch-node ${cls}" href="${href}" target="_blank" onclick="${!p.online ? 'return false' : ''}">
+        <div class="patch-top">
+          <div class="patch-led"></div>
+          <span class="patch-name">${p.name}</span>
+        </div>
+        <div class="patch-port mono">:${p.port}</div>
+        <div class="patch-git">${gitStr}</div>
+      </a>`;
+  }).join('');
+}
+
+// ── Git Rack ──────────────────────────────────────────────────────────────────
+
+function renderGitRack(projects) {
+  const rack = document.getElementById('gitRack');
+  const withGit = projects.filter(p => p.git);
+  if (!withGit.length) {
+    rack.innerHTML = `<div style="color:var(--text-muted);font-size:12px;padding:8px">No git repos found</div>`;
+    return;
+  }
+  rack.innerHTML = withGit.map(p => {
+    const g = p.git;
+    const dotCls    = g.clean ? 'clean' : 'dirty';
+    const statusCls = g.clean ? 'clean' : 'dirty';
+    const statusTxt = g.clean ? 'Clean'  : 'Uncommitted';
+    return `
+      <div class="git-row">
+        <div class="git-dot ${dotCls}"></div>
+        <span class="git-name">${p.name}</span>
+        <span class="git-branch">⎇ ${g.branch}</span>
+        <span class="git-status-label ${statusCls}">${statusTxt}</span>
+        <span class="git-last">${g.last_commit}</span>
+      </div>`;
+  }).join('');
+}
+
+// ── Context health ────────────────────────────────────────────────────────────
+
+function ctxHealth(pct) {
+  if (pct >= 85) return { cls: 'health-danger', pill: 'pill-red',    txt: '!! RESET NOW' };
+  if (pct >= 70) return { cls: 'health-warn',   pill: 'pill-orange', txt: '!! FILLING'   };
+  if (pct >= 50) return { cls: 'health-mid',    pill: 'pill-orange', txt: 'WATCH'        };
+  return               { cls: 'health-ok',     pill: 'pill-green',  txt: 'OK'           };
+}
+
+// ── Power button ──────────────────────────────────────────────────────────────
+
+function toggleAutoOpen() {
+  autoOpen = !autoOpen;
+  document.getElementById('powerLed').classList.toggle('on', autoOpen);
+  document.getElementById('powerLabel').textContent = autoOpen ? 'AUTO-OPEN' : 'AUTO-OPEN';
+  fetch('/api/settings', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ auto_open: autoOpen })
+  });
+}
+
+function setAutoOpenUI(val) {
+  autoOpen = val;
+  document.getElementById('powerLed').classList.toggle('on', val);
+}
+
+// ── Main update ───────────────────────────────────────────────────────────────
+
+async function update() {
+  try {
+    const r = await fetch('/api/status');
+    const d = await r.json();
+
+    // Nameplate
+    document.getElementById('npModel').textContent   = d.context.model || '—';
+    document.getElementById('npSession').textContent = fmtMins(d.session_mins);
+    document.getElementById('npTime').textContent    = d.now;
+
+    setAutoOpenUI(d.settings.auto_open);
+
+    // Oscilloscope
+    const hist = d.context.history || [];
+    const pct  = d.context.pct || 0;
+    oscHistory  = hist;
+    drawOsc(hist, pct);
+
+    document.getElementById('oscPctVal').textContent = pct.toFixed(0);
+    document.getElementById('oscFree').textContent   = (d.context.free_k || '—') + ' free';
+    document.getElementById('ctxModelLbl').textContent = d.context.model || '—';
+
+    const h = ctxHealth(pct);
+    document.getElementById('oscPctVal').className   = h.cls;
+    const pill = document.getElementById('ctxHealthPill');
+    pill.className   = 'pill ' + h.pill;
+    pill.textContent = h.txt;
+
+    // VU Meters (max = 1M tokens as reference scale)
+    const MAX = 1_000_000;
+    setVU('Day',  d.usage.day.tokens,   MAX);
+    setVU('Wk',   d.usage.week.tokens,  MAX);
+    setVU('Mo',   d.usage.month.tokens, MAX);
+
+    // Cost
+    const costs = [
+      { id: 'Day', tok: d.usage.day.tokens,   cost: d.usage.day.cost,   bar: 'costDayBar' },
+      { id: 'Wk',  tok: d.usage.week.tokens,  cost: d.usage.week.cost,  bar: 'costWkBar' },
+      { id: 'Mo',  tok: d.usage.month.tokens, cost: d.usage.month.cost, bar: 'costMoBar' },
+    ];
+    const maxCost = Math.max(...costs.map(c => c.cost), 0.01);
+    costs.forEach(c => {
+      document.getElementById('cost' + c.id + 'Val').textContent = fmtCost(c.cost);
+      document.getElementById('cost' + c.id + 'Tok').textContent = fmtK(c.tok);
+      document.getElementById(c.bar).style.width = Math.max(2, (c.cost / maxCost) * 100) + '%';
+    });
+
+    // Patch bay + git
+    if (d.projects) {
+      renderPatchBay(d.projects);
+      renderGitRack(d.projects);
+    }
+
+  } catch(e) {
+    console.warn('Update failed', e);
+  }
+}
+
+// ── Clock (local, independent of server) ─────────────────────────────────────
+
+function tickClock() {
+  const t = new Date();
+  const hh = String(t.getHours()).padStart(2,'0');
+  const mm = String(t.getMinutes()).padStart(2,'0');
+  document.getElementById('npTime').textContent = hh + ':' + mm;
+}
+
+// ── Boot ──────────────────────────────────────────────────────────────────────
+
+update();
+setInterval(update,    6000);
+setInterval(tickClock, 1000);
+window.addEventListener('resize', () => drawOsc(oscHistory, parseFloat(document.getElementById('oscPctVal').textContent) || 0));
+</script>
+</body>
+</html>
