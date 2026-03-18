@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KodeKeeper</title>
+<title>KodeKeeper — Creative Konsoles</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -12,14 +12,21 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --bg:           #09090d;
-  --surface:      #0f1018;
-  --surface2:     #14161f;
-  --surface3:     #1a1d28;
-  --border:       #1f2235;
-  --border2:      #272b3e;
+  --bg:           #08080e;
+  --surface:      #0d0d16;
+  --surface2:     #11111c;
+  --surface3:     #181825;
+  --border:       #1e1e30;
+  --border2:      #252538;
 
-  /* Organic warm palette */
+  /* Creative Konsoles spectrum */
+  --ck-cyan:      #00d4ff;
+  --ck-blue:      #6b7fff;
+  --ck-purple:    #a855f7;
+  --ck-magenta:   #e040fb;
+  --ck-teal:      #00e5c0;
+
+  /* Functional palette — organic warm */
   --green:        #7ecb52;
   --green-glow:   rgba(126,203,82,0.18);
   --green-dim:    #2d4f1a;
@@ -29,10 +36,10 @@
   --orange:       #ff8c3a;
   --orange-glow:  rgba(255,140,58,0.22);
   --orange-dim:   #6b3610;
-  --blue:         #5ba3ff;
-  --blue-glow:    rgba(91,163,255,0.18);
+  --blue:         var(--ck-blue);
+  --blue-glow:    rgba(107,127,255,0.2);
   --yellow:       #f5c842;
-  --purple:       #b06fff;
+  --purple:       var(--ck-purple);
 
   --text:         #d8dcec;
   --text-dim:     #6b7591;
@@ -106,7 +113,7 @@ html, body {
 
 /* ── Nameplate (top bar) ───────────────────────────────────────────────────── */
 .nameplate {
-  background: linear-gradient(135deg, #0d0f1a 0%, #111420 50%, #0d0f1a 100%);
+  background: linear-gradient(135deg, #0a0812 0%, #110d1e 40%, #130a1a 70%, #0a0812 100%);
   border: 1px solid var(--border2);
   border-radius: var(--radius-lg);
   padding: 14px 20px;
@@ -333,9 +340,9 @@ canvas#osc {
   border-radius: 2px 2px 0 0;
 }
 
-.vu-bar.day  { background: linear-gradient(to top, var(--green-dim), var(--green)); }
-.vu-bar.week { background: linear-gradient(to top, #1a3f6e, var(--blue)); }
-.vu-bar.month{ background: linear-gradient(to top, var(--orange-dim), var(--orange)); }
+.vu-bar.day  { background: linear-gradient(to top, #00607a, var(--ck-cyan)); }
+.vu-bar.week { background: linear-gradient(to top, #3a1a7a, var(--ck-purple)); }
+.vu-bar.month{ background: linear-gradient(to top, #6a0a7a, var(--ck-magenta)); }
 
 /* Peak hold tick */
 .vu-peak {
@@ -402,9 +409,9 @@ canvas#osc {
   transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.cost-bar.day   { background: var(--green); box-shadow: 0 0 6px var(--green-glow); }
-.cost-bar.week  { background: var(--blue);  box-shadow: 0 0 6px var(--blue-glow); }
-.cost-bar.month { background: var(--orange); box-shadow: 0 0 6px var(--orange-glow); }
+.cost-bar.day   { background: var(--ck-cyan);    box-shadow: 0 0 8px rgba(0,212,255,0.35); }
+.cost-bar.week  { background: var(--ck-purple);  box-shadow: 0 0 8px rgba(168,85,247,0.35); }
+.cost-bar.month { background: var(--ck-magenta); box-shadow: 0 0 8px rgba(224,64,251,0.35); }
 
 .cost-val {
   font-family: var(--font-mono);
@@ -675,10 +682,12 @@ canvas#osc {
   <!-- ── Nameplate ──────────────────────────────────────────────────────── -->
   <div class="nameplate">
     <div class="brand">
-      <div class="brand-logo">🎛</div>
+      <img src="/static/logo.png" alt="Creative Konsoles"
+           style="width:44px;height:44px;border-radius:10px;flex-shrink:0"
+           onerror="this.style.fontSize='22px';this.outerHTML='<div style=\'font-size:22px\'>🎛</div>'">
       <div class="brand-name">
         <span class="main">KodeKeeper</span>
-        <span class="sub">Claude Code Mission Control</span>
+        <span class="sub">Creative Konsoles &nbsp;·&nbsp; Code · Create · Control</span>
       </div>
     </div>
 
@@ -910,10 +919,10 @@ function drawOsc(history, pct) {
 
   // Color based on health
   let lineColor, glowColor;
-  if      (pct >= 85) { lineColor = '#ff5c38'; glowColor = 'rgba(255,92,56,0.4)'; }
+  if      (pct >= 85) { lineColor = '#ff5c38'; glowColor = 'rgba(255,92,56,0.45)'; }
   else if (pct >= 70) { lineColor = '#ff8c3a'; glowColor = 'rgba(255,140,58,0.4)'; }
   else if (pct >= 50) { lineColor = '#f5c842'; glowColor = 'rgba(245,200,66,0.35)'; }
-  else                { lineColor = '#7ecb52'; glowColor = 'rgba(126,203,82,0.35)'; }
+  else                { lineColor = '#a855f7'; glowColor = 'rgba(168,85,247,0.4)'; }
 
   const pts = history.slice(-60);
   const step = W / (pts.length - 1);

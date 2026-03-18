@@ -1,6 +1,17 @@
-# kodekeeper
+<div align="center">
+  <img src="static/banner.png" alt="Creative Konsoles — KodeKeeper" width="100%">
+</div>
 
-> **Mission control for every Claude Code session you run.**
+<br>
+
+<div align="center">
+  <img src="static/logo.png" alt="KodeKeeper" width="96">
+  <h1>kodekeeper</h1>
+  <p><strong>Mission control for every Claude Code session you run.</strong></p>
+  <p><sub>by <a href="https://github.com/papjamzzz">Creative Konsoles</a> &nbsp;·&nbsp; Code · Create · Control</sub></p>
+</div>
+
+<br>
 
 A hardware synthesizer-inspired dashboard that monitors your AI coding sessions in real time. Context window health, token burn rates, cost tracking, live project status, and git — all in one rack.
 
