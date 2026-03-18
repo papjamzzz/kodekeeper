@@ -1,5 +1,5 @@
 """
-KodeKeeper — Claude Code Mission Control
+Kode Keeper — Claude Code Mission Control
 Port 5560 | 127.0.0.1 only
 """
 
@@ -43,7 +43,7 @@ def _open_browser():
 
 
 if __name__ == "__main__":
-    print("  🎛  KodeKeeper — Claude Code Mission Control")
+    print("  🎛  Kode Keeper — Claude Code Mission Control")
     print("  🌐  http://localhost:5560")
 
     settings = load_settings()

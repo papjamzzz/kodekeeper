@@ -1,14 +1,14 @@
 <div align="center">
-  <img src="static/banner.png" alt="Creative Konsoles — KodeKeeper" width="100%">
+  <img src="static/banner.png" alt="Creative Konsoles — Kode Keeper" width="100%">
 </div>
 
 <br>
 
 <div align="center">
-  <img src="static/logo.png" alt="KodeKeeper" width="96">
-  <h1>kodekeeper</h1>
+  <img src="static/logo.png" alt="Kode Keeper" width="96">
+  <h1>Kode Keeper</h1>
   <p><strong>Mission control for every Claude Code session you run.</strong></p>
-  <p><sub>by <a href="https://github.com/papjamzzz">Creative Konsoles</a> &nbsp;·&nbsp; Code · Create · Control</sub></p>
+  <p><sub>by <a href="https://github.com/papjamzzz">papjamzzz</a> &nbsp;·&nbsp; Real-time Claude Code health monitor</sub></p>
 </div>
 
 <br>
@@ -21,7 +21,7 @@ A hardware synthesizer-inspired dashboard that monitors your AI coding sessions 
 
 Claude Code is running. You're building. But what's actually happening? How full is your context? How much have you spent today? Which of your apps are live? Is your git clean?
 
-KodeKeeper answers all of it, continuously, without you having to ask.
+Kode Keeper answers all of it, continuously, without you having to ask.
 
 ---
 
@@ -132,7 +132,7 @@ Organic. Modern. No clinical colors.
 | [TrackTracks](https://github.com/papjamzzz/Track-Tracks) | 5557 | Per-track Ableton CPU monitor |
 | [DAW Doctor](https://github.com/papjamzzz/Daw-Doctor) | 5558 | Ableton Live diagnostics |
 | [KK Trader](https://github.com/papjamzzz/kalshi-trader) | 5559 | Autonomous Kalshi trading engine |
-| KodeKeeper | 5560 | Claude Code mission control ← you are here |
+| Kode Keeper | 5560 | Claude Code mission control ← you are here |
 
 ---
 

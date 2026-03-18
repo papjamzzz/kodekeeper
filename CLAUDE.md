@@ -1,5 +1,5 @@
-# KodeKeeper — CLAUDE.md
-*Re-entry: KodeKeeper*
+# Kode Keeper — CLAUDE.md
+*Re-entry: Kode Keeper*
 
 ## What This Is
 Claude Code Mission Control — hardware synthesizer-style dashboard for monitoring
