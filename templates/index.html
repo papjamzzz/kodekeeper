@@ -3,1069 +3,530 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kode Keeper — Claude Code Mission Control</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<title>Kode Keeper</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-/* ── Reset & Base ──────────────────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --bg:           #0B1210;
-  --surface:      #0e1814;
-  --surface2:     #121e18;
-  --surface3:     #18261e;
-  --border:       #1e3028;
-  --border2:      #264038;
-
-  /* Kode Keeper brand palette */
-  --kk-green:     #58DE83;
-  --kk-green2:    #69F09B;
-  --kk-deep:      #1F5A38;
-  --kk-amber:     #DA8E20;
-  --kk-ember:     #CD4E14;
-  --kk-mint:      #C3FDD8;
-
-  /* Functional aliases */
-  --green:        #58DE83;
-  --green-glow:   rgba(88,222,131,0.2);
-  --green-dim:    #1a4028;
-  --red:          #CD4E14;
-  --red-glow:     rgba(205,78,20,0.2);
-  --red-dim:      #5a1f08;
-  --orange:       #DA8E20;
-  --orange-glow:  rgba(218,142,32,0.25);
-  --orange-dim:   #5a3a08;
-  --blue:         #69F09B;
-  --blue-glow:    rgba(105,240,155,0.2);
-  --yellow:       #DA8E20;
-  --purple:       #58DE83;
-
-  --text:         #d8dcec;
-  --text-dim:     #6b7591;
-  --text-muted:   #333750;
-  --label:        #8892aa;
-
-  --font-ui:   'Inter', sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
-
-  --radius:  6px;
-  --radius-lg: 10px;
+  --bg:       #0d0f14;
+  --surface:  #111318;
+  --border:   #1e2230;
+  --green:    #58DE83;
+  --green2:   #69F09B;
+  --green-dim:#1a4028;
+  --amber:    #DA8E20;
+  --amber-dim:#5a3a08;
+  --red:      #CD4E14;
+  --red-dim:  #5a1f08;
+  --text:     #c8cfe0;
+  --dim:      #4a5270;
+  --muted:    #252838;
+  --purple:   #9d7fff;
+  --mono:     'JetBrains Mono', monospace;
 }
 
 html, body {
   background: var(--bg);
   color: var(--text);
-  font-family: var(--font-ui);
+  font-family: var(--mono);
   font-size: 13px;
   min-height: 100vh;
+  line-height: 1.5;
   overflow-x: hidden;
 }
 
-/* ── Scrollbar ─────────────────────────────────────────────────────────────── */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: var(--bg); }
-::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+/* Subtle scanline overlay */
+body::after {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,0,0,0.04) 2px,
+    rgba(0,0,0,0.04) 4px
+  );
+  pointer-events: none;
+  z-index: 1000;
+}
 
-/* ── Layout ────────────────────────────────────────────────────────────────── */
-.rack {
-  max-width: 1280px;
+/* ── Layout ── */
+.terminal {
+  max-width: 1100px;
   margin: 0 auto;
-  padding: 20px 20px 40px;
+  padding: 24px 20px 60px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 0;
 }
 
-/* ── Rack module card ──────────────────────────────────────────────────────── */
-.module {
-  background: var(--surface);
+/* ── Row / block ── */
+.t-block {
   border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  position: relative;
+  border-bottom: none;
 }
+.t-block:first-child  { border-radius: 6px 6px 0 0; }
+.t-block:last-child   { border-bottom: 1px solid var(--border); border-radius: 0 0 6px 6px; }
+.t-block:only-child   { border-radius: 6px; border-bottom: 1px solid var(--border); }
 
-.module::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--border2), transparent);
-}
-
-.module-header {
+.t-header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 6px 16px;
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 8px 16px;
-  background: var(--surface2);
-  border-bottom: 1px solid var(--border);
+  gap: 16px;
   font-size: 10px;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 2px;
   text-transform: uppercase;
-  color: var(--text-dim);
+  color: var(--dim);
 }
 
-.module-header .mod-title { color: var(--label); }
-.module-body { padding: 16px; }
+.t-header .label { color: var(--green); }
+.t-header .spacer { flex: 1; }
 
-/* ── Nameplate (top bar) ───────────────────────────────────────────────────── */
+.t-body {
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* ── Nameplate row ── */
 .nameplate {
-  background: linear-gradient(135deg, #090f0d 0%, #0d1a14 40%, #0b1810 70%, #090f0d 100%);
-  border: 1px solid var(--border2);
-  border-radius: var(--radius-lg);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
   padding: 14px 20px;
   display: flex;
   align-items: center;
-  gap: 20px;
-  position: relative;
-  overflow: hidden;
+  gap: 0;
+  margin-bottom: 10px;
 }
 
-.nameplate::after {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent 0%, var(--border2) 30%, var(--orange) 50%, var(--border2) 70%, transparent 100%);
-  opacity: 0.5;
-}
-
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.brand-logo {
+.np-logo {
   width: 36px; height: 36px;
-  background: var(--surface3);
-  border: 1px solid var(--border2);
-  border-radius: 8px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 18px;
-}
-
-.brand-name {
-  display: flex; flex-direction: column;
-}
-
-.brand-name .main {
-  font-size: 17px;
-  font-weight: 800;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  background: linear-gradient(90deg, var(--text) 0%, var(--text-dim) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.brand-name .sub {
-  font-size: 9px;
-  letter-spacing: 2.5px;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  margin-top: 1px;
-}
-
-/* Power button */
-.power-btn {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: var(--surface3);
-  border: 1px solid var(--border2);
-  border-radius: 20px;
-  padding: 6px 14px 6px 10px;
-  cursor: pointer;
-  transition: all 0.2s;
-  user-select: none;
-}
-
-.power-btn:hover { border-color: var(--orange); }
-
-.power-led {
-  width: 10px; height: 10px;
-  border-radius: 50%;
-  background: var(--orange-dim);
-  box-shadow: none;
-  transition: all 0.3s;
+  border-radius: 6px;
+  margin-right: 14px;
   flex-shrink: 0;
 }
 
-.power-led.on {
-  background: var(--orange);
-  box-shadow: 0 0 8px var(--orange), 0 0 16px rgba(255,140,58,0.4);
+.np-brand {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
 }
 
-.power-btn .btn-label {
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 1.5px;
+.np-name {
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 3px;
   text-transform: uppercase;
-  color: var(--text-dim);
+  color: var(--text);
 }
 
-/* Nameplate readouts */
-.np-readouts {
+.np-sub {
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--dim);
+}
+
+.np-right {
+  margin-left: auto;
   display: flex;
   align-items: center;
   gap: 24px;
-  margin-left: auto;
 }
 
-.np-readout {
+.np-stat {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 2px;
+  gap: 1px;
 }
 
-.np-readout .val {
-  font-family: var(--font-mono);
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text);
-}
+.np-stat .val { font-size: 13px; font-weight: 600; color: var(--text); }
+.np-stat .lbl { font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--dim); }
 
-.np-readout .lbl {
-  font-size: 9px;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  color: var(--text-muted);
-}
+.np-sep { width: 1px; height: 24px; background: var(--border); }
 
-.np-divider {
-  width: 1px;
-  height: 28px;
-  background: var(--border);
-}
-
-/* ── Three-column row ──────────────────────────────────────────────────────── */
-.row-3 {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 14px;
-}
-
-/* ── Context oscilloscope ──────────────────────────────────────────────────── */
-.osc-wrap {
-  position: relative;
-  height: 100px;
-  background: #06070c;
-  border-radius: 6px;
-  overflow: hidden;
-  border: 1px solid var(--border);
-}
-
-canvas#osc {
-  width: 100%;
-  height: 100%;
-  display: block;
-}
-
-.osc-readout {
-  position: absolute;
-  bottom: 8px; right: 10px;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--green);
-  text-shadow: 0 0 8px var(--green);
-}
-
-.osc-pct {
-  position: absolute;
-  top: 8px; left: 10px;
-  font-family: var(--font-mono);
-  font-size: 22px;
-  font-weight: 700;
-  color: var(--green);
-  text-shadow: 0 0 12px var(--green);
-  line-height: 1;
-}
-
-.osc-pct .pct-sign {
-  font-size: 12px;
-  opacity: 0.7;
-}
-
-.ctx-meta {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 8px;
-  font-size: 10px;
-  color: var(--text-dim);
-  font-family: var(--font-mono);
-}
-
-/* ── VU Meters ─────────────────────────────────────────────────────────────── */
-.vu-panel {
-  display: flex;
-  justify-content: space-around;
-  align-items: flex-end;
-  gap: 10px;
-  height: 100px;
-  padding: 0 4px;
-}
-
-.vu-meter {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  flex: 1;
-}
-
-.vu-bar-wrap {
-  flex: 1;
-  width: 100%;
-  background: #06070c;
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  overflow: hidden;
-  position: relative;
-  min-height: 68px;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-}
-
-.vu-bar {
-  width: 100%;
-  transition: height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  border-radius: 2px 2px 0 0;
-}
-
-.vu-bar.day  { background: linear-gradient(to top, var(--kk-deep), var(--kk-green)); }
-.vu-bar.week { background: linear-gradient(to top, #1a3a28, var(--kk-green2)); }
-.vu-bar.month{ background: linear-gradient(to top, var(--orange-dim), var(--kk-amber)); }
-
-/* Peak hold tick */
-.vu-peak {
-  position: absolute;
-  width: 100%;
-  height: 2px;
-  background: #fff;
-  opacity: 0.5;
-  transition: bottom 0.1s;
-  bottom: 0;
-}
-
-.vu-val {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 600;
-  color: var(--text-dim);
-  text-align: center;
-  line-height: 1;
-}
-
-.vu-lbl {
-  font-size: 9px;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  text-align: center;
-}
-
-/* ── Cost Tracker ──────────────────────────────────────────────────────────── */
-.cost-rows {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding-top: 4px;
-}
-
-.cost-row {
+/* ── Main status row ── */
+.status-row {
   display: flex;
   align-items: center;
-  gap: 10px;
-}
-
-.cost-period {
-  font-size: 9px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  width: 38px;
-  flex-shrink: 0;
-}
-
-.cost-bar-wrap {
-  flex: 1;
-  height: 4px;
-  background: var(--surface3);
-  border-radius: 2px;
-  overflow: hidden;
-}
-
-.cost-bar {
-  height: 100%;
-  border-radius: 2px;
-  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.cost-bar.day   { background: var(--kk-green);  box-shadow: 0 0 8px rgba(88,222,131,0.35); }
-.cost-bar.week  { background: var(--kk-green2); box-shadow: 0 0 8px rgba(105,240,155,0.3); }
-.cost-bar.month { background: var(--kk-amber);  box-shadow: 0 0 8px rgba(218,142,32,0.35); }
-
-.cost-val {
-  font-family: var(--font-mono);
+  gap: 8px;
   font-size: 13px;
+  flex-wrap: wrap;
+}
+
+.pipe { color: var(--border); margin: 0 4px; user-select: none; }
+
+/* Health indicator */
+.health {
   font-weight: 700;
-  color: var(--text);
-  text-align: right;
-  width: 52px;
-  flex-shrink: 0;
+  padding: 1px 6px;
+  border-radius: 3px;
 }
+.health.ok     { color: var(--green);  background: var(--green-dim); }
+.health.watch  { color: var(--amber);  background: var(--amber-dim); }
+.health.warn   { color: var(--amber);  background: var(--amber-dim); }
+.health.danger { color: var(--red);    background: var(--red-dim); }
 
-.cost-tokens {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  color: var(--text-muted);
-  text-align: right;
-  width: 44px;
-  flex-shrink: 0;
-}
+/* ASCII bar */
+.ascii-bar { color: var(--green); letter-spacing: -1px; font-weight: 500; }
+.ascii-bar.warn   { color: var(--amber); }
+.ascii-bar.danger { color: var(--red); }
 
-/* ── Project Patch Bay ─────────────────────────────────────────────────────── */
-.patch-bay {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  gap: 10px;
-}
+.pct { font-weight: 600; }
+.pct.ok     { color: var(--green); }
+.pct.watch  { color: var(--amber); }
+.pct.warn   { color: var(--amber); }
+.pct.danger { color: var(--red); }
 
-.patch-node {
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 12px;
+/* Power toggle */
+.power-toggle {
+  display: flex; align-items: center; gap: 6px;
   cursor: pointer;
-  transition: all 0.2s;
-  text-decoration: none;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  position: relative;
-  overflow: hidden;
-}
-
-.patch-node:hover {
-  border-color: var(--border2);
-  background: var(--surface3);
-  transform: translateY(-1px);
-}
-
-.patch-node.online { border-color: var(--green-dim); }
-.patch-node.online:hover { border-color: var(--green); }
-
-.patch-node::after {
-  content: '';
-  position: absolute;
-  top: 0; right: 0;
-  width: 3px;
-  height: 100%;
-  background: var(--surface3);
-  transition: background 0.2s;
-}
-
-.patch-node.online::after { background: var(--green); box-shadow: 0 0 8px var(--green-glow); }
-.patch-node.offline::after { background: var(--surface3); }
-
-.patch-led {
-  width: 7px; height: 7px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-.patch-node.online  .patch-led { background: var(--green); box-shadow: 0 0 6px var(--green); }
-.patch-node.offline .patch-led { background: var(--text-muted); }
-
-.patch-top {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-}
-
-.patch-name {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--text);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.patch-port {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  color: var(--text-muted);
-}
-
-.patch-git {
-  font-family: var(--font-mono);
-  font-size: 9px;
-  color: var(--text-dim);
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.patch-git .branch {
-  color: var(--purple);
-}
-
-.patch-git .dirty {
-  color: var(--yellow);
-}
-
-.patch-git .clean {
-  color: var(--green);
-}
-
-/* ── Git Rack ──────────────────────────────────────────────────────────────── */
-.git-rack {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.git-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 9px 12px;
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  transition: border-color 0.2s;
-}
-
-.git-row:hover { border-color: var(--border2); }
-
-.git-dot {
-  width: 6px; height: 6px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-.git-dot.clean  { background: var(--green); box-shadow: 0 0 6px var(--green); }
-.git-dot.dirty  { background: var(--yellow); box-shadow: 0 0 6px var(--yellow); }
-.git-dot.nodata { background: var(--text-muted); }
-
-.git-name {
-  font-weight: 600;
-  font-size: 12px;
-  width: 150px;
-  flex-shrink: 0;
-}
-
-.git-branch {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  color: var(--purple);
-}
-
-.git-status-label {
-  font-size: 10px;
   padding: 2px 8px;
-  border-radius: 10px;
-  font-weight: 600;
-}
-
-.git-status-label.clean  { background: var(--green-dim);  color: var(--green);  }
-.git-status-label.dirty  { background: rgba(245,200,66,0.12); color: var(--yellow); }
-.git-status-label.nodata { background: var(--surface3);   color: var(--text-muted); }
-
-.git-last {
-  margin-left: auto;
-  font-size: 10px;
-  color: var(--text-muted);
-  font-family: var(--font-mono);
-}
-
-/* ── Context health states ─────────────────────────────────────────────────── */
-.health-ok     { color: var(--green); }
-.health-mid    { color: var(--yellow); }
-.health-warn   { color: var(--orange); }
-.health-danger { color: var(--red); }
-
-/* ── Segment display (model readout) ──────────────────────────────────────── */
-.seg-display {
-  font-family: var(--font-mono);
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--orange);
-  background: #06070c;
   border: 1px solid var(--border);
-  border-radius: 4px;
-  padding: 4px 10px;
-  letter-spacing: 1px;
-  text-shadow: 0 0 8px var(--orange);
+  border-radius: 3px;
+  transition: border-color 0.2s;
+  user-select: none;
+  margin-left: auto;
+}
+.power-toggle:hover { border-color: var(--amber); }
+.power-led {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--amber-dim);
+  transition: all 0.3s;
+}
+.power-led.on { background: var(--amber); box-shadow: 0 0 6px var(--amber); }
+.power-label { font-size: 10px; letter-spacing: 1.5px; color: var(--dim); }
+
+/* ── Data rows ── */
+.data-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0;
+  font-size: 13px;
+  line-height: 1.8;
 }
 
-/* ── Utility ───────────────────────────────────────────────────────────────── */
-.flex-center { display: flex; align-items: center; justify-content: center; }
-.flex { display: flex; align-items: center; }
-.gap-6 { gap: 6px; }
-.gap-8 { gap: 8px; }
-.mono { font-family: var(--font-mono); }
-.text-dim { color: var(--text-dim); }
-.text-muted { color: var(--text-muted); }
-
-.screw {
-  width: 12px; height: 12px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 35%, var(--surface3), var(--border));
-  border: 1px solid var(--text-muted);
-  opacity: 0.4;
+.row-key {
+  color: var(--dim);
+  width: 110px;
   flex-shrink: 0;
+  font-size: 11px;
+  letter-spacing: 1px;
 }
 
-/* ── Spinner ───────────────────────────────────────────────────────────────── */
-@keyframes spin { to { transform: rotate(360deg); } }
-.spinner {
-  width: 12px; height: 12px;
-  border: 2px solid var(--border2);
-  border-top-color: var(--orange);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-
-/* ── Tooltip ───────────────────────────────────────────────────────────────── */
-[data-tip] { position: relative; cursor: default; }
-[data-tip]::after {
-  content: attr(data-tip);
-  position: absolute;
-  bottom: calc(100% + 6px);
-  left: 50%;
-  transform: translateX(-50%);
-  background: var(--surface3);
-  border: 1px solid var(--border2);
-  border-radius: 4px;
-  padding: 4px 8px;
-  font-size: 10px;
-  white-space: nowrap;
+.row-val {
   color: var(--text);
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.2s;
-  z-index: 100;
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  flex-wrap: wrap;
 }
-[data-tip]:hover::after { opacity: 1; }
 
-/* ── Module label pill ─────────────────────────────────────────────────────── */
-.pill {
+.val-grp {
+  display: flex; align-items: baseline; gap: 6px;
+}
+
+.tag {
   font-size: 9px;
-  font-weight: 700;
   letter-spacing: 1.5px;
   text-transform: uppercase;
-  padding: 2px 8px;
-  border-radius: 10px;
-  border: 1px solid;
+  color: var(--dim);
+  margin-right: 2px;
 }
 
-.pill-orange { background: var(--orange-dim); color: var(--orange); border-color: rgba(255,140,58,0.3); }
-.pill-green  { background: var(--green-dim);  color: var(--green);  border-color: rgba(126,203,82,0.3); }
-.pill-blue   { background: rgba(91,163,255,0.1); color: var(--blue); border-color: rgba(91,163,255,0.3); }
-.pill-red    { background: var(--red-dim);    color: var(--red);    border-color: rgba(255,92,56,0.3); }
+.num { font-weight: 600; color: var(--text); }
+.num.green  { color: var(--green); }
+.num.amber  { color: var(--amber); }
+.num.purple { color: var(--purple); }
+
+/* ── Project list ── */
+.proj-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  padding: 3px 0;
+  border-bottom: 1px solid var(--muted);
+}
+.proj-row:last-child { border-bottom: none; }
+
+.proj-led {
+  width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;
+}
+.proj-led.on  { background: var(--green);  box-shadow: 0 0 5px var(--green); }
+.proj-led.off { background: var(--dim); }
+
+.proj-name  { width: 130px; flex-shrink: 0; font-weight: 600; }
+.proj-port  { width: 60px;  flex-shrink: 0; color: var(--dim); }
+.proj-branch{ width: 100px; flex-shrink: 0; color: var(--purple); }
+.proj-clean { width: 70px;  flex-shrink: 0; }
+.proj-status{ margin-left: auto; font-size: 11px; letter-spacing: 1px; }
+
+.proj-status.online  { color: var(--green); }
+.proj-status.offline { color: var(--dim); }
+
+/* ── Git rows ── */
+.git-row {
+  display: grid;
+  grid-template-columns: 140px 100px 80px 120px 1fr;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  padding: 3px 0;
+  border-bottom: 1px solid var(--muted);
+}
+.git-row:last-child { border-bottom: none; }
+
+.git-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; display: inline-block; margin-right: 6px; }
+.git-dot.clean { background: var(--green); box-shadow: 0 0 5px var(--green); }
+.git-dot.dirty { background: var(--amber); box-shadow: 0 0 5px var(--amber); }
+
+.git-name   { font-weight: 600; }
+.git-branch { color: var(--purple); }
+.git-state  { }
+.git-state.clean { color: var(--green); }
+.git-state.dirty { color: var(--amber); }
+.git-last   { color: var(--dim); font-size: 11px; }
+
+/* ── Cursor blink ── */
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+.cursor { display: inline-block; width: 8px; height: 13px; background: var(--green); animation: blink 1.2s step-end infinite; vertical-align: text-bottom; margin-left: 2px; }
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+/* ── Spinner ── */
+@keyframes spin { to { transform: rotate(360deg); } }
+.spinner { display: inline-block; width: 10px; height: 10px; border: 1px solid var(--border); border-top-color: var(--green); border-radius: 50%; animation: spin 0.7s linear infinite; }
 </style>
 </head>
 <body>
+<div class="terminal">
 
-<div class="rack">
-
-  <!-- ── Nameplate ──────────────────────────────────────────────────────── -->
+  <!-- ── Nameplate ── -->
   <div class="nameplate">
-    <div class="brand">
-      <img src="/static/logo.png" alt="Creative Konsoles"
-           style="width:44px;height:44px;border-radius:10px;flex-shrink:0"
-           onerror="this.style.fontSize='22px';this.outerHTML='<div style=\'font-size:22px\'>🎛</div>'">
-      <div class="brand-name">
-        <span class="main">Kode Keeper</span>
-        <span class="sub">Claude Code Mission Control</span>
-      </div>
+    <img src="/static/logo.png" alt="Kode Keeper" class="np-logo"
+         onerror="this.style.display='none'">
+    <div class="np-brand">
+      <span class="np-name">Kode Keeper</span>
+      <span class="np-sub">Claude Code Mission Control &nbsp;·&nbsp; Creative Konsoles</span>
     </div>
-
-    <div class="screw"></div>
-
-    <!-- Auto-open power button -->
-    <div class="power-btn" id="powerBtn" onclick="toggleAutoOpen()">
-      <div class="power-led" id="powerLed"></div>
-      <span class="btn-label" id="powerLabel">AUTO-OPEN</span>
-    </div>
-
-    <div class="np-divider"></div>
-
-    <div class="np-readouts">
-      <div class="np-readout">
-        <span class="val seg-display" id="npModel">—</span>
+    <div class="np-right">
+      <div class="np-stat">
+        <span class="val" id="npModel">—</span>
         <span class="lbl">Model</span>
       </div>
-      <div class="np-readout">
-        <span class="val mono" id="npSession" style="font-size:13px">—</span>
+      <div class="np-sep"></div>
+      <div class="np-stat">
+        <span class="val" id="npSession">—</span>
         <span class="lbl">Session</span>
       </div>
-      <div class="np-readout">
-        <span class="val mono" id="npTime" style="font-size:16px;color:var(--text-dim)">—</span>
-        <span class="lbl">Local Time</span>
+      <div class="np-sep"></div>
+      <div class="np-stat">
+        <span class="val" id="npTime" style="color:var(--dim);font-size:15px">—</span>
+        <span class="lbl">Time</span>
       </div>
     </div>
-
-    <div class="screw"></div>
   </div>
 
-  <!-- ── Row 1: Context / VU / Cost ─────────────────────────────────────── -->
-  <div class="row-3">
-
-    <!-- Context Oscilloscope -->
-    <div class="module">
-      <div class="module-header">
-        <div class="screw"></div>
-        <span class="mod-title">Context Oscilloscope</span>
-        <span class="pill pill-green" id="ctxHealthPill">OK</span>
-      </div>
-      <div class="module-body">
-        <div class="osc-wrap">
-          <canvas id="osc"></canvas>
-          <div class="osc-pct" id="oscPct">
-            <span id="oscPctVal">—</span><span class="pct-sign">%</span>
-          </div>
-          <div class="osc-readout" id="oscFree">— free</div>
-        </div>
-        <div class="ctx-meta">
-          <span>context window</span>
-          <span id="ctxModelLbl">—</span>
-        </div>
+  <!-- ── Context / Status ── -->
+  <div class="t-block">
+    <div class="t-header">
+      <span class="label">Context</span>
+      <span class="spacer"></span>
+      <div class="power-toggle" id="powerBtn" onclick="toggleAutoOpen()">
+        <div class="power-led" id="powerLed"></div>
+        <span class="power-label" id="powerLabel">AUTO-OPEN</span>
       </div>
     </div>
-
-    <!-- VU Meters -->
-    <div class="module">
-      <div class="module-header">
-        <div class="screw"></div>
-        <span class="mod-title">Usage VU Meters</span>
-        <span class="pill pill-blue">Tokens</span>
-      </div>
-      <div class="module-body">
-        <div class="vu-panel">
-          <div class="vu-meter">
-            <div class="vu-val" id="vuDayVal">—</div>
-            <div class="vu-bar-wrap">
-              <div class="vu-bar day" id="vuDayBar" style="height:0%"></div>
-              <div class="vu-peak" id="vuDayPeak"></div>
-            </div>
-            <div class="vu-lbl">Day</div>
-          </div>
-          <div class="vu-meter">
-            <div class="vu-val" id="vuWkVal">—</div>
-            <div class="vu-bar-wrap">
-              <div class="vu-bar week" id="vuWkBar" style="height:0%"></div>
-              <div class="vu-peak" id="vuWkPeak"></div>
-            </div>
-            <div class="vu-lbl">Week</div>
-          </div>
-          <div class="vu-meter">
-            <div class="vu-val" id="vuMoVal">—</div>
-            <div class="vu-bar-wrap">
-              <div class="vu-bar month" id="vuMoBar" style="height:0%"></div>
-              <div class="vu-peak" id="vuMoPeak"></div>
-            </div>
-            <div class="vu-lbl">Month</div>
-          </div>
-        </div>
+    <div class="t-body">
+      <div class="status-row">
+        <span class="health ok" id="ctxHealth">OK</span>
+        <span class="ascii-bar" id="ctxBar">░░░░░░░░░░</span>
+        <span class="pct ok" id="ctxPct">—%</span>
+        <span class="pipe">|</span>
+        <span id="ctxFree" style="color:var(--dim)">— free</span>
+        <span class="pipe">|</span>
+        <span id="ctxModel2" style="color:var(--dim)">—</span>
+        <span class="cursor"></span>
       </div>
     </div>
-
-    <!-- Cost Tracker -->
-    <div class="module">
-      <div class="module-header">
-        <div class="screw"></div>
-        <span class="mod-title">Cost Tracker</span>
-        <span class="pill pill-orange">USD</span>
-      </div>
-      <div class="module-body" style="padding-top:12px">
-        <div class="cost-rows">
-          <div class="cost-row">
-            <span class="cost-period">Today</span>
-            <div class="cost-bar-wrap"><div class="cost-bar day" id="costDayBar" style="width:0%"></div></div>
-            <span class="cost-tokens" id="costDayTok">—</span>
-            <span class="cost-val" id="costDayVal">$—</span>
-          </div>
-          <div class="cost-row">
-            <span class="cost-period">Week</span>
-            <div class="cost-bar-wrap"><div class="cost-bar week" id="costWkBar" style="width:0%"></div></div>
-            <span class="cost-tokens" id="costWkTok">—</span>
-            <span class="cost-val" id="costWkVal">$—</span>
-          </div>
-          <div class="cost-row">
-            <span class="cost-period">Month</span>
-            <div class="cost-bar-wrap"><div class="cost-bar month" id="costMoBar" style="width:0%"></div></div>
-            <span class="cost-tokens" id="costMoTok">—</span>
-            <span class="cost-val" id="costMoVal">$—</span>
-          </div>
-        </div>
-        <div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--border);font-size:10px;color:var(--text-muted);font-family:var(--font-mono)">
-          Sonnet 4.6 · $3/M in · $15/M out
-        </div>
-      </div>
-    </div>
-
   </div>
 
-  <!-- ── Project Patch Bay ──────────────────────────────────────────────── -->
-  <div class="module">
-    <div class="module-header">
-      <div class="screw"></div>
-      <span class="mod-title">Project Patch Bay</span>
-      <span id="patchOnlineCount" class="pill pill-green">0 online</span>
-      <div class="screw" style="margin-left:auto"></div>
+  <!-- ── Usage & Cost ── -->
+  <div class="t-block">
+    <div class="t-header">
+      <span class="label">Usage</span>
     </div>
-    <div class="module-body">
-      <div class="patch-bay" id="patchBay">
-        <div class="flex-center" style="height:60px;color:var(--text-muted);grid-column:1/-1">
-          <div class="spinner"></div>
+    <div class="t-body">
+      <div class="data-row">
+        <span class="row-key">Tokens</span>
+        <div class="row-val">
+          <div class="val-grp"><span class="tag">day</span><span class="num green" id="tokDay">—</span></div>
+          <span class="pipe">|</span>
+          <div class="val-grp"><span class="tag">week</span><span class="num purple" id="tokWk">—</span></div>
+          <span class="pipe">|</span>
+          <div class="val-grp"><span class="tag">month</span><span class="num amber" id="tokMo">—</span></div>
+        </div>
+      </div>
+      <div class="data-row">
+        <span class="row-key">Est. Cost</span>
+        <div class="row-val">
+          <div class="val-grp"><span class="tag">day</span><span class="num green" id="costDay">—</span></div>
+          <span class="pipe">|</span>
+          <div class="val-grp"><span class="tag">week</span><span class="num purple" id="costWk">—</span></div>
+          <span class="pipe">|</span>
+          <div class="val-grp"><span class="tag">month</span><span class="num amber" id="costMo">—</span></div>
+          <span class="pipe">|</span>
+          <span style="color:var(--dim);font-size:11px">Sonnet 4.6 · $3/M in · $15/M out</span>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ── Git Status Rack ────────────────────────────────────────────────── -->
-  <div class="module">
-    <div class="module-header">
-      <div class="screw"></div>
-      <span class="mod-title">Git Status Rack</span>
-      <div class="screw" style="margin-left:auto"></div>
+  <!-- ── Projects ── -->
+  <div class="t-block">
+    <div class="t-header">
+      <span class="label">Projects</span>
+      <span id="onlineCount" style="color:var(--dim);margin-left:8px">—</span>
     </div>
-    <div class="module-body">
-      <div class="git-rack" id="gitRack">
-        <div class="flex-center" style="height:40px;color:var(--text-muted)">
-          <div class="spinner"></div>
-        </div>
-      </div>
+    <div class="t-body" id="projectList">
+      <div class="spinner"></div>
     </div>
   </div>
 
-</div><!-- /rack -->
+  <!-- ── Git ── -->
+  <div class="t-block">
+    <div class="t-header">
+      <span class="label">Git</span>
+    </div>
+    <div class="t-body" id="gitList">
+      <div class="spinner"></div>
+    </div>
+  </div>
+
+</div><!-- /terminal -->
 
 <script>
-// ── State ─────────────────────────────────────────────────────────────────────
-
-let autoOpen = true;
-let oscHistory = [];
-let vuPeaks   = { day: 0, week: 0, month: 0 };
-let vuPeakTimers = { day: null, week: null, month: null };
-
-// ── Utilities ─────────────────────────────────────────────────────────────────
+// ── Utilities ──────────────────────────────────────────────────────────────────
 
 const fmtK = n => {
   n = parseInt(n) || 0;
-  if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + 'M';
-  if (n >= 1_000)     return Math.round(n / 1_000) + 'k';
+  if (n >= 1_000_000) return (n/1_000_000).toFixed(1)+'M';
+  if (n >= 1_000) return Math.round(n/1_000)+'k';
   return String(n);
 };
 
 const fmtCost = v => {
-  const n = parseFloat(v) || 0;
-  if (n === 0) return '$0.00';
-  if (n < 0.01) return '<$0.01';
-  return '$' + n.toFixed(2);
+  const n = parseFloat(v)||0;
+  if (n===0) return '$0.00';
+  if (n<0.01) return '<$0.01';
+  return '$'+n.toFixed(2);
 };
 
 const fmtMins = m => {
-  if (!m && m !== 0) return '—';
-  if (m < 60) return m + 'm';
-  const h = Math.floor(m / 60), r = m % 60;
-  return h + 'h ' + (r > 0 ? r + 'm' : '');
+  if (!m && m!==0) return '—';
+  if (m<60) return m+'m';
+  const h=Math.floor(m/60), r=m%60;
+  return h+'h'+(r>0?' '+r+'m':'');
 };
 
-// ── Oscilloscope ──────────────────────────────────────────────────────────────
+// ── ASCII bar ──────────────────────────────────────────────────────────────────
 
-const canvas = document.getElementById('osc');
-const ctx2d  = canvas.getContext('2d');
-
-function drawOsc(history, pct) {
-  const W = canvas.offsetWidth  * window.devicePixelRatio;
-  const H = canvas.offsetHeight * window.devicePixelRatio;
-  canvas.width  = W;
-  canvas.height = H;
-
-  ctx2d.clearRect(0, 0, W, H);
-
-  // Background grid
-  ctx2d.strokeStyle = 'rgba(126,203,82,0.06)';
-  ctx2d.lineWidth = 1;
-  for (let x = 0; x < W; x += W / 8) {
-    ctx2d.beginPath(); ctx2d.moveTo(x, 0); ctx2d.lineTo(x, H); ctx2d.stroke();
-  }
-  for (let y = 0; y < H; y += H / 4) {
-    ctx2d.beginPath(); ctx2d.moveTo(0, y); ctx2d.lineTo(W, y); ctx2d.stroke();
-  }
-
-  if (!history || history.length < 2) {
-    // Flat line when no data
-    ctx2d.strokeStyle = 'rgba(126,203,82,0.3)';
-    ctx2d.lineWidth = 1.5 * window.devicePixelRatio;
-    ctx2d.beginPath();
-    ctx2d.moveTo(0, H * 0.5);
-    ctx2d.lineTo(W, H * 0.5);
-    ctx2d.stroke();
-    return;
-  }
-
-  // Color based on health
-  let lineColor, glowColor;
-  if      (pct >= 85) { lineColor = '#ff5c38'; glowColor = 'rgba(255,92,56,0.45)'; }
-  else if (pct >= 70) { lineColor = '#ff8c3a'; glowColor = 'rgba(255,140,58,0.4)'; }
-  else if (pct >= 50) { lineColor = '#f5c842'; glowColor = 'rgba(245,200,66,0.35)'; }
-  else                { lineColor = '#58DE83'; glowColor = 'rgba(88,222,131,0.4)'; }
-
-  const pts = history.slice(-60);
-  const step = W / (pts.length - 1);
-
-  // Glow pass
-  ctx2d.shadowBlur = 8 * window.devicePixelRatio;
-  ctx2d.shadowColor = glowColor;
-  ctx2d.strokeStyle = lineColor;
-  ctx2d.lineWidth = 1.5 * window.devicePixelRatio;
-  ctx2d.lineJoin = 'round';
-  ctx2d.lineCap  = 'round';
-
-  ctx2d.beginPath();
-  pts.forEach((v, i) => {
-    const x = i * step;
-    const y = H - (v / 100) * H * 0.85 - H * 0.07;
-    i === 0 ? ctx2d.moveTo(x, y) : ctx2d.lineTo(x, y);
-  });
-  ctx2d.stroke();
-
-  // Fill under curve
-  ctx2d.shadowBlur = 0;
-  const grad = ctx2d.createLinearGradient(0, 0, 0, H);
-  grad.addColorStop(0, lineColor.replace(')', ',0.25)').replace('rgb', 'rgba').replace('#', 'rgba(').replace('rgba(', '').replace(')', ''));
-  // simpler approach:
-  const fillColor = pct >= 85 ? 'rgba(255,92,56,' : pct >= 70 ? 'rgba(255,140,58,' : pct >= 50 ? 'rgba(245,200,66,' : 'rgba(126,203,82,';
-  const grad2 = ctx2d.createLinearGradient(0, 0, 0, H);
-  grad2.addColorStop(0, fillColor + '0.15)');
-  grad2.addColorStop(1, fillColor + '0.01)');
-  ctx2d.fillStyle = grad2;
-
-  ctx2d.beginPath();
-  pts.forEach((v, i) => {
-    const x = i * step;
-    const y = H - (v / 100) * H * 0.85 - H * 0.07;
-    i === 0 ? ctx2d.moveTo(x, y) : ctx2d.lineTo(x, y);
-  });
-  ctx2d.lineTo((pts.length - 1) * step, H);
-  ctx2d.lineTo(0, H);
-  ctx2d.closePath();
-  ctx2d.fill();
+function asciiBar(pct) {
+  const filled = Math.round(pct/10);
+  return '█'.repeat(Math.min(filled,10)) + '░'.repeat(Math.max(10-filled,0));
 }
 
-// ── VU Meters ─────────────────────────────────────────────────────────────────
+// ── Context health ─────────────────────────────────────────────────────────────
 
-function setVU(id, val, max) {
-  const pct = Math.min(100, (val / max) * 100);
-  document.getElementById('vu' + id + 'Bar').style.height = pct + '%';
-  document.getElementById('vu' + id + 'Val').textContent  = fmtK(val);
-
-  // Peak hold
-  const key = id.toLowerCase();
-  if (pct > vuPeaks[key]) {
-    vuPeaks[key] = pct;
-    document.getElementById('vu' + id + 'Peak').style.bottom = pct + '%';
-    clearTimeout(vuPeakTimers[key]);
-    vuPeakTimers[key] = setTimeout(() => {
-      vuPeaks[key] = 0;
-      document.getElementById('vu' + id + 'Peak').style.bottom = '0%';
-    }, 3000);
-  }
+function healthClass(pct) {
+  if (pct>=85) return 'danger';
+  if (pct>=70) return 'warn';
+  if (pct>=50) return 'watch';
+  return 'ok';
 }
 
-// ── Patch Bay ─────────────────────────────────────────────────────────────────
+function healthLabel(pct) {
+  if (pct>=85) return '!! RESET NOW';
+  if (pct>=70) return '!! FILLING';
+  if (pct>=50) return '>';
+  return 'OK';
+}
 
-function renderPatchBay(projects) {
-  const bay     = document.getElementById('patchBay');
-  const online  = projects.filter(p => p.online).length;
-  document.getElementById('patchOnlineCount').textContent = online + ' online';
-  document.getElementById('patchOnlineCount').className   = 'pill ' + (online > 0 ? 'pill-green' : 'pill-red');
+// ── Power button ───────────────────────────────────────────────────────────────
 
-  bay.innerHTML = projects.map(p => {
-    const cls   = p.online ? 'online' : 'offline';
-    const href  = p.online ? `http://localhost:${p.port}` : '#';
-    const gitStr = p.git
-      ? `<span class="branch">⎇ ${p.git.branch}</span> <span class="${p.git.clean ? 'clean' : 'dirty'}">${p.git.clean ? '✓' : '●'}</span>`
-      : `<span style="color:var(--text-muted)">no repo</span>`;
+let autoOpen = true;
+
+function toggleAutoOpen() {
+  autoOpen = !autoOpen;
+  document.getElementById('powerLed').classList.toggle('on', autoOpen);
+  fetch('/api/settings', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({auto_open: autoOpen})
+  });
+}
+
+// ── Render projects ────────────────────────────────────────────────────────────
+
+function renderProjects(projects) {
+  const online = projects.filter(p=>p.online).length;
+  document.getElementById('onlineCount').textContent = online + ' online / ' + projects.length + ' total';
+
+  document.getElementById('projectList').innerHTML = projects.map(p => {
+    const g = p.git;
+    const branchStr = g ? `⎇ ${g.branch}` : '—';
+    const cleanStr  = g ? (g.clean ? '<span style="color:var(--green)">✓ clean</span>' : '<span style="color:var(--amber)">● dirty</span>') : '<span style="color:var(--dim)">—</span>';
+    const href = p.online ? `http://localhost:${p.port}` : '#';
+    const onClick = p.online ? '' : 'onclick="return false"';
     return `
-      <a class="patch-node ${cls}" href="${href}" target="_blank" onclick="${!p.online ? 'return false' : ''}">
-        <div class="patch-top">
-          <div class="patch-led"></div>
-          <span class="patch-name">${p.name}</span>
-        </div>
-        <div class="patch-port mono">:${p.port}</div>
-        <div class="patch-git">${gitStr}</div>
-      </a>`;
+      <div class="proj-row">
+        <div class="proj-led ${p.online?'on':'off'}"></div>
+        <span class="proj-name">${p.name}</span>
+        <span class="proj-port">:${p.port}</span>
+        <span class="proj-branch">${branchStr}</span>
+        <span class="proj-clean">${cleanStr}</span>
+        <span class="proj-status ${p.online?'online':'offline'}">${p.online?'● ONLINE':'○ offline'}</span>
+        ${p.online ? `<a href="${href}" target="_blank" style="margin-left:12px;color:var(--dim);font-size:10px;text-decoration:none;letter-spacing:1px">OPEN →</a>` : ''}
+      </div>`;
   }).join('');
 }
 
-// ── Git Rack ──────────────────────────────────────────────────────────────────
+// ── Render git ─────────────────────────────────────────────────────────────────
 
-function renderGitRack(projects) {
-  const rack = document.getElementById('gitRack');
-  const withGit = projects.filter(p => p.git);
+function renderGit(projects) {
+  const withGit = projects.filter(p=>p.git);
   if (!withGit.length) {
-    rack.innerHTML = `<div style="color:var(--text-muted);font-size:12px;padding:8px">No git repos found</div>`;
+    document.getElementById('gitList').innerHTML = '<span style="color:var(--dim)">no repos found</span>';
     return;
   }
-  rack.innerHTML = withGit.map(p => {
+  document.getElementById('gitList').innerHTML = withGit.map(p => {
     const g = p.git;
-    const dotCls    = g.clean ? 'clean' : 'dirty';
-    const statusCls = g.clean ? 'clean' : 'dirty';
-    const statusTxt = g.clean ? 'Clean'  : 'Uncommitted';
+    const cls = g.clean ? 'clean' : 'dirty';
+    const stateTxt = g.clean ? '✓ clean' : '● uncommitted';
     return `
       <div class="git-row">
-        <div class="git-dot ${dotCls}"></div>
-        <span class="git-name">${p.name}</span>
+        <span class="git-name"><span class="git-dot ${cls}"></span>${p.name}</span>
         <span class="git-branch">⎇ ${g.branch}</span>
-        <span class="git-status-label ${statusCls}">${statusTxt}</span>
+        <span class="git-state ${cls}">${stateTxt}</span>
         <span class="git-last">${g.last_commit}</span>
       </div>`;
   }).join('');
 }
 
-// ── Context health ────────────────────────────────────────────────────────────
-
-function ctxHealth(pct) {
-  if (pct >= 85) return { cls: 'health-danger', pill: 'pill-red',    txt: '!! RESET NOW' };
-  if (pct >= 70) return { cls: 'health-warn',   pill: 'pill-orange', txt: '!! FILLING'   };
-  if (pct >= 50) return { cls: 'health-mid',    pill: 'pill-orange', txt: 'WATCH'        };
-  return               { cls: 'health-ok',     pill: 'pill-green',  txt: 'OK'           };
-}
-
-// ── Power button ──────────────────────────────────────────────────────────────
-
-function toggleAutoOpen() {
-  autoOpen = !autoOpen;
-  document.getElementById('powerLed').classList.toggle('on', autoOpen);
-  document.getElementById('powerLabel').textContent = autoOpen ? 'AUTO-OPEN' : 'AUTO-OPEN';
-  fetch('/api/settings', {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({ auto_open: autoOpen })
-  });
-}
-
-function setAutoOpenUI(val) {
-  autoOpen = val;
-  document.getElementById('powerLed').classList.toggle('on', val);
-}
-
-// ── Main update ───────────────────────────────────────────────────────────────
+// ── Main update ────────────────────────────────────────────────────────────────
 
 async function update() {
   try {
@@ -1077,69 +538,53 @@ async function update() {
     document.getElementById('npSession').textContent = fmtMins(d.session_mins);
     document.getElementById('npTime').textContent    = d.now;
 
-    setAutoOpenUI(d.settings.auto_open);
+    autoOpen = d.settings.auto_open;
+    document.getElementById('powerLed').classList.toggle('on', autoOpen);
 
-    // Oscilloscope
-    const hist = d.context.history || [];
-    const pct  = d.context.pct || 0;
-    oscHistory  = hist;
-    drawOsc(hist, pct);
+    // Context bar
+    const pct = d.context.pct || 0;
+    const hCls = healthClass(pct);
+    const hEl  = document.getElementById('ctxHealth');
+    hEl.textContent = healthLabel(pct);
+    hEl.className   = 'health '+hCls;
 
-    document.getElementById('oscPctVal').textContent = pct.toFixed(0);
-    document.getElementById('oscFree').textContent   = (d.context.free_k || '—') + ' free';
-    document.getElementById('ctxModelLbl').textContent = d.context.model || '—';
+    const barEl = document.getElementById('ctxBar');
+    barEl.textContent = asciiBar(pct);
+    barEl.className   = 'ascii-bar '+hCls;
 
-    const h = ctxHealth(pct);
-    document.getElementById('oscPctVal').className   = h.cls;
-    const pill = document.getElementById('ctxHealthPill');
-    pill.className   = 'pill ' + h.pill;
-    pill.textContent = h.txt;
+    const pctEl = document.getElementById('ctxPct');
+    pctEl.textContent = pct.toFixed(0)+'%';
+    pctEl.className   = 'pct '+hCls;
 
-    // VU Meters (max = 1M tokens as reference scale)
-    const MAX = 1_000_000;
-    setVU('Day',  d.usage.day.tokens,   MAX);
-    setVU('Wk',   d.usage.week.tokens,  MAX);
-    setVU('Mo',   d.usage.month.tokens, MAX);
+    document.getElementById('ctxFree').textContent   = (d.context.free_k||'—')+' free';
+    document.getElementById('ctxModel2').textContent = d.context.model||'—';
 
-    // Cost
-    const costs = [
-      { id: 'Day', tok: d.usage.day.tokens,   cost: d.usage.day.cost,   bar: 'costDayBar' },
-      { id: 'Wk',  tok: d.usage.week.tokens,  cost: d.usage.week.cost,  bar: 'costWkBar' },
-      { id: 'Mo',  tok: d.usage.month.tokens, cost: d.usage.month.cost, bar: 'costMoBar' },
-    ];
-    const maxCost = Math.max(...costs.map(c => c.cost), 0.01);
-    costs.forEach(c => {
-      document.getElementById('cost' + c.id + 'Val').textContent = fmtCost(c.cost);
-      document.getElementById('cost' + c.id + 'Tok').textContent = fmtK(c.tok);
-      document.getElementById(c.bar).style.width = Math.max(2, (c.cost / maxCost) * 100) + '%';
-    });
+    // Usage
+    document.getElementById('tokDay').textContent  = fmtK(d.usage.day.tokens);
+    document.getElementById('tokWk').textContent   = fmtK(d.usage.week.tokens);
+    document.getElementById('tokMo').textContent   = fmtK(d.usage.month.tokens);
+    document.getElementById('costDay').textContent = fmtCost(d.usage.day.cost);
+    document.getElementById('costWk').textContent  = fmtCost(d.usage.week.cost);
+    document.getElementById('costMo').textContent  = fmtCost(d.usage.month.cost);
 
-    // Patch bay + git
+    // Projects + git
     if (d.projects) {
-      renderPatchBay(d.projects);
-      renderGitRack(d.projects);
+      renderProjects(d.projects);
+      renderGit(d.projects);
     }
 
-  } catch(e) {
-    console.warn('Update failed', e);
-  }
+  } catch(e) { console.warn('update failed', e); }
 }
-
-// ── Clock (local, independent of server) ─────────────────────────────────────
 
 function tickClock() {
   const t = new Date();
-  const hh = String(t.getHours()).padStart(2,'0');
-  const mm = String(t.getMinutes()).padStart(2,'0');
-  document.getElementById('npTime').textContent = hh + ':' + mm;
+  document.getElementById('npTime').textContent =
+    String(t.getHours()).padStart(2,'0')+':'+String(t.getMinutes()).padStart(2,'0');
 }
 
-// ── Boot ──────────────────────────────────────────────────────────────────────
-
 update();
-setInterval(update,    6000);
+setInterval(update, 6000);
 setInterval(tickClock, 1000);
-window.addEventListener('resize', () => drawOsc(oscHistory, parseFloat(document.getElementById('oscPctVal').textContent) || 0));
 </script>
 </body>
 </html>
