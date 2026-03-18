@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KodeKeeper — Creative Konsoles</title>
+<title>Kode Keeper — Claude Code Mission Control</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -12,34 +12,35 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --bg:           #08080e;
-  --surface:      #0d0d16;
-  --surface2:     #11111c;
-  --surface3:     #181825;
-  --border:       #1e1e30;
-  --border2:      #252538;
+  --bg:           #0B1210;
+  --surface:      #0e1814;
+  --surface2:     #121e18;
+  --surface3:     #18261e;
+  --border:       #1e3028;
+  --border2:      #264038;
 
-  /* Creative Konsoles spectrum */
-  --ck-cyan:      #00d4ff;
-  --ck-blue:      #6b7fff;
-  --ck-purple:    #a855f7;
-  --ck-magenta:   #e040fb;
-  --ck-teal:      #00e5c0;
+  /* Kode Keeper brand palette */
+  --kk-green:     #58DE83;
+  --kk-green2:    #69F09B;
+  --kk-deep:      #1F5A38;
+  --kk-amber:     #DA8E20;
+  --kk-ember:     #CD4E14;
+  --kk-mint:      #C3FDD8;
 
-  /* Functional palette — organic warm */
-  --green:        #7ecb52;
-  --green-glow:   rgba(126,203,82,0.18);
-  --green-dim:    #2d4f1a;
-  --red:          #ff5c38;
-  --red-glow:     rgba(255,92,56,0.18);
-  --red-dim:      #5c1f0f;
-  --orange:       #ff8c3a;
-  --orange-glow:  rgba(255,140,58,0.22);
-  --orange-dim:   #6b3610;
-  --blue:         var(--ck-blue);
-  --blue-glow:    rgba(107,127,255,0.2);
-  --yellow:       #f5c842;
-  --purple:       var(--ck-purple);
+  /* Functional aliases */
+  --green:        #58DE83;
+  --green-glow:   rgba(88,222,131,0.2);
+  --green-dim:    #1a4028;
+  --red:          #CD4E14;
+  --red-glow:     rgba(205,78,20,0.2);
+  --red-dim:      #5a1f08;
+  --orange:       #DA8E20;
+  --orange-glow:  rgba(218,142,32,0.25);
+  --orange-dim:   #5a3a08;
+  --blue:         #69F09B;
+  --blue-glow:    rgba(105,240,155,0.2);
+  --yellow:       #DA8E20;
+  --purple:       #58DE83;
 
   --text:         #d8dcec;
   --text-dim:     #6b7591;
@@ -113,7 +114,7 @@ html, body {
 
 /* ── Nameplate (top bar) ───────────────────────────────────────────────────── */
 .nameplate {
-  background: linear-gradient(135deg, #0a0812 0%, #110d1e 40%, #130a1a 70%, #0a0812 100%);
+  background: linear-gradient(135deg, #090f0d 0%, #0d1a14 40%, #0b1810 70%, #090f0d 100%);
   border: 1px solid var(--border2);
   border-radius: var(--radius-lg);
   padding: 14px 20px;
@@ -340,9 +341,9 @@ canvas#osc {
   border-radius: 2px 2px 0 0;
 }
 
-.vu-bar.day  { background: linear-gradient(to top, #00607a, var(--ck-cyan)); }
-.vu-bar.week { background: linear-gradient(to top, #3a1a7a, var(--ck-purple)); }
-.vu-bar.month{ background: linear-gradient(to top, #6a0a7a, var(--ck-magenta)); }
+.vu-bar.day  { background: linear-gradient(to top, var(--kk-deep), var(--kk-green)); }
+.vu-bar.week { background: linear-gradient(to top, #1a3a28, var(--kk-green2)); }
+.vu-bar.month{ background: linear-gradient(to top, var(--orange-dim), var(--kk-amber)); }
 
 /* Peak hold tick */
 .vu-peak {
@@ -409,9 +410,9 @@ canvas#osc {
   transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.cost-bar.day   { background: var(--ck-cyan);    box-shadow: 0 0 8px rgba(0,212,255,0.35); }
-.cost-bar.week  { background: var(--ck-purple);  box-shadow: 0 0 8px rgba(168,85,247,0.35); }
-.cost-bar.month { background: var(--ck-magenta); box-shadow: 0 0 8px rgba(224,64,251,0.35); }
+.cost-bar.day   { background: var(--kk-green);  box-shadow: 0 0 8px rgba(88,222,131,0.35); }
+.cost-bar.week  { background: var(--kk-green2); box-shadow: 0 0 8px rgba(105,240,155,0.3); }
+.cost-bar.month { background: var(--kk-amber);  box-shadow: 0 0 8px rgba(218,142,32,0.35); }
 
 .cost-val {
   font-family: var(--font-mono);
@@ -686,8 +687,8 @@ canvas#osc {
            style="width:44px;height:44px;border-radius:10px;flex-shrink:0"
            onerror="this.style.fontSize='22px';this.outerHTML='<div style=\'font-size:22px\'>🎛</div>'">
       <div class="brand-name">
-        <span class="main">KodeKeeper</span>
-        <span class="sub">Creative Konsoles &nbsp;·&nbsp; Code · Create · Control</span>
+        <span class="main">Kode Keeper</span>
+        <span class="sub">Claude Code Mission Control</span>
       </div>
     </div>
 
@@ -922,7 +923,7 @@ function drawOsc(history, pct) {
   if      (pct >= 85) { lineColor = '#ff5c38'; glowColor = 'rgba(255,92,56,0.45)'; }
   else if (pct >= 70) { lineColor = '#ff8c3a'; glowColor = 'rgba(255,140,58,0.4)'; }
   else if (pct >= 50) { lineColor = '#f5c842'; glowColor = 'rgba(245,200,66,0.35)'; }
-  else                { lineColor = '#a855f7'; glowColor = 'rgba(168,85,247,0.4)'; }
+  else                { lineColor = '#58DE83'; glowColor = 'rgba(88,222,131,0.4)'; }
 
   const pts = history.slice(-60);
   const step = W / (pts.length - 1);
