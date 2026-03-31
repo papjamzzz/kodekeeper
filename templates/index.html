@@ -9,21 +9,23 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --bg:       #0d0f14;
-  --surface:  #111318;
-  --border:   #1e2230;
-  --green:    #58DE83;
-  --green2:   #69F09B;
-  --green-dim:#1a4028;
-  --amber:    #DA8E20;
-  --amber-dim:#5a3a08;
-  --red:      #CD4E14;
-  --red-dim:  #5a1f08;
-  --text:     #c8cfe0;
-  --dim:      #4a5270;
-  --muted:    #252838;
-  --purple:   #9d7fff;
-  --mono:     'JetBrains Mono', monospace;
+  --bg:        #0e1118;
+  --surface:   #13161f;
+  --surface2:  #191d28;
+  --border:    #252a3a;
+  --green:     #4dff8e;
+  --green-dim: #0d3320;
+  --amber:     #ffb347;
+  --amber-dim: #3d2800;
+  --red:       #ff5c38;
+  --red-dim:   #3d1008;
+  --blue:      #6ab0ff;
+  --purple:    #b48eff;
+  --text:      #e8edf8;
+  --sub:       #9aa5bf;
+  --dim:       #5a6480;
+  --muted:     #1e2233;
+  --mono:      'JetBrains Mono', monospace;
 }
 
 html, body {
@@ -36,18 +38,11 @@ html, body {
   overflow-x: hidden;
 }
 
-/* Subtle scanline overlay */
 body::after {
   content: '';
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
-  background: repeating-linear-gradient(
-    0deg,
-    transparent,
-    transparent 2px,
-    rgba(0,0,0,0.04) 2px,
-    rgba(0,0,0,0.04) 4px
-  );
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px);
   pointer-events: none;
   z-index: 1000;
 }
@@ -62,14 +57,13 @@ body::after {
   gap: 0;
 }
 
-/* ── Row / block ── */
+/* ── Blocks ── */
 .t-block {
   border: 1px solid var(--border);
   border-bottom: none;
 }
-.t-block:first-child  { border-radius: 6px 6px 0 0; }
-.t-block:last-child   { border-bottom: 1px solid var(--border); border-radius: 0 0 6px 6px; }
-.t-block:only-child   { border-radius: 6px; border-bottom: 1px solid var(--border); }
+.t-block:first-child { border-radius: 6px 6px 0 0; }
+.t-block:last-child  { border-bottom: 1px solid var(--border); border-radius: 0 0 6px 6px; }
 
 .t-header {
   background: var(--surface);
@@ -77,25 +71,24 @@ body::after {
   padding: 6px 16px;
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
   font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 2px;
+  font-weight: 700;
+  letter-spacing: 2.5px;
   text-transform: uppercase;
-  color: var(--dim);
+  color: var(--sub);
 }
-
-.t-header .label { color: var(--green); }
+.t-header .label { color: var(--green); text-shadow: 0 0 8px rgba(77,255,142,0.5); }
 .t-header .spacer { flex: 1; }
 
 .t-body {
-  padding: 12px 16px;
+  padding: 14px 16px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
 }
 
-/* ── Nameplate row ── */
+/* ── Nameplate ── */
 .nameplate {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -103,7 +96,6 @@ body::after {
   padding: 14px 20px;
   display: flex;
   align-items: center;
-  gap: 0;
   margin-bottom: 10px;
 }
 
@@ -114,11 +106,7 @@ body::after {
   flex-shrink: 0;
 }
 
-.np-brand {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-}
+.np-brand { display: flex; flex-direction: column; gap: 2px; }
 
 .np-name {
   font-size: 16px;
@@ -126,76 +114,145 @@ body::after {
   letter-spacing: 3px;
   text-transform: uppercase;
   color: var(--text);
+  text-shadow: 0 0 12px rgba(232,237,248,0.3);
 }
 
 .np-sub {
   font-size: 10px;
-  letter-spacing: 2px;
-  color: var(--dim);
+  letter-spacing: 1.5px;
+  color: var(--sub);
 }
 
 .np-right {
   margin-left: auto;
   display: flex;
   align-items: center;
-  gap: 24px;
+  gap: 20px;
 }
 
-.np-stat {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 1px;
-}
-
-.np-stat .val { font-size: 13px; font-weight: 600; color: var(--text); }
-.np-stat .lbl { font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--dim); }
+.np-stat { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+.np-stat .val { font-size: 13px; font-weight: 600; color: var(--text); text-shadow: 0 0 8px rgba(232,237,248,0.25); }
+.np-stat .lbl { font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--sub); }
 
 .np-sep { width: 1px; height: 24px; background: var(--border); }
 
-/* ── Main status row ── */
+/* ── Guide button ── */
+.guide-btn {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  color: var(--sub);
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 700;
+  width: 26px; height: 26px;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s, box-shadow 0.2s;
+  display: flex; align-items: center; justify-content: center;
+}
+.guide-btn:hover { border-color: var(--green); color: var(--green); box-shadow: 0 0 8px rgba(77,255,142,0.3); }
+
+/* ── Usage LEFT (big feature section) ── */
+.usage-left-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.usage-meter {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 14px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.usage-meter-label {
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--sub);
+  font-weight: 600;
+}
+
+.usage-meter-value {
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1;
+}
+.usage-meter-value.green { color: var(--green); text-shadow: 0 0 16px rgba(77,255,142,0.6); }
+.usage-meter-value.amber { color: var(--amber); text-shadow: 0 0 16px rgba(255,179,71,0.6); }
+.usage-meter-value.red   { color: var(--red);   text-shadow: 0 0 16px rgba(255,92,56,0.6); }
+
+.usage-meter-sub {
+  font-size: 10px;
+  color: var(--sub);
+  letter-spacing: 1px;
+}
+
+.usage-bar-track {
+  height: 4px;
+  background: var(--muted);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.usage-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.5s ease;
+}
+.usage-bar-fill.green { background: var(--green); box-shadow: 0 0 6px rgba(77,255,142,0.6); }
+.usage-bar-fill.amber { background: var(--amber); box-shadow: 0 0 6px rgba(255,179,71,0.6); }
+.usage-bar-fill.red   { background: var(--red);   box-shadow: 0 0 6px rgba(255,92,56,0.6); }
+
+/* ── Context row ── */
 .status-row {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   font-size: 13px;
   flex-wrap: wrap;
 }
 
-.pipe { color: var(--border); margin: 0 4px; user-select: none; }
-
-/* Health indicator */
 .health {
   font-weight: 700;
-  padding: 1px 6px;
+  padding: 2px 8px;
   border-radius: 3px;
+  font-size: 11px;
+  letter-spacing: 1px;
 }
-.health.ok     { color: var(--green);  background: var(--green-dim); }
-.health.watch  { color: var(--amber);  background: var(--amber-dim); }
-.health.warn   { color: var(--amber);  background: var(--amber-dim); }
-.health.danger { color: var(--red);    background: var(--red-dim); }
+.health.ok     { color: var(--green); background: var(--green-dim); text-shadow: 0 0 6px rgba(77,255,142,0.4); }
+.health.watch  { color: var(--amber); background: var(--amber-dim); text-shadow: 0 0 6px rgba(255,179,71,0.4); }
+.health.warn   { color: var(--amber); background: var(--amber-dim); text-shadow: 0 0 6px rgba(255,179,71,0.4); }
+.health.danger { color: var(--red);   background: var(--red-dim);   text-shadow: 0 0 6px rgba(255,92,56,0.4); }
 
-/* ASCII bar */
-.ascii-bar { color: var(--green); letter-spacing: -1px; font-weight: 500; }
-.ascii-bar.warn   { color: var(--amber); }
-.ascii-bar.danger { color: var(--red); }
+.ascii-bar { letter-spacing: -1px; font-weight: 500; font-size: 14px; }
+.ascii-bar.ok     { color: var(--green); text-shadow: 0 0 4px rgba(77,255,142,0.5); }
+.ascii-bar.watch  { color: var(--amber); text-shadow: 0 0 4px rgba(255,179,71,0.5); }
+.ascii-bar.warn   { color: var(--amber); text-shadow: 0 0 4px rgba(255,179,71,0.5); }
+.ascii-bar.danger { color: var(--red);   text-shadow: 0 0 4px rgba(255,92,56,0.5); }
 
-.pct { font-weight: 600; }
-.pct.ok     { color: var(--green); }
-.pct.watch  { color: var(--amber); }
-.pct.warn   { color: var(--amber); }
-.pct.danger { color: var(--red); }
+.pct { font-weight: 700; font-size: 15px; }
+.pct.ok     { color: var(--green); text-shadow: 0 0 8px rgba(77,255,142,0.5); }
+.pct.watch  { color: var(--amber); text-shadow: 0 0 8px rgba(255,179,71,0.5); }
+.pct.warn   { color: var(--amber); text-shadow: 0 0 8px rgba(255,179,71,0.5); }
+.pct.danger { color: var(--red);   text-shadow: 0 0 8px rgba(255,92,56,0.5); }
 
-/* Power toggle */
+.pipe { color: var(--border); margin: 0 2px; user-select: none; }
+
+.ctx-meta { color: var(--sub); font-size: 12px; }
+
+/* ── Power toggle ── */
 .power-toggle {
   display: flex; align-items: center; gap: 6px;
   cursor: pointer;
-  padding: 2px 8px;
+  padding: 3px 10px;
   border: 1px solid var(--border);
   border-radius: 3px;
   transition: border-color 0.2s;
   user-select: none;
-  margin-left: auto;
 }
 .power-toggle:hover { border-color: var(--amber); }
 .power-led {
@@ -203,8 +260,64 @@ body::after {
   background: var(--amber-dim);
   transition: all 0.3s;
 }
-.power-led.on { background: var(--amber); box-shadow: 0 0 6px var(--amber); }
-.power-label { font-size: 10px; letter-spacing: 1.5px; color: var(--dim); }
+.power-led.on { background: var(--amber); box-shadow: 0 0 8px var(--amber); }
+.power-label { font-size: 10px; letter-spacing: 1.5px; color: var(--sub); }
+
+/* ── System stats ── */
+.sys-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
+}
+
+.sys-card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sys-label {
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--sub);
+  font-weight: 600;
+}
+
+.sys-value {
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--text);
+  text-shadow: 0 0 10px rgba(232,237,248,0.2);
+}
+.sys-value.warn  { color: var(--amber); text-shadow: 0 0 10px rgba(255,179,71,0.5); }
+.sys-value.danger{ color: var(--red);   text-shadow: 0 0 10px rgba(255,92,56,0.5); }
+
+.sys-sub {
+  font-size: 10px;
+  color: var(--sub);
+}
+
+.sys-bar-track {
+  height: 3px;
+  background: var(--muted);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.sys-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.5s ease;
+  background: var(--blue);
+  box-shadow: 0 0 4px rgba(106,176,255,0.5);
+}
+.sys-bar-fill.warn  { background: var(--amber); box-shadow: 0 0 4px rgba(255,179,71,0.5); }
+.sys-bar-fill.danger{ background: var(--red);   box-shadow: 0 0 4px rgba(255,92,56,0.5); }
 
 /* ── Data rows ── */
 .data-row {
@@ -214,15 +327,13 @@ body::after {
   font-size: 13px;
   line-height: 1.8;
 }
-
 .row-key {
-  color: var(--dim);
+  color: var(--sub);
   width: 110px;
   flex-shrink: 0;
   font-size: 11px;
   letter-spacing: 1px;
 }
-
 .row-val {
   color: var(--text);
   display: flex;
@@ -230,23 +341,18 @@ body::after {
   gap: 6px;
   flex-wrap: wrap;
 }
-
-.val-grp {
-  display: flex; align-items: baseline; gap: 6px;
-}
-
+.num { font-weight: 600; color: var(--text); text-shadow: 0 0 6px rgba(232,237,248,0.2); }
+.num.green  { color: var(--green); text-shadow: 0 0 8px rgba(77,255,142,0.4); }
+.num.amber  { color: var(--amber); text-shadow: 0 0 8px rgba(255,179,71,0.4); }
+.num.purple { color: var(--purple); text-shadow: 0 0 8px rgba(180,142,255,0.4); }
+.num.blue   { color: var(--blue);   text-shadow: 0 0 8px rgba(106,176,255,0.4); }
 .tag {
   font-size: 9px;
   letter-spacing: 1.5px;
   text-transform: uppercase;
-  color: var(--dim);
+  color: var(--sub);
   margin-right: 2px;
 }
-
-.num { font-weight: 600; color: var(--text); }
-.num.green  { color: var(--green); }
-.num.amber  { color: var(--amber); }
-.num.purple { color: var(--purple); }
 
 /* ── Project list ── */
 .proj-row {
@@ -254,52 +360,59 @@ body::after {
   align-items: center;
   gap: 10px;
   font-size: 12px;
-  padding: 3px 0;
+  padding: 5px 0;
   border-bottom: 1px solid var(--muted);
 }
 .proj-row:last-child { border-bottom: none; }
 
 .proj-led {
-  width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;
+  width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
 }
-.proj-led.on  { background: var(--green);  box-shadow: 0 0 5px var(--green); }
+.proj-led.on  { background: var(--green); box-shadow: 0 0 6px var(--green); }
 .proj-led.off { background: var(--dim); }
 
-.proj-name  { width: 130px; flex-shrink: 0; font-weight: 600; }
-.proj-port  { width: 60px;  flex-shrink: 0; color: var(--dim); }
-.proj-branch{ width: 100px; flex-shrink: 0; color: var(--purple); }
-.proj-clean { width: 70px;  flex-shrink: 0; }
-.proj-status{ margin-left: auto; font-size: 11px; letter-spacing: 1px; }
-
-.proj-status.online  { color: var(--green); }
+.proj-name   { width: 130px; flex-shrink: 0; font-weight: 600; color: var(--text); }
+.proj-port   { width: 60px;  flex-shrink: 0; color: var(--sub); }
+.proj-branch { width: 110px; flex-shrink: 0; color: var(--purple); }
+.proj-clean  { width: 80px;  flex-shrink: 0; }
+.proj-status { margin-left: auto; font-size: 11px; letter-spacing: 1px; font-weight: 600; }
+.proj-status.online  { color: var(--green); text-shadow: 0 0 6px rgba(77,255,142,0.4); }
 .proj-status.offline { color: var(--dim); }
+.proj-open-link {
+  margin-left: 12px;
+  color: var(--sub);
+  font-size: 10px;
+  text-decoration: none;
+  letter-spacing: 1px;
+  transition: color 0.2s;
+}
+.proj-open-link:hover { color: var(--green); }
 
 /* ── Git rows ── */
 .git-row {
   display: grid;
-  grid-template-columns: 140px 100px 80px 120px 1fr;
+  grid-template-columns: 150px 110px 90px 1fr;
   align-items: center;
   gap: 8px;
   font-size: 12px;
-  padding: 3px 0;
+  padding: 5px 0;
   border-bottom: 1px solid var(--muted);
 }
 .git-row:last-child { border-bottom: none; }
 
-.git-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; display: inline-block; margin-right: 6px; }
+.git-dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; margin-right: 7px; }
 .git-dot.clean { background: var(--green); box-shadow: 0 0 5px var(--green); }
 .git-dot.dirty { background: var(--amber); box-shadow: 0 0 5px var(--amber); }
 
-.git-name   { font-weight: 600; }
+.git-name   { font-weight: 600; color: var(--text); }
 .git-branch { color: var(--purple); }
-.git-state  { }
 .git-state.clean { color: var(--green); }
 .git-state.dirty { color: var(--amber); }
-.git-last   { color: var(--dim); font-size: 11px; }
+.git-last   { color: var(--sub); font-size: 11px; }
 
 /* ── Cursor blink ── */
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
-.cursor { display: inline-block; width: 8px; height: 13px; background: var(--green); animation: blink 1.2s step-end infinite; vertical-align: text-bottom; margin-left: 2px; }
+.cursor { display: inline-block; width: 8px; height: 13px; background: var(--green); box-shadow: 0 0 6px var(--green); animation: blink 1.2s step-end infinite; vertical-align: text-bottom; margin-left: 2px; }
 
 /* ── Scrollbar ── */
 ::-webkit-scrollbar { width: 4px; }
@@ -316,8 +429,7 @@ body::after {
 
   <!-- ── Nameplate ── -->
   <div class="nameplate">
-    <img src="/static/logo.png" alt="Kode Keeper" class="np-logo"
-         onerror="this.style.display='none'">
+    <img src="/static/logo.png" alt="Kode Keeper" class="np-logo" onerror="this.style.display='none'">
     <div class="np-brand">
       <span class="np-name">Kode Keeper</span>
       <span class="np-sub">Claude Code Mission Control &nbsp;·&nbsp; Creative Konsoles</span>
@@ -334,62 +446,128 @@ body::after {
       </div>
       <div class="np-sep"></div>
       <div class="np-stat">
-        <span class="val" id="npTime" style="color:var(--dim);font-size:15px">—</span>
+        <span class="val" id="npTime" style="font-size:15px">—</span>
         <span class="lbl">Time</span>
+      </div>
+      <div class="np-sep"></div>
+      <button class="guide-btn" onclick="document.getElementById('guideModal').style.display='flex'" title="User Guide">?</button>
+    </div>
+  </div>
+
+  <!-- ── Guide Modal ── -->
+  <div id="guideModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.8);z-index:2000;align-items:center;justify-content:center;" onclick="if(event.target===this)this.style.display='none'">
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:28px 32px;max-width:560px;width:90%;max-height:80vh;overflow-y:auto;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+        <span style="font-size:12px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--green);text-shadow:0 0 8px rgba(77,255,142,0.5)">Kode Keeper — User Guide</span>
+        <button onclick="document.getElementById('guideModal').style.display='none'" style="background:none;border:none;color:var(--sub);font-size:18px;cursor:pointer;font-family:var(--mono)">✕</button>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:16px;font-size:12px;line-height:1.8;color:var(--text);">
+        <div>
+          <div style="color:var(--green);font-weight:700;letter-spacing:1.5px;margin-bottom:4px;font-size:10px;">USAGE LEFT</div>
+          <div style="color:var(--sub)">Two meters: <b style="color:var(--text)">Session Context</b> (how full this Claude window is) and <b style="color:var(--text)">Month Tokens</b> (total volume this month). Session context is the one to watch — when it hits 70%+ start wrapping up work.</div>
+        </div>
+        <div>
+          <div style="color:var(--green);font-weight:700;letter-spacing:1.5px;margin-bottom:4px;font-size:10px;">CONTEXT BAR</div>
+          <div style="color:var(--sub)">Real-time fill of the current session window. <span style="color:var(--amber)">70%</span> = start wrapping up. <span style="color:var(--red)">85%+</span> = Claude's memory degrades — start a new session immediately.</div>
+        </div>
+        <div>
+          <div style="color:var(--green);font-weight:700;letter-spacing:1.5px;margin-bottom:4px;font-size:10px;">SYSTEM</div>
+          <div style="color:var(--sub)"><b style="color:var(--text)">RAM</b> — how much memory is in use. Above 80% = things start slowing down. Above 90% = crashes possible. <b style="color:var(--text)">Battery</b> — current % and minutes to full charge (0 = fully charged).</div>
+        </div>
+        <div>
+          <div style="color:var(--green);font-weight:700;letter-spacing:1.5px;margin-bottom:4px;font-size:10px;">PROJECTS</div>
+          <div style="color:var(--sub)">Every app in your stack. Green dot = running now. Click <span style="color:var(--green)">OPEN →</span> to launch it. Offline = run <code style="color:var(--purple)">make run</code> in that folder.</div>
+        </div>
+        <div>
+          <div style="color:var(--green);font-weight:700;letter-spacing:1.5px;margin-bottom:4px;font-size:10px;">GIT</div>
+          <div style="color:var(--sub)"><span style="color:var(--green)">✓ clean</span> = committed & pushed. <span style="color:var(--amber)">● dirty</span> = uncommitted changes sitting on your machine. Go push before you lose it.</div>
+        </div>
+        <div style="border-top:1px solid var(--border);padding-top:12px;color:var(--dim);font-size:11px;">
+          Dashboard refreshes every 6 seconds. AUTO-OPEN LED (amber) toggles browser auto-launch on startup. Built by Creative Konsoles.
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- ── Context / Status ── -->
+  <!-- ── Usage Left (prominent) ── -->
+  <div class="t-block">
+    <div class="t-header">
+      <span class="label">Usage Left</span>
+      <span style="color:var(--sub);font-size:10px;letter-spacing:1px">session capacity · monthly volume</span>
+    </div>
+    <div class="t-body">
+      <div class="usage-left-grid">
+        <div class="usage-meter">
+          <span class="usage-meter-label">Session Context Remaining</span>
+          <span class="usage-meter-value green" id="ctxRemaining">—</span>
+          <span class="usage-meter-sub" id="ctxRemainingFree">— free · <span id="ctxRemainingModel">—</span></span>
+          <div class="usage-bar-track">
+            <div class="usage-bar-fill green" id="ctxRemainingBar" style="width:0%"></div>
+          </div>
+        </div>
+        <div class="usage-meter">
+          <span class="usage-meter-label">Month Tokens Used</span>
+          <span class="usage-meter-value amber" id="tokMoBig">—</span>
+          <span class="usage-meter-sub" id="tokMoSub">this month</span>
+          <div class="usage-bar-track">
+            <div class="usage-bar-fill amber" id="tokMoBar" style="width:0%"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Context ── -->
   <div class="t-block">
     <div class="t-header">
       <span class="label">Context</span>
       <span class="spacer"></span>
       <div class="power-toggle" id="powerBtn" onclick="toggleAutoOpen()">
         <div class="power-led" id="powerLed"></div>
-        <span class="power-label" id="powerLabel">AUTO-OPEN</span>
+        <span class="power-label">AUTO-OPEN</span>
       </div>
     </div>
     <div class="t-body">
       <div class="status-row">
         <span class="health ok" id="ctxHealth">OK</span>
-        <span class="ascii-bar" id="ctxBar">░░░░░░░░░░</span>
+        <span class="ascii-bar ok" id="ctxBar">░░░░░░░░░░</span>
         <span class="pct ok" id="ctxPct">—%</span>
         <span class="pipe">|</span>
-        <span id="ctxFree" style="color:var(--dim)">— free</span>
+        <span class="ctx-meta" id="ctxFree">— free</span>
         <span class="pipe">|</span>
-        <span id="ctxModel2" style="color:var(--dim)">—</span>
+        <span class="ctx-meta" id="ctxModel2">—</span>
         <span class="cursor"></span>
       </div>
     </div>
   </div>
 
-  <!-- ── Usage & Cost ── -->
+  <!-- ── System ── -->
   <div class="t-block">
     <div class="t-header">
-      <span class="label">Usage</span>
+      <span class="label">System</span>
     </div>
     <div class="t-body">
-      <div class="data-row">
-        <span class="row-key">Tokens</span>
-        <div class="row-val">
-          <div class="val-grp"><span class="tag">day</span><span class="num green" id="tokDay">—</span></div>
-          <span class="pipe">|</span>
-          <div class="val-grp"><span class="tag">week</span><span class="num purple" id="tokWk">—</span></div>
-          <span class="pipe">|</span>
-          <div class="val-grp"><span class="tag">month</span><span class="num amber" id="tokMo">—</span></div>
+      <div class="sys-grid">
+        <div class="sys-card">
+          <span class="sys-label">RAM Used</span>
+          <span class="sys-value" id="sysRamPct">—</span>
+          <span class="sys-sub" id="sysRamDetail">— / — GB</span>
+          <div class="sys-bar-track">
+            <div class="sys-bar-fill" id="sysRamBar" style="width:0%"></div>
+          </div>
         </div>
-      </div>
-      <div class="data-row">
-        <span class="row-key">Est. Cost</span>
-        <div class="row-val">
-          <div class="val-grp"><span class="tag">day</span><span class="num green" id="costDay">—</span></div>
-          <span class="pipe">|</span>
-          <div class="val-grp"><span class="tag">week</span><span class="num purple" id="costWk">—</span></div>
-          <span class="pipe">|</span>
-          <div class="val-grp"><span class="tag">month</span><span class="num amber" id="costMo">—</span></div>
-          <span class="pipe">|</span>
-          <span style="color:var(--dim);font-size:11px">Sonnet 4.6 · $3/M in · $15/M out</span>
+        <div class="sys-card">
+          <span class="sys-label">Battery</span>
+          <span class="sys-value" id="sysBattPct">—</span>
+          <span class="sys-sub" id="sysBattDetail">—</span>
+          <div class="sys-bar-track">
+            <div class="sys-bar-fill" id="sysBattBar" style="width:0%"></div>
+          </div>
+        </div>
+        <div class="sys-card">
+          <span class="sys-label">Charge Time</span>
+          <span class="sys-value" id="sysCharge">—</span>
+          <span class="sys-sub" id="sysChargeSub">to full</span>
         </div>
       </div>
     </div>
@@ -399,7 +577,7 @@ body::after {
   <div class="t-block">
     <div class="t-header">
       <span class="label">Projects</span>
-      <span id="onlineCount" style="color:var(--dim);margin-left:8px">—</span>
+      <span id="onlineCount" style="color:var(--sub)">—</span>
     </div>
     <div class="t-body" id="projectList">
       <div class="spinner"></div>
@@ -416,11 +594,9 @@ body::after {
     </div>
   </div>
 
-</div><!-- /terminal -->
+</div>
 
 <script>
-// ── Utilities ──────────────────────────────────────────────────────────────────
-
 const fmtK = n => {
   n = parseInt(n) || 0;
   if (n >= 1_000_000) return (n/1_000_000).toFixed(1)+'M';
@@ -428,44 +604,31 @@ const fmtK = n => {
   return String(n);
 };
 
-const fmtCost = v => {
-  const n = parseFloat(v)||0;
-  if (n===0) return '$0.00';
-  if (n<0.01) return '<$0.01';
-  return '$'+n.toFixed(2);
-};
-
 const fmtMins = m => {
   if (!m && m!==0) return '—';
-  if (m<60) return m+'m';
-  const h=Math.floor(m/60), r=m%60;
+  if (m < 60) return m+'m';
+  const h = Math.floor(m/60), r = m%60;
   return h+'h'+(r>0?' '+r+'m':'');
 };
-
-// ── ASCII bar ──────────────────────────────────────────────────────────────────
 
 function asciiBar(pct) {
   const filled = Math.round(pct/10);
   return '█'.repeat(Math.min(filled,10)) + '░'.repeat(Math.max(10-filled,0));
 }
 
-// ── Context health ─────────────────────────────────────────────────────────────
-
 function healthClass(pct) {
-  if (pct>=85) return 'danger';
-  if (pct>=70) return 'warn';
-  if (pct>=50) return 'watch';
+  if (pct >= 85) return 'danger';
+  if (pct >= 70) return 'warn';
+  if (pct >= 50) return 'watch';
   return 'ok';
 }
 
 function healthLabel(pct) {
-  if (pct>=85) return '!! RESET NOW';
-  if (pct>=70) return '!! FILLING';
-  if (pct>=50) return '>';
+  if (pct >= 85) return '!! RESET NOW';
+  if (pct >= 70) return '!! FILLING';
+  if (pct >= 50) return '>';
   return 'OK';
 }
-
-// ── Power button ───────────────────────────────────────────────────────────────
 
 let autoOpen = true;
 
@@ -473,24 +636,21 @@ function toggleAutoOpen() {
   autoOpen = !autoOpen;
   document.getElementById('powerLed').classList.toggle('on', autoOpen);
   fetch('/api/settings', {
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
     body: JSON.stringify({auto_open: autoOpen})
   });
 }
 
-// ── Render projects ────────────────────────────────────────────────────────────
-
 function renderProjects(projects) {
-  const online = projects.filter(p=>p.online).length;
+  const online = projects.filter(p => p.online).length;
   document.getElementById('onlineCount').textContent = online + ' online / ' + projects.length + ' total';
-
   document.getElementById('projectList').innerHTML = projects.map(p => {
     const g = p.git;
     const branchStr = g ? `⎇ ${g.branch}` : '—';
-    const cleanStr  = g ? (g.clean ? '<span style="color:var(--green)">✓ clean</span>' : '<span style="color:var(--amber)">● dirty</span>') : '<span style="color:var(--dim)">—</span>';
-    const href = p.online ? `http://localhost:${p.port}` : '#';
-    const onClick = p.online ? '' : 'onclick="return false"';
+    const cleanStr  = g
+      ? (g.clean ? '<span style="color:var(--green)">✓ clean</span>' : '<span style="color:var(--amber)">● dirty</span>')
+      : '<span style="color:var(--dim)">—</span>';
     return `
       <div class="proj-row">
         <div class="proj-led ${p.online?'on':'off'}"></div>
@@ -499,15 +659,13 @@ function renderProjects(projects) {
         <span class="proj-branch">${branchStr}</span>
         <span class="proj-clean">${cleanStr}</span>
         <span class="proj-status ${p.online?'online':'offline'}">${p.online?'● ONLINE':'○ offline'}</span>
-        ${p.online ? `<a href="${href}" target="_blank" style="margin-left:12px;color:var(--dim);font-size:10px;text-decoration:none;letter-spacing:1px">OPEN →</a>` : ''}
+        ${p.online ? `<a class="proj-open-link" href="http://localhost:${p.port}" target="_blank">OPEN →</a>` : ''}
       </div>`;
   }).join('');
 }
 
-// ── Render git ─────────────────────────────────────────────────────────────────
-
 function renderGit(projects) {
-  const withGit = projects.filter(p=>p.git);
+  const withGit = projects.filter(p => p.git);
   if (!withGit.length) {
     document.getElementById('gitList').innerHTML = '<span style="color:var(--dim)">no repos found</span>';
     return;
@@ -515,18 +673,56 @@ function renderGit(projects) {
   document.getElementById('gitList').innerHTML = withGit.map(p => {
     const g = p.git;
     const cls = g.clean ? 'clean' : 'dirty';
-    const stateTxt = g.clean ? '✓ clean' : '● uncommitted';
     return `
       <div class="git-row">
         <span class="git-name"><span class="git-dot ${cls}"></span>${p.name}</span>
         <span class="git-branch">⎇ ${g.branch}</span>
-        <span class="git-state ${cls}">${stateTxt}</span>
+        <span class="git-state ${cls}">${g.clean ? '✓ clean' : '● uncommitted'}</span>
         <span class="git-last">${g.last_commit}</span>
       </div>`;
   }).join('');
 }
 
-// ── Main update ────────────────────────────────────────────────────────────────
+function renderSystem(sys) {
+  if (!sys) return;
+
+  // RAM
+  const ramPct = sys.ram_pct || 0;
+  const ramCls = ramPct >= 90 ? 'danger' : ramPct >= 75 ? 'warn' : '';
+  const ramEl = document.getElementById('sysRamPct');
+  ramEl.textContent = ramPct.toFixed(0) + '%';
+  ramEl.className = 'sys-value' + (ramCls ? ' '+ramCls : '');
+  document.getElementById('sysRamDetail').textContent = `${sys.ram_used} / ${sys.ram_total} GB`;
+  const ramBar = document.getElementById('sysRamBar');
+  ramBar.style.width = ramPct + '%';
+  ramBar.className = 'sys-bar-fill' + (ramCls ? ' '+ramCls : '');
+
+  // Battery
+  if (sys.battery_pct !== null) {
+    const battPct = sys.battery_pct;
+    const battCls = battPct <= 15 ? 'danger' : battPct <= 30 ? 'warn' : '';
+    const battEl = document.getElementById('sysBattPct');
+    battEl.textContent = battPct + '%';
+    battEl.className = 'sys-value' + (battCls ? ' '+battCls : '');
+    document.getElementById('sysBattDetail').textContent = sys.battery_charging ? 'charging' : 'on battery';
+    const battBar = document.getElementById('sysBattBar');
+    battBar.style.width = battPct + '%';
+    battBar.className = 'sys-bar-fill' + (battCls ? ' '+battCls : '');
+
+    // Charge time
+    const chargeEl = document.getElementById('sysCharge');
+    if (sys.battery_charging && sys.battery_mins === 0) {
+      chargeEl.textContent = '0 min';
+      document.getElementById('sysChargeSub').textContent = 'fully charged';
+    } else if (sys.battery_charging && sys.battery_mins > 0) {
+      chargeEl.textContent = sys.battery_mins + ' min';
+      document.getElementById('sysChargeSub').textContent = 'to full';
+    } else {
+      chargeEl.textContent = '—';
+      document.getElementById('sysChargeSub').textContent = 'not charging';
+    }
+  }
+}
 
 async function update() {
   try {
@@ -542,30 +738,40 @@ async function update() {
     document.getElementById('powerLed').classList.toggle('on', autoOpen);
 
     // Context bar
-    const pct = d.context.pct || 0;
+    const pct  = d.context.pct || 0;
     const hCls = healthClass(pct);
-    const hEl  = document.getElementById('ctxHealth');
-    hEl.textContent = healthLabel(pct);
-    hEl.className   = 'health '+hCls;
+    const remaining = Math.max(0, 100 - pct);
 
+    // Usage left — session context remaining
+    const ctxRemEl = document.getElementById('ctxRemaining');
+    ctxRemEl.textContent = remaining.toFixed(0) + '%';
+    const remCls = remaining <= 15 ? 'red' : remaining <= 30 ? 'amber' : 'green';
+    ctxRemEl.className = 'usage-meter-value ' + remCls;
+    document.getElementById('ctxRemainingFree').innerHTML = `${d.context.free_k || '—'} free &nbsp;·&nbsp; <span id="ctxRemainingModel">${d.context.model || '—'}</span>`;
+    const remBar = document.getElementById('ctxRemainingBar');
+    remBar.style.width = remaining + '%';
+    remBar.className = 'usage-bar-fill ' + remCls;
+
+    // Usage left — month tokens
+    const moTok = d.usage.month.tokens || 0;
+    document.getElementById('tokMoBig').textContent = fmtK(moTok);
+    document.getElementById('tokMoSub').textContent = 'tokens this month';
+
+    // Context bar section
+    const hEl = document.getElementById('ctxHealth');
+    hEl.textContent = healthLabel(pct);
+    hEl.className = 'health ' + hCls;
     const barEl = document.getElementById('ctxBar');
     barEl.textContent = asciiBar(pct);
-    barEl.className   = 'ascii-bar '+hCls;
-
+    barEl.className = 'ascii-bar ' + hCls;
     const pctEl = document.getElementById('ctxPct');
-    pctEl.textContent = pct.toFixed(0)+'%';
-    pctEl.className   = 'pct '+hCls;
+    pctEl.textContent = pct.toFixed(0) + '%';
+    pctEl.className = 'pct ' + hCls;
+    document.getElementById('ctxFree').textContent   = (d.context.free_k || '—') + ' free';
+    document.getElementById('ctxModel2').textContent = d.context.model || '—';
 
-    document.getElementById('ctxFree').textContent   = (d.context.free_k||'—')+' free';
-    document.getElementById('ctxModel2').textContent = d.context.model||'—';
-
-    // Usage
-    document.getElementById('tokDay').textContent  = fmtK(d.usage.day.tokens);
-    document.getElementById('tokWk').textContent   = fmtK(d.usage.week.tokens);
-    document.getElementById('tokMo').textContent   = fmtK(d.usage.month.tokens);
-    document.getElementById('costDay').textContent = fmtCost(d.usage.day.cost);
-    document.getElementById('costWk').textContent  = fmtCost(d.usage.week.cost);
-    document.getElementById('costMo').textContent  = fmtCost(d.usage.month.cost);
+    // System
+    renderSystem(d.system);
 
     // Projects + git
     if (d.projects) {
@@ -579,7 +785,7 @@ async function update() {
 function tickClock() {
   const t = new Date();
   document.getElementById('npTime').textContent =
-    String(t.getHours()).padStart(2,'0')+':'+String(t.getMinutes()).padStart(2,'0');
+    String(t.getHours()).padStart(2,'0') + ':' + String(t.getMinutes()).padStart(2,'0');
 }
 
 update();

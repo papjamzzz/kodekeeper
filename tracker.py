@@ -6,9 +6,16 @@ git status, estimates costs, and serves everything to the dashboard.
 
 import json
 import os
+import re
 import socket
 import subprocess
 from datetime import datetime, date
+
+try:
+    import psutil
+    _HAS_PSUTIL = True
+except ImportError:
+    _HAS_PSUTIL = False
 
 USAGE_FILE    = os.path.expanduser("~/.claude/usage/totals.json")
 SETTINGS_FILE = os.path.expanduser("~/.claude/usage/kk_settings.json")
@@ -30,6 +37,8 @@ PROJECTS = [
     {"name": "DAW Doctor",     "slug": "daw-doctor",      "port": 5558, "path": "~/ableton-diagnostics",    "repo": "papjamzzz/Daw-Doctor"},
     {"name": "KK Trader",      "slug": "kk-trader",       "port": 5559, "path": "~/kalshi-trader",          "repo": "papjamzzz/kalshi-trader"},
     {"name": "KodeKeeper",     "slug": "kodekeeper",      "port": 5560, "path": "~/kodekeeper",             "repo": None},
+    {"name": "Pipeline",       "slug": "pipeline",        "port": 5561, "path": "~/pipeline",               "repo": None},
+    {"name": "5i",             "slug": "5i",              "port": 5562, "path": "~/5i",                     "repo": "papjamzzz/5i"},
 ]
 
 
@@ -148,6 +157,9 @@ def get_status():
         except Exception:
             pass
 
+    # ── System stats ──────────────────────────────────────────────────────────
+    system = _get_system_stats()
+
     return {
         "usage": {
             "day":  {"tokens": day_tok,  "cost": day_cost},
@@ -163,6 +175,39 @@ def get_status():
         "projects":     projects,
         "session_mins": session_mins,
         "settings":     settings,
+        "system":       system,
         "now":          datetime.now().strftime("%H:%M"),
         "today":        str(date.today()),
     }
+
+
+def _get_system_stats():
+    stats = {
+        "ram_used": None, "ram_total": None, "ram_pct": None,
+        "battery_pct": None, "battery_charging": False, "battery_mins": 0,
+    }
+
+    # RAM
+    if _HAS_PSUTIL:
+        try:
+            mem = psutil.virtual_memory()
+            stats["ram_used"]  = round(mem.used  / 1e9, 1)
+            stats["ram_total"] = round(mem.total / 1e9, 1)
+            stats["ram_pct"]   = round(mem.percent, 1)
+        except Exception:
+            pass
+
+    # Battery via pmset (macOS)
+    try:
+        out = subprocess.check_output(["pmset", "-g", "batt"], text=True, stderr=subprocess.DEVNULL)
+        m = re.search(r'(\d+)%;\s*(\w+);?\s*(?:(\d+):(\d+)\s*remaining)?', out)
+        if m:
+            stats["battery_pct"]      = int(m.group(1))
+            status                    = m.group(2).lower()
+            stats["battery_charging"] = status in ("charging", "charged", "finishing")
+            if m.group(3) and m.group(4):
+                stats["battery_mins"] = int(m.group(3)) * 60 + int(m.group(4))
+    except Exception:
+        pass
+
+    return stats
