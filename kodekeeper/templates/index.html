@@ -315,45 +315,52 @@ html, body {
 .power-led.on { background: var(--amber); box-shadow: var(--glow-a); }
 .power-label { font-size: 10px; letter-spacing: 1.5px; color: var(--sub); }
 
-/* ── Projects ── */
-.proj-row {
-  display: flex; align-items: center; gap: 10px;
-  font-size: 13px; padding: 6px 0;
-  border-bottom: 1px solid var(--muted);
+/* ── Master Project Table ── */
+.master-table { width: 100%; border-collapse: collapse; }
+.master-table thead tr {
+  border-bottom: 2px solid var(--border);
 }
-.proj-row:last-child { border-bottom: none; }
-.proj-led { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
-.proj-led.on  { background: var(--green); box-shadow: var(--glow-g); }
-.proj-led.off { background: var(--dim); }
-.proj-name   { width: 120px; flex-shrink: 0; font-weight: 600; color: var(--text); }
-.proj-port   { width: 52px;  flex-shrink: 0; color: var(--sub); }
-.proj-branch { width: 100px; flex-shrink: 0; color: var(--purple); }
-.proj-clean  { width: 90px;  flex-shrink: 0; }
-.proj-last   { width: 110px; flex-shrink: 0; color: var(--sub); font-size: 11px; }
-.proj-sync   { width: 90px;  flex-shrink: 0; font-size: 11px; }
-.proj-status { margin-left: auto; font-size: 11px; letter-spacing: 1px; font-weight: 600; }
-.proj-status.online  { color: var(--green); text-shadow: var(--glow-g); }
-.proj-status.offline { color: var(--dim); }
-.proj-open-link { margin-left: 10px; color: var(--sub); font-size: 10px; text-decoration: none; letter-spacing: 1px; transition: color 0.2s; }
-.proj-open-link:hover { color: var(--green); }
+.master-table thead th {
+  font-size: 9px; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--dim); font-weight: 700; padding: 0 8px 8px 8px;
+  text-align: left; white-space: nowrap;
+}
+.master-table thead th.col-git { border-left: 1px solid var(--border); padding-left: 14px; }
+.master-table tbody tr {
+  border-bottom: 1px solid var(--muted);
+  transition: background 0.15s;
+}
+.master-table tbody tr:last-child { border-bottom: none; }
+.master-table tbody tr:hover { background: var(--surface2); }
+.master-table td {
+  padding: 7px 8px; font-size: 13px; vertical-align: middle; white-space: nowrap;
+}
+.master-table td.col-git-first { border-left: 1px solid var(--border); padding-left: 14px; }
 
-/* ── Git ── */
-.git-row {
-  display: grid;
-  grid-template-columns: 150px 110px 90px 1fr;
-  align-items: center; gap: 8px;
-  font-size: 12px; padding: 5px 0;
-  border-bottom: 1px solid var(--muted);
-}
-.git-row:last-child { border-bottom: none; }
-.git-dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; margin-right: 7px; }
-.git-dot.clean { background: var(--green); box-shadow: var(--glow-g); }
-.git-dot.dirty { background: var(--amber); box-shadow: var(--glow-a); }
-.git-name   { font-weight: 600; color: var(--text); }
-.git-branch { color: var(--purple); }
-.git-state.clean { color: var(--green); }
-.git-state.dirty { color: var(--amber); }
-.git-last   { color: var(--sub); font-size: 11px; }
+/* Server LED */
+.srv-led { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+.srv-led.on  { background: var(--green); box-shadow: var(--glow-g); }
+.srv-led.off { background: var(--dim); }
+
+/* Git icon — flashes when server is online */
+@keyframes git-pulse { 0%,100%{opacity:1} 50%{opacity:0.25} }
+.git-icon        { font-size: 13px; display: inline-block; }
+.git-icon.active { animation: git-pulse 1.8s ease-in-out infinite; }
+
+/* Column value styles */
+.col-name   { font-weight: 700; color: var(--text); min-width: 108px; }
+.col-port   { color: var(--sub); font-size: 12px; min-width: 48px; }
+.col-srv    { font-size: 11px; font-weight: 700; letter-spacing: 1px; min-width: 72px; }
+.col-srv.online  { color: var(--green); text-shadow: var(--glow-g); }
+.col-srv.offline { color: var(--dim); }
+.col-open   { font-size: 10px; letter-spacing: 1px; }
+.col-branch { color: var(--purple); font-size: 12px; min-width: 100px; }
+.col-state  { font-size: 12px; font-weight: 600; min-width: 80px; }
+.col-state.clean { color: var(--green); }
+.col-state.dirty { color: var(--amber); }
+.col-state.no-repo { color: var(--dim); }
+.col-sync   { font-size: 11px; min-width: 90px; }
+.col-last   { color: var(--sub); font-size: 11px; min-width: 110px; }
 
 /* ── Cursor ── */
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
@@ -617,22 +624,15 @@ html, body {
     </div>
   </div>
 
-  <!-- ── Projects ── -->
+  <!-- ── Projects + Git Master Table ── -->
   <div class="t-block">
     <div class="t-header">
       <span class="label">Projects</span>
       <span id="onlineCount" style="color:var(--sub)">—</span>
+      <span class="spacer"></span>
+      <span id="gitCleanCount" style="color:var(--dim);font-size:10px;letter-spacing:1px;">—</span>
     </div>
-    <div class="t-body" id="projectList"><div class="spinner"></div></div>
-  </div>
-
-  <!-- ── Git ── -->
-  <div class="t-block">
-    <div class="t-header">
-      <span class="label">Git</span>
-      <span id="gitCleanCount" style="color:var(--sub)">—</span>
-    </div>
-    <div class="t-body" id="gitList"><div class="spinner"></div></div>
+    <div class="t-body" style="padding:10px 16px;" id="masterTableWrap"><div class="spinner"></div></div>
   </div>
 
 </div>
@@ -897,39 +897,87 @@ function renderWarnings(warnings) {
 }
 
 // ── Render projects ───────────────────────────────────────────────────────────
-function renderProjects(projects) {
-  const online = projects.filter(p => p.online).length;
-  document.getElementById('onlineCount').textContent = online + ' online / ' + projects.length + ' total';
-  document.getElementById('projectList').innerHTML = projects.map(p => {
+// ── Master project+git table ──────────────────────────────────────────────────
+function renderMaster(projects) {
+  const online   = projects.filter(p => p.online).length;
+  const withGit  = projects.filter(p => p.git);
+  const clean    = withGit.filter(p => p.git.clean).length;
+
+  document.getElementById('onlineCount').textContent   = `${online} online / ${projects.length} total`;
+  document.getElementById('gitCleanCount').textContent = `${clean} clean · ${withGit.length - clean} dirty`;
+
+  const rows = projects.map(p => {
     const g = p.git;
-    const branchStr = g ? `⎇ ${g.branch}` : '—';
-    const cleanStr  = g
-      ? (g.clean ? '<span style="color:var(--green)">✓ clean</span>' : '<span style="color:var(--amber)">● dirty</span>')
-      : '<span style="color:var(--dim)">—</span>';
-    const lastStr   = g ? g.last_commit : '—';
+
+    // Server columns
+    const ledCls    = p.online ? 'on' : 'off';
+    const srvCls    = p.online ? 'online' : 'offline';
+    const srvTxt    = p.online ? '● ONLINE' : '○ offline';
+    const openLink  = p.online
+      ? `<a href="http://localhost:${p.port}" target="_blank"
+           style="color:var(--green);font-size:10px;letter-spacing:1px;text-decoration:none;font-weight:700;"
+           onmouseover="this.style.opacity='.7'" onmouseout="this.style.opacity='1'">OPEN →</a>`
+      : '';
+
+    // Git icon — pulses when server is live
+    const gitIcon = g
+      ? `<span class="git-icon${p.online ? ' active' : ''}">⎇</span>`
+      : `<span style="color:var(--dim);font-size:11px;">—</span>`;
+
+    // Git columns
+    const branch = g ? `<span style="color:var(--purple)">⎇ ${g.branch}</span>` : '<span style="color:var(--dim)">—</span>';
+
+    let stateCls = 'no-repo', stateTxt = '—';
+    if (g) {
+      stateCls = g.clean ? 'clean' : 'dirty';
+      stateTxt = g.clean ? '✓ clean' : '● dirty';
+    }
+
     let syncStr = '<span style="color:var(--dim)">—</span>';
     if (g) {
       const a = g.ahead || 0, b = g.behind || 0;
-      if (a === 0 && b === 0) syncStr = '<span style="color:var(--green)">✓ synced</span>';
-      else {
+      if (a === 0 && b === 0) {
+        syncStr = '<span style="color:var(--green)">✓ synced</span>';
+      } else {
         const parts = [];
         if (a > 0) parts.push(`<span style="color:var(--amber)">↑${a}</span>`);
         if (b > 0) parts.push(`<span style="color:var(--red)">↓${b}</span>`);
         syncStr = parts.join(' ');
       }
     }
-    return `<div class="proj-row">
-      <div class="proj-led ${p.online?'on':'off'}"></div>
-      <span class="proj-name">${p.name}</span>
-      <span class="proj-port">:${p.port}</span>
-      <span class="proj-branch">${branchStr}</span>
-      <span class="proj-clean">${cleanStr}</span>
-      <span class="proj-last">${lastStr}</span>
-      <span class="proj-sync">${syncStr}</span>
-      <span class="proj-status ${p.online?'online':'offline'}">${p.online?'● ONLINE':'○ offline'}</span>
-      ${p.online ? `<a class="proj-open-link" href="http://localhost:${p.port}" target="_blank">OPEN →</a>` : ''}
-    </div>`;
+
+    const lastTxt = g ? g.last_commit : '—';
+
+    return `<tr>
+      <td><span class="srv-led ${ledCls}"></span></td>
+      <td class="col-name">${p.name}</td>
+      <td class="col-port">:${p.port}</td>
+      <td class="col-srv ${srvCls}">${srvTxt}</td>
+      <td>${openLink}</td>
+      <td class="col-git-first">${gitIcon}</td>
+      <td class="col-branch">${branch}</td>
+      <td class="col-state ${stateCls}">${stateTxt}</td>
+      <td class="col-sync">${syncStr}</td>
+      <td class="col-last">${lastTxt}</td>
+    </tr>`;
   }).join('');
+
+  document.getElementById('masterTableWrap').innerHTML = `
+    <table class="master-table">
+      <thead><tr>
+        <th></th>
+        <th>Project</th>
+        <th>Port</th>
+        <th>Server</th>
+        <th></th>
+        <th class="col-git"></th>
+        <th class="col-git">Branch</th>
+        <th class="col-git">Status</th>
+        <th class="col-git">Sync</th>
+        <th class="col-git">Last Commit</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
 }
 
 // ── Render system ─────────────────────────────────────────────────────────────
@@ -1002,34 +1050,6 @@ function renderSystem(sys, tokPerMin) {
   }
 }
 
-// ── Render git ────────────────────────────────────────────────────────────────
-function renderGit(projects) {
-  const withRepo = projects.filter(p => p.git);
-  const clean = withRepo.filter(p => p.git.clean).length;
-  document.getElementById('gitCleanCount').textContent = clean + ' clean / ' + withRepo.length + ' repos';
-  document.getElementById('gitList').innerHTML = withRepo.map(p => {
-    const g = p.git;
-    const dotCls  = g.clean ? 'clean' : 'dirty';
-    const stateTxt = g.clean ? '✓ clean' : '● dirty';
-    const stateCls = g.clean ? 'clean' : 'dirty';
-    let syncStr = '';
-    const a = g.ahead || 0, b = g.behind || 0;
-    if (a === 0 && b === 0) syncStr = '<span style="color:var(--green)">✓ synced</span>';
-    else {
-      const parts = [];
-      if (a > 0) parts.push(`<span style="color:var(--amber)">↑${a} ahead</span>`);
-      if (b > 0) parts.push(`<span style="color:var(--red)">↓${b} behind</span>`);
-      syncStr = parts.join(' ');
-    }
-    return `<div class="git-row">
-      <span class="git-name"><span class="git-dot ${dotCls}"></span>${p.name}</span>
-      <span class="git-branch">⎇ ${g.branch}</span>
-      <span class="git-state ${stateCls}">${stateTxt}</span>
-      <span class="git-last">${g.last_commit} &nbsp;·&nbsp; ${syncStr}</span>
-    </div>`;
-  }).join('');
-}
-
 // ── Main update ───────────────────────────────────────────────────────────────
 async function update() {
   try {
@@ -1079,11 +1099,8 @@ async function update() {
     // System
     renderSystem(d.system, d.tok_per_min);
 
-    // Projects + Git
-    if (d.projects) {
-      renderProjects(d.projects);
-      renderGit(d.projects);
-    }
+    // Master project + git table
+    if (d.projects) renderMaster(d.projects);
 
   } catch(e) { console.warn('update failed', e); }
 }
