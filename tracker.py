@@ -178,7 +178,8 @@ def get_status():
 
     # ── Context ───────────────────────────────────────────────────────────────
     ctx_history = usage.get("ctx_history", [])
-    ctx_pct     = ctx_history[-1] if ctx_history else 0
+    non_zero    = [v for v in ctx_history if v]
+    ctx_pct     = non_zero[-1] if non_zero else 0
     ctx_free_k  = usage.get("ctx_free_k", "—")
 
     # ── Projects ──────────────────────────────────────────────────────────────
