@@ -469,16 +469,6 @@ html, body {
           <span style="font-size:10px;color:var(--dim);margin-top:2px;">Subscription usage tracker — not a hard limit</span>
         </div>
       </div>
-      <div class="status-row" style="margin-top:4px;">
-        <span class="health ok" id="ctxHealth">OK</span>
-        <span class="ascii-bar ok" id="ctxBar">░░░░░░░░░░</span>
-        <span class="pct ok" id="ctxPct">—%</span>
-        <span class="pipe">|</span>
-        <span class="ctx-meta" id="ctxFree">— free</span>
-        <span class="pipe">|</span>
-        <span class="ctx-meta" id="ctxModel2">—</span>
-        <span class="cursor"></span>
-      </div>
     </div>
   </div>
 
@@ -530,6 +520,14 @@ html, body {
     <div class="t-body" id="projectList"><div class="spinner"></div></div>
   </div>
 
+  <!-- ── Git ── -->
+  <div class="t-block">
+    <div class="t-header">
+      <span class="label">Git</span>
+      <span id="gitCleanCount" style="color:var(--sub)">—</span>
+    </div>
+    <div class="t-body" id="gitList"><div class="spinner"></div></div>
+  </div>
 
 </div>
 
@@ -732,6 +730,34 @@ function renderSystem(sys, tokPerMin) {
   }
 }
 
+// ── Render git ────────────────────────────────────────────────────────────────
+function renderGit(projects) {
+  const withRepo = projects.filter(p => p.git);
+  const clean = withRepo.filter(p => p.git.clean).length;
+  document.getElementById('gitCleanCount').textContent = clean + ' clean / ' + withRepo.length + ' repos';
+  document.getElementById('gitList').innerHTML = withRepo.map(p => {
+    const g = p.git;
+    const dotCls  = g.clean ? 'clean' : 'dirty';
+    const stateTxt = g.clean ? '✓ clean' : '● dirty';
+    const stateCls = g.clean ? 'clean' : 'dirty';
+    let syncStr = '';
+    const a = g.ahead || 0, b = g.behind || 0;
+    if (a === 0 && b === 0) syncStr = '<span style="color:var(--green)">✓ synced</span>';
+    else {
+      const parts = [];
+      if (a > 0) parts.push(`<span style="color:var(--amber)">↑${a} ahead</span>`);
+      if (b > 0) parts.push(`<span style="color:var(--red)">↓${b} behind</span>`);
+      syncStr = parts.join(' ');
+    }
+    return `<div class="git-row">
+      <span class="git-name"><span class="git-dot ${dotCls}"></span>${p.name}</span>
+      <span class="git-branch">⎇ ${g.branch}</span>
+      <span class="git-state ${stateCls}">${stateTxt}</span>
+      <span class="git-last">${g.last_commit} &nbsp;·&nbsp; ${syncStr}</span>
+    </div>`;
+  }).join('');
+}
+
 // ── Main update ───────────────────────────────────────────────────────────────
 async function update() {
   try {
@@ -775,22 +801,14 @@ async function update() {
     // Usage left — month tokens
     document.getElementById('tokMoBig').textContent = fmtK(d.usage.month.tokens);
 
-    // Context bar
-    const hCls = healthClass(pct);
-    const hEl  = document.getElementById('ctxHealth');
-    hEl.textContent = healthLabel(pct); hEl.className = 'health ' + hCls;
-    const barEl = document.getElementById('ctxBar');
-    barEl.textContent = asciiBar(pct); barEl.className = 'ascii-bar ' + hCls;
-    const pctEl = document.getElementById('ctxPct');
-    pctEl.textContent = pct.toFixed(0) + '%'; pctEl.className = 'pct ' + hCls;
-    document.getElementById('ctxFree').textContent   = (d.context.free_k || '—') + ' free';
-    document.getElementById('ctxModel2').textContent = d.context.model || '—';
-
     // System
     renderSystem(d.system, d.tok_per_min);
 
-    // Projects
-    if (d.projects) renderProjects(d.projects);
+    // Projects + Git
+    if (d.projects) {
+      renderProjects(d.projects);
+      renderGit(d.projects);
+    }
 
   } catch(e) { console.warn('update failed', e); }
 }
