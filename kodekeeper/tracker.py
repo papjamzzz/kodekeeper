@@ -32,14 +32,14 @@ MODEL_COSTS = {
 
 PROJECTS = [
     {"name": "Launcher",    "slug": "launcher",    "port": 5554, "path": "~/launcher",           "repo": None,                       "needs_env": False},
-    {"name": "Kalshi Edge", "slug": "kalshi-edge", "port": 5555, "path": "~/kalshi-edge",         "repo": "papjamzzz/kalshi-konnektor","needs_env": True},
+    {"name": "Kalshi Edge", "slug": "kalshi-edge", "port": 5555, "path": "~/kalshi-edge",         "repo": "papjamzzz/kalshi-konnektor","needs_env": True,  "bw_item": "Kalshi Edge — API Keys"},
     {"name": "StreamFader", "slug": "streamfader", "port": 5556, "path": "~/streamfader",         "repo": "papjamzzz/Stream-Fader",   "needs_env": False},
     {"name": "TrackTracks", "slug": "tracktracks", "port": 5557, "path": "~/track_cpu_monitor",   "repo": "papjamzzz/Track-Tracks",   "needs_env": False},
     {"name": "DAW Doctor",  "slug": "daw-doctor",  "port": 5558, "path": "~/ableton-diagnostics", "repo": "papjamzzz/Daw-Doctor",     "needs_env": False},
-    {"name": "KK Trader",   "slug": "kk-trader",   "port": 5559, "path": "~/kalshi-trader",       "repo": "papjamzzz/kalshi-trader",  "needs_env": True},
+    {"name": "KK Trader",   "slug": "kk-trader",   "port": 5559, "path": "~/kalshi-trader",       "repo": "papjamzzz/kalshi-trader",  "needs_env": True,  "bw_item": "KK Trader — API Keys"},
     {"name": "KodeKeeper",  "slug": "kodekeeper",  "port": 5560, "path": "~/kodekeeper",          "repo": None,                       "needs_env": False},
     {"name": "Pipeline",    "slug": "pipeline",    "port": 5561, "path": "~/pipeline",            "repo": None,                       "needs_env": False},
-    {"name": "5i",          "slug": "5i",          "port": 5562, "path": "~/5i",                  "repo": "papjamzzz/5i",             "needs_env": True},
+    {"name": "5i",          "slug": "5i",          "port": 5562, "path": "~/5i",                  "repo": "papjamzzz/5i",             "needs_env": True,  "bw_item": "5i — API Keys"},
 ]
 
 
@@ -322,6 +322,10 @@ def get_status():
     ctx_pct     = non_zero[-1] if non_zero else 0
     ctx_free_k  = usage.get("ctx_free_k", "—")
 
+    bw_installed = subprocess.run(
+        ["which", "bw"], capture_output=True
+    ).returncode == 0
+
     projects = []
     for p in PROJECTS:
         online = _port_open(p["port"])
@@ -367,6 +371,7 @@ def get_status():
         "tok_per_min":  tok_per_min,
         "settings":     settings,
         "system":       system,
+        "bw_installed":  bw_installed,
         "warnings":     _build_warnings(projects, system, budget_warnings),
         "now":          datetime.now().strftime("%H:%M"),
         "today":        str(date.today()),

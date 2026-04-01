@@ -120,6 +120,25 @@ def project_open_terminal(slug):
         return jsonify({"error": str(e)}), 500
 
 
+@app.route("/api/project/<slug>/inject-env", methods=["POST"])
+def project_inject_env(slug):
+    """Open Terminal with bwdotenv command pre-typed — user runs it themselves."""
+    p = _project_by_slug(slug)
+    if not p:
+        return jsonify({"error": "not found"}), 404
+    bw_item = p.get("bw_item")
+    if not bw_item:
+        return jsonify({"error": "no Bitwarden item mapped for this project"}), 400
+    env_path = os.path.join(os.path.expanduser(p["path"]), ".env")
+    cmd = f'bwunlock && bwdotenv "{bw_item}" {env_path}'
+    script = f'tell application "Terminal" to do script "{cmd}"'
+    try:
+        subprocess.Popen(["osascript", "-e", script])
+        return jsonify({"ok": True, "cmd": cmd})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 @app.route("/api/project/<slug>/restart", methods=["POST"])
 def project_restart(slug):
     p = _project_by_slug(slug)

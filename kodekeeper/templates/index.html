@@ -956,7 +956,13 @@ function renderCosts(usage, budgets) {
 }
 
 // ── Render warnings ───────────────────────────────────────────────────────────
-function renderWarnings(warnings) {
+let _bwInstalled = false;
+let _projects    = [];
+
+function renderWarnings(warnings, bwInstalled, projects) {
+  _bwInstalled = bwInstalled;
+  _projects    = projects || [];
+
   const strip = document.getElementById('warningStrip');
   if (!warnings || warnings.length === 0) {
     strip.style.display = 'none';
@@ -964,11 +970,37 @@ function renderWarnings(warnings) {
   }
   strip.style.display = 'flex';
   strip.innerHTML = warnings.map(w => {
-    const isDown  = w.startsWith('↓');
-    const isUp    = w.startsWith('↑');
-    const color   = isDown ? '#ff5c38' : isUp ? '#aaaaaa' : '#c07000';
-    return `<div style="font-size:11px;letter-spacing:0.5px;color:${color};font-weight:600;">${w}</div>`;
+    const isDown = w.startsWith('↓');
+    const isUp   = w.startsWith('↑');
+    const color  = isDown ? '#ff5c38' : isUp ? '#aaaaaa' : '#c07000';
+
+    // Check if this is a missing-.env warning with a Bitwarden item mapped
+    let bwBtn = '';
+    if (bwInstalled && w.includes('missing .env')) {
+      const proj = _projects.find(p => w.includes(p.name) && p.bw_item);
+      if (proj) {
+        bwBtn = ` <button onclick="injectEnv('${proj.slug}',this)"
+          style="margin-left:8px;background:none;border:1px solid #c07000;border-radius:3px;
+                 color:#c07000;font-family:var(--mono);font-size:9px;font-weight:700;
+                 padding:2px 7px;cursor:pointer;letter-spacing:1px;vertical-align:middle;"
+          title="Inject .env from Bitwarden">🔐 Inject</button>`;
+      }
+    }
+    return `<div style="font-size:11px;letter-spacing:0.5px;color:${color};font-weight:600;display:flex;align-items:center;">${w}${bwBtn}</div>`;
   }).join('');
+}
+
+function injectEnv(slug, btn) {
+  const orig = btn.textContent;
+  btn.textContent = '…';
+  btn.disabled = true;
+  fetch(`/api/project/${slug}/inject-env`, {method:'POST'})
+    .then(r => r.json())
+    .then(d => {
+      btn.textContent = d.ok ? '✓ Terminal opened' : '✗ ' + (d.error || 'err');
+      setTimeout(() => { btn.textContent = orig; btn.disabled = false; }, 3000);
+    })
+    .catch(() => { btn.textContent = orig; btn.disabled = false; });
 }
 
 // ── Render projects ───────────────────────────────────────────────────────────
@@ -1247,7 +1279,7 @@ async function update() {
     document.getElementById('powerLed').classList.toggle('on', autoOpen);
 
     // Warnings
-    renderWarnings(d.warnings);
+    renderWarnings(d.warnings, d.bw_installed, d.projects);
 
     // Usage left — context remaining
     const pct  = d.context.pct || 0;
