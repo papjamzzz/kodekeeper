@@ -362,6 +362,55 @@ html, body {
 .col-sync   { font-size: 11px; min-width: 90px; }
 .col-last   { color: var(--sub); font-size: 11px; min-width: 110px; }
 
+/* ── Action buttons ── */
+.act-btn {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  color: var(--sub);
+  font-family: var(--mono);
+  font-size: 10px; font-weight: 700; letter-spacing: 0.5px;
+  padding: 3px 7px; cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  white-space: nowrap;
+}
+.act-btn:hover { background: var(--surface); color: var(--text); border-color: var(--green); }
+.act-btn.act-restart:hover { border-color: var(--amber); color: var(--amber); }
+.act-btn.act-logs:hover    { border-color: var(--blue);  color: var(--blue); }
+.act-btn.act-term:hover    { border-color: var(--purple); color: var(--purple); }
+.act-btn.act-folder:hover  { border-color: var(--green); color: var(--green); }
+.act-btn.flashing { animation: act-flash 0.5s ease; }
+@keyframes act-flash { 0%{opacity:1} 30%{opacity:0.2} 100%{opacity:1} }
+.act-group { display: flex; gap: 4px; }
+
+/* ── Logs drawer ── */
+#logsDrawer {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  height: 0; overflow: hidden;
+  background: var(--surface);
+  border-top: 2px solid var(--border);
+  transition: height 0.25s ease;
+  z-index: 1500;
+  display: flex; flex-direction: column;
+}
+#logsDrawer.open { height: 320px; }
+#logsDrawerHeader {
+  display: flex; align-items: center; gap: 12px;
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface2); flex-shrink: 0;
+}
+#logsTitle { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--green); }
+#logsSource { font-size: 10px; color: var(--dim); flex: 1; }
+#logsDrawerBody {
+  overflow-y: auto; flex: 1;
+  padding: 10px 16px;
+  font-size: 11px; line-height: 1.7; color: var(--sub);
+}
+#logsDrawerBody .log-line { white-space: pre-wrap; word-break: break-all; }
+#logsDrawerBody .log-line.err { color: var(--red); }
+#logsDrawerBody .log-line.warn { color: var(--amber); }
+
 /* ── Cursor ── */
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
 .cursor { display: inline-block; width: 8px; height: 13px; background: var(--green); box-shadow: var(--glow-g); animation: blink 1.2s step-end infinite; vertical-align: text-bottom; margin-left: 2px; }
@@ -650,6 +699,17 @@ html, body {
     <div class="t-body" style="padding:10px 16px;" id="masterTableWrap"><div class="spinner"></div></div>
   </div>
 
+</div>
+
+<!-- ── Logs Drawer ── -->
+<div id="logsDrawer">
+  <div id="logsDrawerHeader">
+    <span id="logsTitle">LOGS</span>
+    <span id="logsSource"></span>
+    <button onclick="closeLogs()" style="background:none;border:none;color:var(--sub);font-family:var(--mono);font-size:12px;cursor:pointer;padding:0 4px;">✕ CLOSE</button>
+    <button onclick="refreshLogs()" style="background:none;border:1px solid var(--border);color:var(--sub);font-family:var(--mono);font-size:10px;cursor:pointer;padding:3px 8px;border-radius:3px;letter-spacing:1px;">↺ REFRESH</button>
+  </div>
+  <div id="logsDrawerBody"><span style="color:var(--dim)">Select a project to view logs.</span></div>
 </div>
 
 <script>
@@ -963,6 +1023,14 @@ function renderMaster(projects) {
 
     const lastTxt = g ? g.last_commit : '—';
 
+    const s = p.slug;
+    const actions = `<div class="act-group">
+      <button class="act-btn act-logs"    onclick="openLogs('${s}','${p.name}')"   title="View logs">📋 Logs</button>
+      <button class="act-btn act-term"    onclick="openTerm('${s}',this)"          title="Open terminal">⌨ Term</button>
+      <button class="act-btn act-folder"  onclick="openFolder('${s}',this)"        title="Open in Finder">📁 Folder</button>
+      <button class="act-btn act-restart" onclick="restartProj('${s}','${p.name}',this)" title="Restart server">↺ Restart</button>
+    </div>`;
+
     return `<tr>
       <td><span class="srv-led ${ledCls}"></span></td>
       <td class="col-name">${p.name}</td>
@@ -974,6 +1042,7 @@ function renderMaster(projects) {
       <td class="col-state ${stateCls}">${stateTxt}</td>
       <td class="col-sync">${syncStr}</td>
       <td class="col-last">${lastTxt}</td>
+      <td style="padding-left:12px;">${actions}</td>
     </tr>`;
   }).join('');
 
@@ -990,6 +1059,7 @@ function renderMaster(projects) {
         <th class="col-git">Status</th>
         <th class="col-git">Sync</th>
         <th class="col-git">Last Commit</th>
+        <th style="padding-left:12px;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);font-weight:700;">Actions</th>
       </tr></thead>
       <tbody>${rows}</tbody>
     </table>`;
@@ -1063,6 +1133,92 @@ function renderSystem(sys, tokPerMin) {
     bar.style.width = pct + '%';
     bar.className = 'sys-bar-fill ' + cls;
   }
+}
+
+// ── Project actions ───────────────────────────────────────────────────────────
+let _currentLogsSlug = null;
+
+function flashBtn(btn) {
+  btn.classList.add('flashing');
+  setTimeout(() => btn.classList.remove('flashing'), 500);
+}
+
+function openLogs(slug, name) {
+  _currentLogsSlug = slug;
+  const drawer = document.getElementById('logsDrawer');
+  document.getElementById('logsTitle').textContent = `LOGS — ${name.toUpperCase()}`;
+  document.getElementById('logsSource').textContent = 'loading…';
+  document.getElementById('logsDrawerBody').innerHTML = '<span style="color:var(--dim)">Loading…</span>';
+  drawer.classList.add('open');
+  refreshLogs();
+}
+
+function closeLogs() {
+  document.getElementById('logsDrawer').classList.remove('open');
+  _currentLogsSlug = null;
+}
+
+function refreshLogs() {
+  if (!_currentLogsSlug) return;
+  fetch(`/api/project/${_currentLogsSlug}/logs`)
+    .then(r => r.json())
+    .then(d => {
+      document.getElementById('logsSource').textContent = d.source || d.note || '';
+      if (d.error) {
+        document.getElementById('logsDrawerBody').innerHTML = `<span style="color:var(--red)">${d.error}</span>`;
+        return;
+      }
+      if (!d.lines || d.lines.length === 0) {
+        document.getElementById('logsDrawerBody').innerHTML = `<span style="color:var(--dim)">${d.note || 'No log output yet.'}</span>`;
+        return;
+      }
+      const html = d.lines.map(l => {
+        const cls = /error|exception|traceback/i.test(l) ? 'err'
+                  : /warn/i.test(l) ? 'warn' : '';
+        return `<div class="log-line${cls?' '+cls:''}">${l.replace(/</g,'&lt;')}</div>`;
+      }).join('');
+      const body = document.getElementById('logsDrawerBody');
+      body.innerHTML = html;
+      body.scrollTop = body.scrollHeight;
+    })
+    .catch(e => {
+      document.getElementById('logsDrawerBody').innerHTML = `<span style="color:var(--red)">Fetch failed: ${e}</span>`;
+    });
+}
+
+function openTerm(slug, btn) {
+  flashBtn(btn);
+  fetch(`/api/project/${slug}/open-terminal`, {method:'POST'})
+    .then(r => r.json())
+    .then(d => { if (d.error) alert(d.error); });
+}
+
+function openFolder(slug, btn) {
+  flashBtn(btn);
+  fetch(`/api/project/${slug}/open-folder`, {method:'POST'})
+    .then(r => r.json())
+    .then(d => { if (d.error) alert(d.error); });
+}
+
+function restartProj(slug, name, btn) {
+  const orig = btn.textContent;
+  btn.textContent = '…';
+  btn.disabled = true;
+  fetch(`/api/project/${slug}/restart`, {method:'POST'})
+    .then(r => r.json())
+    .then(d => {
+      btn.textContent = d.ok ? '✓ Done' : '✗ Err';
+      btn.style.color = d.ok ? 'var(--green)' : 'var(--red)';
+      setTimeout(() => {
+        btn.textContent = orig;
+        btn.style.color = '';
+        btn.disabled = false;
+      }, 2500);
+    })
+    .catch(() => {
+      btn.textContent = '✗ Err';
+      setTimeout(() => { btn.textContent = orig; btn.disabled = false; }, 2500);
+    });
 }
 
 // ── Main update ───────────────────────────────────────────────────────────────

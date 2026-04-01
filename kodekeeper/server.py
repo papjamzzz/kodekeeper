@@ -5,6 +5,9 @@ Works both as `python server.py` (repo) and `kodekeeper start` (pip install).
 """
 
 import os
+import signal
+import socket
+import subprocess
 import threading
 import webbrowser
 from flask import Flask, jsonify, render_template, request
@@ -44,6 +47,113 @@ def settings_post():
     s.update(data)
     save_settings(s)
     return jsonify({"ok": True})
+
+
+def _project_by_slug(slug):
+    from kodekeeper.tracker import PROJECTS
+    return next((p for p in PROJECTS if p["slug"] == slug), None)
+
+
+def _pids_on_port(port):
+    """Return list of PIDs listening on the given port."""
+    try:
+        out = subprocess.check_output(
+            ["lsof", "-ti", f":{port}"], stderr=subprocess.DEVNULL, text=True
+        )
+        return [int(p) for p in out.strip().split() if p.strip()]
+    except Exception:
+        return []
+
+
+# ── Project action routes ─────────────────────────────────────────────────────
+
+@app.route("/api/project/<slug>/logs")
+def project_logs(slug):
+    p = _project_by_slug(slug)
+    if not p:
+        return jsonify({"error": "not found"}), 404
+    path = os.path.expanduser(p["path"])
+    # Check common log file locations
+    candidates = [
+        os.path.join(path, "app.log"),
+        os.path.join(path, "server.log"),
+        os.path.join(path, "logs", "app.log"),
+        os.path.expanduser(f"~/.claude/logs/{slug}.log"),
+    ]
+    log_file = next((f for f in candidates if os.path.exists(f)), None)
+    if not log_file:
+        return jsonify({"lines": [], "source": None, "note": "No log file found. Run the server with output redirected to app.log."})
+    try:
+        out = subprocess.check_output(
+            ["tail", "-n", "80", log_file], text=True, stderr=subprocess.DEVNULL
+        )
+        lines = out.splitlines()
+        return jsonify({"lines": lines, "source": log_file})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/project/<slug>/open-folder", methods=["POST"])
+def project_open_folder(slug):
+    p = _project_by_slug(slug)
+    if not p:
+        return jsonify({"error": "not found"}), 404
+    path = os.path.expanduser(p["path"])
+    try:
+        subprocess.Popen(["open", path])
+        return jsonify({"ok": True})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/project/<slug>/open-terminal", methods=["POST"])
+def project_open_terminal(slug):
+    p = _project_by_slug(slug)
+    if not p:
+        return jsonify({"error": "not found"}), 404
+    path = os.path.expanduser(p["path"])
+    script = f'tell application "Terminal" to do script "cd {path}"'
+    try:
+        subprocess.Popen(["osascript", "-e", script])
+        return jsonify({"ok": True})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/project/<slug>/restart", methods=["POST"])
+def project_restart(slug):
+    p = _project_by_slug(slug)
+    if not p:
+        return jsonify({"error": "not found"}), 404
+    path = os.path.expanduser(p["path"])
+    port = p["port"]
+
+    # Kill existing process on port
+    killed = []
+    for pid in _pids_on_port(port):
+        try:
+            os.kill(pid, signal.SIGTERM)
+            killed.append(pid)
+        except Exception:
+            pass
+
+    # Start in background via make run, fall back to python3 app.py
+    makefile = os.path.join(path, "Makefile")
+    if os.path.exists(makefile):
+        cmd = ["make", "-C", path, "run"]
+    else:
+        cmd = ["python3", os.path.join(path, "app.py")]
+
+    log_path = os.path.join(path, "app.log")
+    try:
+        with open(log_path, "a") as log_f:
+            subprocess.Popen(
+                cmd, stdout=log_f, stderr=log_f,
+                cwd=path, start_new_session=True
+            )
+        return jsonify({"ok": True, "killed": killed, "log": log_path})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 def _open_browser():
