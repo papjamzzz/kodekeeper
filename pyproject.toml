@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "kodekeeper"
+version = "1.0.0"
+description = "Claude Code Mission Control — real-time usage dashboard for Claude Code power users"
+requires-python = ">=3.9"
+license = {text = "MIT"}
+keywords = ["claude", "ai", "dashboard", "monitoring", "claude-code"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Topic :: Software Development :: User Interfaces",
+]
+dependencies = [
+    "flask>=3.0.0",
+    "psutil>=5.9.0",
+]
+
+[project.scripts]
+kodekeeper = "kodekeeper.__main__:main"
+
+[project.urls]
+Homepage   = "https://github.com/papjamzzz/kodekeeper"
+Repository = "https://github.com/papjamzzz/kodekeeper"
+
+[tool.setuptools.packages.find]
+include = ["kodekeeper*"]
+
+[tool.setuptools.package-data]
+kodekeeper = [
+    "templates/**/*",
+    "static/**/*",
+    "data/*",
+]

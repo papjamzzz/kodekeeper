@@ -468,6 +468,36 @@ html, body {
           <span style="font-size:10px;color:var(--dim);margin-top:2px;">Subscription usage tracker — not a hard limit</span>
         </div>
       </div>
+
+      <!-- ── Cost + Budget ── -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:4px;">
+        <!-- Day cost -->
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:12px 16px;display:flex;flex-direction:column;gap:6px;">
+          <span style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--sub);font-weight:700;">Today's Cost</span>
+          <span style="font-size:26px;font-weight:700;color:var(--text);text-shadow:var(--glow-t)" id="costDay">$—</span>
+          <div style="height:3px;background:var(--muted);border-radius:2px;overflow:hidden"><div id="costDayBar" style="height:100%;border-radius:2px;background:var(--green);width:0%;transition:width 0.5s"></div></div>
+          <div style="display:flex;align-items:center;gap:6px;margin-top:2px;">
+            <span style="font-size:10px;color:var(--dim)">Daily limit $</span>
+            <input id="inputDailyBudget" type="number" min="0" step="0.50" placeholder="—"
+              style="width:72px;background:var(--surface);border:1px solid var(--border);border-radius:3px;color:var(--text);font-family:var(--mono);font-size:11px;padding:2px 6px;outline:none;">
+            <button onclick="setBudget('daily')" style="background:var(--green);color:var(--bg);border:none;border-radius:3px;font-family:var(--mono);font-size:10px;font-weight:700;padding:3px 8px;cursor:pointer;letter-spacing:1px;">SET</button>
+            <button onclick="clearBudget('daily')" style="background:none;color:var(--dim);border:1px solid var(--border);border-radius:3px;font-family:var(--mono);font-size:10px;padding:3px 6px;cursor:pointer;">✕</button>
+          </div>
+        </div>
+        <!-- Month cost -->
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:12px 16px;display:flex;flex-direction:column;gap:6px;">
+          <span style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--sub);font-weight:700;">Month Cost</span>
+          <span style="font-size:26px;font-weight:700;color:var(--text);text-shadow:var(--glow-t)" id="costMonth">$—</span>
+          <div style="height:3px;background:var(--muted);border-radius:2px;overflow:hidden"><div id="costMonthBar" style="height:100%;border-radius:2px;background:var(--green);width:0%;transition:width 0.5s"></div></div>
+          <div style="display:flex;align-items:center;gap:6px;margin-top:2px;">
+            <span style="font-size:10px;color:var(--dim)">Monthly limit $</span>
+            <input id="inputMonthlyBudget" type="number" min="0" step="1" placeholder="—"
+              style="width:72px;background:var(--surface);border:1px solid var(--border);border-radius:3px;color:var(--text);font-family:var(--mono);font-size:11px;padding:2px 6px;outline:none;">
+            <button onclick="setBudget('monthly')" style="background:var(--green);color:var(--bg);border:none;border-radius:3px;font-family:var(--mono);font-size:10px;font-weight:700;padding:3px 8px;cursor:pointer;letter-spacing:1px;">SET</button>
+            <button onclick="clearBudget('monthly')" style="background:none;color:var(--dim);border:1px solid var(--border);border-radius:3px;font-family:var(--mono);font-size:10px;padding:3px 6px;cursor:pointer;">✕</button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -605,6 +635,73 @@ function toggleAutoOpen() {
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify({auto_open: autoOpen})
   });
+}
+
+// ── Budget controls ───────────────────────────────────────────────────────────
+function setBudget(period) {
+  const id  = period === 'daily' ? 'inputDailyBudget' : 'inputMonthlyBudget';
+  const key = period === 'daily' ? 'daily_budget'     : 'monthly_budget';
+  const val = parseFloat(document.getElementById(id).value);
+  if (isNaN(val) || val <= 0) return;
+  fetch('/api/settings', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({[key]: val})
+  });
+}
+
+function clearBudget(period) {
+  const id  = period === 'daily' ? 'inputDailyBudget' : 'inputMonthlyBudget';
+  const key = period === 'daily' ? 'daily_budget'     : 'monthly_budget';
+  document.getElementById(id).value = '';
+  fetch('/api/settings', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({[key]: null})
+  });
+}
+
+function renderCosts(usage, budgets) {
+  const dayCost = usage.day.cost;
+  const moCost  = usage.month.cost;
+  const dayBudget = budgets ? budgets.daily   : null;
+  const moBudget  = budgets ? budgets.monthly : null;
+
+  // Day cost
+  const dayEl = document.getElementById('costDay');
+  dayEl.textContent = '$' + dayCost.toFixed(2);
+  const dayOver = dayBudget && dayCost >= dayBudget;
+  dayEl.style.color = dayOver ? 'var(--red)' : 'var(--text)';
+  const dayBar = document.getElementById('costDayBar');
+  if (dayBudget) {
+    const pct = Math.min((dayCost / dayBudget) * 100, 100);
+    dayBar.style.width = pct + '%';
+    dayBar.style.background = dayOver ? 'var(--red)' : pct > 80 ? 'var(--amber)' : 'var(--green)';
+  } else {
+    dayBar.style.width = '0%';
+  }
+
+  // Month cost
+  const moEl = document.getElementById('costMonth');
+  moEl.textContent = '$' + moCost.toFixed(2);
+  const moOver = moBudget && moCost >= moBudget;
+  moEl.style.color = moOver ? 'var(--red)' : 'var(--text)';
+  const moBar = document.getElementById('costMonthBar');
+  if (moBudget) {
+    const pct = Math.min((moCost / moBudget) * 100, 100);
+    moBar.style.width = pct + '%';
+    moBar.style.background = moOver ? 'var(--red)' : pct > 80 ? 'var(--amber)' : 'var(--green)';
+  } else {
+    moBar.style.width = '0%';
+  }
+
+  // Populate inputs if budget is set (don't overwrite user mid-typing)
+  const dayInput = document.getElementById('inputDailyBudget');
+  if (dayBudget && document.activeElement !== dayInput && !dayInput.value)
+    dayInput.value = dayBudget;
+  const moInput = document.getElementById('inputMonthlyBudget');
+  if (moBudget && document.activeElement !== moInput && !moInput.value)
+    moInput.value = moBudget;
 }
 
 // ── Render warnings ───────────────────────────────────────────────────────────
@@ -799,6 +896,9 @@ async function update() {
 
     // Usage left — month tokens
     document.getElementById('tokMoBig').textContent = fmtK(d.usage.month.tokens);
+
+    // Costs + budgets
+    renderCosts(d.usage, d.budgets);
 
     // System
     renderSystem(d.system, d.tok_per_min);

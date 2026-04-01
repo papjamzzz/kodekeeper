@@ -1,0 +1,2 @@
+[console_scripts]
+kodekeeper = kodekeeper.__main__:main
