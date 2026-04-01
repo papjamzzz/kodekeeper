@@ -1126,18 +1126,38 @@ function renderMaster(projects) {
       ${assetsBtn}
     </div>`;
 
+    // Merged git cell: pulsing ⎇ + branch + clean/dirty + ahead/behind
+    let gitCell = '<span style="color:var(--dim)">—</span>';
+    if (g) {
+      const syncBadge = (() => {
+        const a = g.ahead || 0, b = g.behind || 0;
+        if (a === 0 && b === 0) return '';
+        const parts = [];
+        if (a > 0) parts.push(`<span style="color:var(--amber)">↑${a}</span>`);
+        if (b > 0) parts.push(`<span style="color:var(--red)">↓${b}</span>`);
+        return ' ' + parts.join(' ');
+      })();
+      const stateColor = g.clean ? 'var(--green)' : 'var(--amber)';
+      const stateDot   = g.clean ? '✓' : '●';
+      gitCell = `<span class="git-icon${p.online?' active':''}" style="margin-right:5px;">⎇</span>`
+              + `<span style="color:var(--purple);margin-right:6px;">${g.branch}</span>`
+              + `<span style="color:${stateColor};font-weight:700;">${stateDot}</span>`
+              + syncBadge;
+    }
+
     return `<tr>
       <td><span class="srv-led ${ledCls}"></span></td>
-      <td class="col-name">${p.name}</td>
-      <td class="col-port">:${p.port}</td>
-      <td class="col-srv ${srvCls}">${srvTxt}</td>
-      <td>${openLink}</td>
-      <td class="col-git-first">${gitIcon}</td>
-      <td class="col-branch">${branch}</td>
-      <td class="col-state ${stateCls}">${stateTxt}</td>
-      <td class="col-sync">${syncStr}</td>
+      <td class="col-name">
+        ${p.name}
+        <div style="font-size:10px;color:var(--dim);font-weight:400;margin-top:1px;">:${p.port}</div>
+      </td>
+      <td>
+        <span class="col-srv ${srvCls}" style="margin-right:6px;">${p.online ? '● ON' : '○ off'}</span>
+        ${openLink}
+      </td>
+      <td class="col-git-first" style="min-width:220px;">${gitCell}</td>
       <td class="col-last">${lastTxt}</td>
-      <td style="padding-left:12px;">${actions}</td>
+      <td style="padding-left:8px;">${actions}</td>
     </tr>`;
   }).join('');
 
@@ -1146,15 +1166,10 @@ function renderMaster(projects) {
       <thead><tr>
         <th></th>
         <th>Project</th>
-        <th>Port</th>
         <th>Server</th>
-        <th></th>
-        <th class="col-git"></th>
-        <th class="col-git">Branch</th>
-        <th class="col-git">Status</th>
-        <th class="col-git">Sync</th>
-        <th class="col-git">Last Commit</th>
-        <th style="padding-left:12px;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);font-weight:700;">Actions</th>
+        <th class="col-git">Git</th>
+        <th>Last Commit</th>
+        <th style="padding-left:8px;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);font-weight:700;">Actions</th>
       </tr></thead>
       <tbody>${rows}</tbody>
     </table>`;
