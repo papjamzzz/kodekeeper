@@ -120,6 +120,57 @@ def project_open_terminal(slug):
         return jsonify({"error": str(e)}), 500
 
 
+@app.route("/api/project/<slug>/assets")
+def project_assets(slug):
+    """List image/brand files in the project's assets folder."""
+    p = _project_by_slug(slug)
+    if not p:
+        return jsonify({"error": "not found"}), 404
+    assets_path = os.path.expanduser(p.get("assets", ""))
+    if not assets_path or not os.path.isdir(assets_path):
+        return jsonify({"files": [], "path": None, "note": "No assets folder found."})
+    IMAGE_EXT = {".png", ".jpg", ".jpeg", ".svg", ".gif", ".webp", ".ico"}
+    files = []
+    for f in sorted(os.listdir(assets_path)):
+        ext = os.path.splitext(f)[1].lower()
+        if ext in IMAGE_EXT:
+            files.append({"name": f, "path": os.path.join(assets_path, f)})
+    return jsonify({"files": files, "path": assets_path})
+
+
+@app.route("/api/project/<slug>/assets/open-folder", methods=["POST"])
+def project_assets_open_folder(slug):
+    p = _project_by_slug(slug)
+    if not p:
+        return jsonify({"error": "not found"}), 404
+    assets_path = os.path.expanduser(p.get("assets", ""))
+    # Fall back to project root if no assets folder
+    if not assets_path or not os.path.isdir(assets_path):
+        assets_path = os.path.expanduser(p["path"])
+    try:
+        subprocess.Popen(["open", assets_path])
+        return jsonify({"ok": True})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/project/<slug>/assets/reveal", methods=["POST"])
+def project_assets_reveal(slug):
+    """Reveal a specific file in Finder."""
+    p = _project_by_slug(slug)
+    if not p:
+        return jsonify({"error": "not found"}), 404
+    data = request.get_json(force=True)
+    file_path = data.get("path", "")
+    if not file_path or not os.path.exists(file_path):
+        return jsonify({"error": "file not found"}), 404
+    try:
+        subprocess.Popen(["open", "-R", file_path])
+        return jsonify({"ok": True})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 @app.route("/api/project/<slug>/inject-env", methods=["POST"])
 def project_inject_env(slug):
     """Open Terminal with bwdotenv command pre-typed — user runs it themselves."""

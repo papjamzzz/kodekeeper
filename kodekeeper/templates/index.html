@@ -365,9 +365,9 @@ html, body {
 /* ── Action buttons ── */
 .act-btn {
   background: var(--surface2);
-  border: 1px solid var(--border);
+  border: 1px solid var(--border2);
   border-radius: 3px;
-  color: var(--sub);
+  color: var(--text);
   font-family: var(--mono);
   font-size: 10px; font-weight: 700; letter-spacing: 0.5px;
   padding: 3px 7px; cursor: pointer;
@@ -379,9 +379,56 @@ html, body {
 .act-btn.act-logs:hover    { border-color: var(--blue);  color: var(--blue); }
 .act-btn.act-term:hover    { border-color: var(--purple); color: var(--purple); }
 .act-btn.act-folder:hover  { border-color: var(--green); color: var(--green); }
+.act-btn.act-assets:hover  { border-color: var(--green); color: var(--green); }
 .act-btn.flashing { animation: act-flash 0.5s ease; }
 @keyframes act-flash { 0%{opacity:1} 30%{opacity:0.2} 100%{opacity:1} }
 .act-group { display: flex; gap: 4px; }
+
+/* ── Assets dropdown ── */
+.assets-wrap { position: relative; display: inline-block; }
+.assets-menu {
+  display: none;
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 5px;
+  min-width: 200px;
+  z-index: 900;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+  overflow: hidden;
+}
+.assets-menu.open { display: block; }
+.assets-menu-header {
+  font-size: 9px; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--dim); font-weight: 700;
+  padding: 8px 12px 6px; border-bottom: 1px solid var(--border);
+}
+.assets-menu-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 7px 12px; font-size: 11px; font-weight: 600;
+  color: var(--text); cursor: pointer;
+  transition: background 0.1s;
+  border: none; background: none; width: 100%;
+  font-family: var(--mono); text-align: left;
+}
+.assets-menu-item:hover { background: var(--surface2); color: var(--green); }
+.assets-menu-item .ami-icon { width: 14px; text-align: center; flex-shrink: 0; }
+.assets-menu-divider { height: 1px; background: var(--border); margin: 2px 0; }
+.assets-file-list {
+  max-height: 160px; overflow-y: auto;
+  padding: 4px 0;
+}
+.assets-file-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 5px 12px; font-size: 10px;
+  color: var(--sub); cursor: pointer;
+  transition: background 0.1s; width: 100%;
+  border: none; background: none; font-family: var(--mono); text-align: left;
+}
+.assets-file-item:hover { background: var(--surface2); color: var(--text); }
+.assets-file-item .af-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 /* ── Logs drawer ── */
 #logsDrawer {
@@ -1059,11 +1106,24 @@ function renderMaster(projects) {
     const lastTxt = g ? g.last_commit : '—';
 
     const s = p.slug;
+    const hasAssets = !!p.assets;
+    const assetsBtn = hasAssets
+      ? `<div class="assets-wrap">
+           <button class="act-btn act-assets" onclick="toggleAssetsMenu('${s}',this)" title="Assets">🖼 Assets</button>
+           <div class="assets-menu" id="am-${s}">
+             <div class="assets-menu-header">Assets — ${p.name}</div>
+             <button class="assets-menu-item" onclick="assetsOpenFolder('${s}')"><span class="ami-icon">📁</span>Open assets folder</button>
+             <div class="assets-divider-${s}"></div>
+             <div class="assets-file-list" id="afl-${s}"><div style="padding:8px 12px;font-size:10px;color:var(--dim)">Loading…</div></div>
+           </div>
+         </div>`
+      : '';
     const actions = `<div class="act-group">
-      <button class="act-btn act-logs"    onclick="openLogs('${s}','${p.name}')"   title="View logs">📋 Logs</button>
-      <button class="act-btn act-term"    onclick="openTerm('${s}',this)"          title="Open terminal">⌨ Term</button>
-      <button class="act-btn act-folder"  onclick="openFolder('${s}',this)"        title="Open in Finder">📁 Folder</button>
+      <button class="act-btn act-logs"    onclick="openLogs('${s}','${p.name}')"        title="View logs">📋 Logs</button>
+      <button class="act-btn act-term"    onclick="openTerm('${s}',this)"               title="Open terminal">⌨ Term</button>
+      <button class="act-btn act-folder"  onclick="openFolder('${s}',this)"             title="Open in Finder">📁 Folder</button>
       <button class="act-btn act-restart" onclick="restartProj('${s}','${p.name}',this)" title="Restart server">↺ Restart</button>
+      ${assetsBtn}
     </div>`;
 
     return `<tr>
@@ -1168,6 +1228,75 @@ function renderSystem(sys, tokPerMin) {
     bar.style.width = pct + '%';
     bar.className = 'sys-bar-fill ' + cls;
   }
+}
+
+// ── Assets dropdown ──────────────────────────────────────────────────────────
+function toggleAssetsMenu(slug, btn) {
+  const menu = document.getElementById('am-' + slug);
+  if (!menu) return;
+  const isOpen = menu.classList.contains('open');
+  // Close all open menus first
+  document.querySelectorAll('.assets-menu.open').forEach(m => m.classList.remove('open'));
+  if (!isOpen) {
+    menu.classList.add('open');
+    loadAssetFiles(slug);
+    // Close on outside click
+    setTimeout(() => {
+      document.addEventListener('click', function handler(e) {
+        if (!menu.contains(e.target) && e.target !== btn) {
+          menu.classList.remove('open');
+          document.removeEventListener('click', handler);
+        }
+      });
+    }, 0);
+  }
+}
+
+function loadAssetFiles(slug) {
+  const list = document.getElementById('afl-' + slug);
+  if (!list) return;
+  fetch(`/api/project/${slug}/assets`)
+    .then(r => r.json())
+    .then(d => {
+      if (!d.files || d.files.length === 0) {
+        list.innerHTML = `<div style="padding:8px 12px;font-size:10px;color:var(--dim)">${d.note || 'No image files found.'}</div>`;
+        return;
+      }
+      const isLogo  = f => /logo/i.test(f);
+      const isBanner = f => /banner|social|cover/i.test(f);
+      const isIcon  = f => /icon|favicon|avatar/i.test(f);
+
+      list.innerHTML = d.files.map(f => {
+        const tag = isLogo(f.name) ? '🖼' : isBanner(f.name) ? '🏷' : isIcon(f.name) ? '✦' : '·';
+        return `<button class="assets-file-item"
+          onclick="assetsReveal('${slug}','${f.path.replace(/'/g,"\\'")}',this)">
+          <span class="ami-icon">${tag}</span>
+          <span class="af-name" title="${f.name}">${f.name}</span>
+          <span style="font-size:9px;color:var(--dim);margin-left:auto">Reveal</span>
+        </button>`;
+      }).join('');
+    })
+    .catch(() => {
+      list.innerHTML = `<div style="padding:8px 12px;font-size:10px;color:var(--red)">Failed to load.</div>`;
+    });
+}
+
+function assetsOpenFolder(slug) {
+  document.querySelectorAll('.assets-menu.open').forEach(m => m.classList.remove('open'));
+  fetch(`/api/project/${slug}/assets/open-folder`, {method:'POST'});
+}
+
+function assetsReveal(slug, path, btn) {
+  const orig = btn.querySelector('span:last-child').textContent;
+  btn.querySelector('span:last-child').textContent = '…';
+  fetch(`/api/project/${slug}/assets/reveal`, {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({path})
+  }).then(() => {
+    btn.querySelector('span:last-child').textContent = '✓';
+    setTimeout(() => { btn.querySelector('span:last-child').textContent = orig; }, 1500);
+  });
 }
 
 // ── Project actions ───────────────────────────────────────────────────────────
