@@ -30,15 +30,15 @@ MODEL_COSTS = {
 }
 
 PROJECTS = [
-    {"name": "Launcher",       "slug": "launcher",        "port": 5554, "path": "~/launcher",              "repo": None},
-    {"name": "Kalshi Edge",    "slug": "kalshi-edge",     "port": 5555, "path": "~/kalshi-edge",            "repo": "papjamzzz/kalshi-konnektor"},
-    {"name": "StreamFader",    "slug": "streamfader",     "port": 5556, "path": "~/streamfader",            "repo": "papjamzzz/Stream-Fader"},
-    {"name": "TrackTracks",    "slug": "tracktracks",     "port": 5557, "path": "~/track_cpu_monitor",      "repo": "papjamzzz/Track-Tracks"},
-    {"name": "DAW Doctor",     "slug": "daw-doctor",      "port": 5558, "path": "~/ableton-diagnostics",    "repo": "papjamzzz/Daw-Doctor"},
-    {"name": "KK Trader",      "slug": "kk-trader",       "port": 5559, "path": "~/kalshi-trader",          "repo": "papjamzzz/kalshi-trader"},
-    {"name": "KodeKeeper",     "slug": "kodekeeper",      "port": 5560, "path": "~/kodekeeper",             "repo": None},
-    {"name": "Pipeline",       "slug": "pipeline",        "port": 5561, "path": "~/pipeline",               "repo": None},
-    {"name": "5i",             "slug": "5i",              "port": 5562, "path": "~/5i",                     "repo": "papjamzzz/5i"},
+    {"name": "Launcher",    "slug": "launcher",    "port": 5554, "path": "~/launcher",           "repo": None,                       "needs_env": False},
+    {"name": "Kalshi Edge", "slug": "kalshi-edge", "port": 5555, "path": "~/kalshi-edge",         "repo": "papjamzzz/kalshi-konnektor","needs_env": True},
+    {"name": "StreamFader", "slug": "streamfader", "port": 5556, "path": "~/streamfader",         "repo": "papjamzzz/Stream-Fader",   "needs_env": False},
+    {"name": "TrackTracks", "slug": "tracktracks", "port": 5557, "path": "~/track_cpu_monitor",   "repo": "papjamzzz/Track-Tracks",   "needs_env": False},
+    {"name": "DAW Doctor",  "slug": "daw-doctor",  "port": 5558, "path": "~/ableton-diagnostics", "repo": "papjamzzz/Daw-Doctor",     "needs_env": False},
+    {"name": "KK Trader",   "slug": "kk-trader",   "port": 5559, "path": "~/kalshi-trader",       "repo": "papjamzzz/kalshi-trader",  "needs_env": True},
+    {"name": "KodeKeeper",  "slug": "kodekeeper",  "port": 5560, "path": "~/kodekeeper",          "repo": None,                       "needs_env": False},
+    {"name": "Pipeline",    "slug": "pipeline",    "port": 5561, "path": "~/pipeline",            "repo": None,                       "needs_env": False},
+    {"name": "5i",          "slug": "5i",          "port": 5562, "path": "~/5i",                  "repo": "papjamzzz/5i",             "needs_env": True},
 ]
 
 
@@ -67,13 +67,58 @@ def _git_status(path):
             ["git", "-C", full, "log", "-1", "--format=%ar", "--"],
             stderr=subprocess.DEVNULL
         ).decode().strip()
+        # Ahead / behind origin
+        ahead, behind = 0, 0
+        try:
+            ab = subprocess.check_output(
+                ["git", "-C", full, "rev-list", "--left-right", "--count",
+                 f"origin/{branch}...HEAD"],
+                stderr=subprocess.DEVNULL
+            ).decode().strip()
+            parts = ab.split()
+            if len(parts) == 2:
+                behind, ahead = int(parts[0]), int(parts[1])
+        except Exception:
+            pass
         return {
-            "branch": branch,
-            "clean":  len(dirty_out) == 0,
+            "branch":     branch,
+            "clean":      len(dirty_out) == 0,
             "last_commit": last or "—",
+            "ahead":      ahead,
+            "behind":     behind,
         }
     except Exception:
         return None
+
+
+def _build_warnings(projects, system):
+    """Generate actionable warning strings for the warning strip."""
+    warnings = []
+
+    # Low disk
+    if system.get("disk_free") is not None and system["disk_free"] < 15:
+        warnings.append(f"⚠ Low disk — only {system['disk_free']:.0f} GB free")
+
+    # High RAM
+    if system.get("ram_pct") is not None and system["ram_pct"] > 85:
+        warnings.append(f"⚠ RAM at {system['ram_pct']:.0f}% — crashes possible")
+
+    for p in projects:
+        # Missing .env (only for projects that require one)
+        proj_path = os.path.expanduser(p["path"])
+        if p.get("needs_env") and os.path.isdir(proj_path) and not os.path.exists(os.path.join(proj_path, ".env")):
+            warnings.append(f"⚠ {p['name']} — missing .env")
+
+        # Dirty repo
+        g = p.get("git")
+        if g and not g["clean"]:
+            warnings.append(f"↑ {p['name']} — uncommitted changes")
+
+        # Behind origin
+        if g and g.get("behind", 0) > 0:
+            warnings.append(f"↓ {p['name']} — {g['behind']} commit(s) behind origin")
+
+    return warnings
 
 
 def _load_usage():
@@ -107,7 +152,7 @@ def load_settings():
                 return json.load(f)
         except Exception:
             pass
-    return {"auto_open": True}
+    return {"auto_open": True, "theme": "light"}
 
 
 def save_settings(data):
@@ -157,6 +202,12 @@ def get_status():
         except Exception:
             pass
 
+    # ── Token velocity ────────────────────────────────────────────────────────
+    session_tokens = usage.get("last_session_total", 0)
+    tok_per_min = None
+    if session_mins and session_mins > 0 and session_tokens > 0:
+        tok_per_min = round(session_tokens / session_mins)
+
     # ── System stats ──────────────────────────────────────────────────────────
     system = _get_system_stats()
 
@@ -174,8 +225,10 @@ def get_status():
         },
         "projects":     projects,
         "session_mins": session_mins,
+        "tok_per_min":  tok_per_min,
         "settings":     settings,
         "system":       system,
+        "warnings":     _build_warnings(projects, system),
         "now":          datetime.now().strftime("%H:%M"),
         "today":        str(date.today()),
     }
@@ -184,11 +237,14 @@ def get_status():
 def _get_system_stats():
     stats = {
         "ram_used": None, "ram_total": None, "ram_pct": None,
+        "swap_used": None, "swap_total": None, "swap_pct": None,
+        "cpu_pct": None, "cpu_temp": None,
+        "disk_free": None, "disk_total": None, "disk_pct": None,
         "battery_pct": None, "battery_charging": False, "battery_mins": 0,
     }
 
-    # RAM
     if _HAS_PSUTIL:
+        # RAM
         try:
             mem = psutil.virtual_memory()
             stats["ram_used"]  = round(mem.used  / 1e9, 1)
@@ -196,6 +252,41 @@ def _get_system_stats():
             stats["ram_pct"]   = round(mem.percent, 1)
         except Exception:
             pass
+
+        # Swap
+        try:
+            sw = psutil.swap_memory()
+            stats["swap_used"]  = round(sw.used  / 1e9, 1)
+            stats["swap_total"] = round(sw.total / 1e9, 1)
+            stats["swap_pct"]   = round(sw.percent, 1)
+        except Exception:
+            pass
+
+        # CPU
+        try:
+            stats["cpu_pct"] = round(psutil.cpu_percent(interval=0.2), 1)
+        except Exception:
+            pass
+
+        # Disk (main volume)
+        try:
+            disk = psutil.disk_usage("/")
+            stats["disk_free"]  = round(disk.free  / 1e9, 1)
+            stats["disk_total"] = round(disk.total / 1e9, 1)
+            stats["disk_pct"]   = round(disk.percent, 1)
+        except Exception:
+            pass
+
+    # CPU temp (macOS — graceful fallback)
+    try:
+        tmp = subprocess.check_output(
+            ["osx-cpu-temp"], text=True, stderr=subprocess.DEVNULL
+        ).strip()
+        m = re.search(r'([\d.]+)', tmp)
+        if m:
+            stats["cpu_temp"] = float(m.group(1))
+    except Exception:
+        pass
 
     # Battery via pmset (macOS)
     try:
