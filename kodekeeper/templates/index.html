@@ -375,19 +375,29 @@ html, body {
 @keyframes spin { to { transform: rotate(360deg); } }
 .spinner { display: inline-block; width: 10px; height: 10px; border: 1px solid var(--border); border-top-color: var(--green); border-radius: 50%; animation: spin 0.7s linear infinite; }
 
-/* ── Give button ── */
-.give-btn {
-  background: linear-gradient(135deg, var(--green), var(--blue));
-  border: none; border-radius: 4px;
-  color: var(--bg); font-family: var(--mono);
-  font-size: 11px; font-weight: 700; letter-spacing: 1px;
-  padding: 5px 12px; cursor: pointer;
-  transition: opacity 0.2s, transform 0.1s;
+/* ── CK corner block ── */
+.ck-corner {
+  display: flex; align-items: center; gap: 10px;
+  border-left: 1px solid var(--border);
+  padding-left: 16px; margin-left: 4px;
+}
+.ck-corner-logo {
+  width: 54px; height: 54px; border-radius: 8px; flex-shrink: 0;
+  transition: filter 0.3s;
+}
+[data-theme="light"] .ck-corner-logo {
+  filter: drop-shadow(0 2px 10px rgba(100,0,180,0.25)) brightness(1.05) saturate(1.1);
+}
+[data-theme="dark"] .ck-corner-logo {
+  filter: drop-shadow(0 0 14px rgba(204,68,255,0.55)) brightness(1.15) saturate(1.2);
+}
+.ck-corner-brand { display: flex; flex-direction: column; gap: 2px; }
+.ck-corner-name {
+  font-size: 13px; font-weight: 700; letter-spacing: 2.5px;
+  text-transform: uppercase; color: var(--text); text-shadow: var(--glow-t);
   white-space: nowrap;
 }
-.give-btn:hover  { opacity: 0.85; }
-.give-btn:active { transform: scale(0.97); }
-.give-btn:disabled { opacity: 0.35; cursor: default; }
+.ck-corner-sub { font-size: 9px; letter-spacing: 1.5px; color: var(--dim); text-transform: uppercase; }
 </style>
 </head>
 <body>
@@ -395,15 +405,14 @@ html, body {
 
   <!-- ── Nameplate ── -->
   <div class="nameplate">
-    <div class="np-logos">
-      <img src="/static/logo-light.png" alt="" class="np-logo cat-logo" id="siteLogo" onerror="this.style.display='none'">
-      <div class="logo-divider"></div>
-      <img src="/static/logo-ck.png" alt="" class="np-logo ck-logo" onerror="this.style.display='none'">
-    </div>
+    <!-- Left: KK logo + brand -->
+    <img src="/static/logo-light.png" alt="" class="np-logo cat-logo" id="siteLogo" onerror="this.style.display='none'" style="margin-right:12px;">
     <div class="np-brand">
       <span class="np-name">Kode Keeper</span>
-      <span class="np-sub">Claude Code Mission Control &nbsp;·&nbsp; Creative Konsoles</span>
+      <span class="np-sub">Claude Code Mission Control</span>
     </div>
+
+    <!-- Center: live stats -->
     <div class="np-right">
       <div class="np-stat" id="statModel" style="display:none">
         <span class="val" id="npModel">—</span>
@@ -425,14 +434,20 @@ html, body {
         <span class="lbl">Time</span>
       </div>
       <div class="np-sep"></div>
-      <!-- Theme toggle -->
       <div class="theme-toggle" id="themeToggle">
         <button class="theme-btn active" id="btnLight" onclick="setTheme('light')">LIGHT</button>
         <button class="theme-btn" id="btnDark" onclick="setTheme('dark')">DARK</button>
       </div>
       <button class="guide-btn" onclick="document.getElementById('guideModal').style.display='flex'" title="User Guide">?</button>
-      <div class="np-sep"></div>
-      <button id="giveBtn" class="give-btn" onclick="openGiveModal()" title="Give a free month">🎁 Give</button>
+    </div>
+
+    <!-- Right: CK logo + brand (mirrors left) -->
+    <div class="ck-corner">
+      <div class="ck-corner-brand" style="text-align:right;">
+        <span class="ck-corner-name">Creative Konsoles</span>
+        <span class="ck-corner-sub">By Creative Konsoles</span>
+      </div>
+      <img src="/static/logo-ck.png" alt="" class="ck-corner-logo" onerror="this.style.display='none'">
     </div>
   </div>
 
