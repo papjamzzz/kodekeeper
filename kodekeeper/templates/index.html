@@ -332,14 +332,16 @@
     }
 
     .data-label {
-      color: var(--text-secondary);
+      color: var(--text-primary);
       font-size: 12px;
+      font-weight: 500;
     }
 
     .data-value {
       color: var(--text-primary);
-      font-weight: 500;
+      font-weight: 600;
       font-family: var(--font-mono);
+      letter-spacing: 0.5px;
     }
 
     .data-value.success { color: var(--color-success); }
@@ -383,6 +385,11 @@
       text-align: center;
     }
 
+    .projects-table .col-metrics {
+      text-align: right;
+      min-width: 100px;
+    }
+
     .status-badge {
       display: inline-flex;
       align-items: center;
@@ -400,6 +407,11 @@
       color: var(--color-success);
     }
 
+    .status-badge.offline {
+      background: rgba(180, 180, 180, 0.15);
+      color: #999999;
+    }
+
     .status-badge.error {
       background: rgba(255, 92, 56, 0.15);
       color: var(--color-error);
@@ -410,6 +422,133 @@
       color: var(--color-warning);
     }
 
+    /* ── Tooltip System ── */
+    .tooltip-trigger {
+      cursor: help;
+      position: relative;
+      border-bottom: 1px dashed var(--border-color);
+    }
+
+    .tooltip {
+      position: absolute;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      padding: 8px 12px;
+      font-size: 11px;
+      color: var(--text-secondary);
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0;
+      transform: translateY(-8px);
+      transition: opacity 0.2s, transform 0.2s;
+      z-index: 1001;
+      bottom: 120%;
+      left: 50%;
+      transform: translateX(-50%) translateY(-8px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .tooltip-trigger:hover .tooltip {
+      opacity: 1;
+      transform: translateX(-50%) translateY(-4px);
+    }
+
+    /* ── Heartbeat Animation ── */
+    @keyframes heartbeat {
+      0%, 100% { opacity: 0.6; }
+      50% { opacity: 1; }
+    }
+
+    .heartbeat {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--color-success);
+      animation: heartbeat 1.5s infinite;
+    }
+
+    .heartbeat.warning {
+      background: var(--color-warning);
+    }
+
+    .heartbeat.error {
+      background: var(--color-error);
+    }
+
+    /* ── Quick Action Menu ── */
+    .action-menu {
+      position: relative;
+    }
+
+    .action-btn {
+      width: 24px;
+      height: 24px;
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      cursor: pointer;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .action-btn:hover {
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+    }
+
+    .action-dropdown {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      box-shadow: var(--shadow-lg);
+      min-width: 150px;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(-8px);
+      transition: opacity 0.2s, transform 0.2s;
+      z-index: 1001;
+      margin-top: 4px;
+    }
+
+    .action-menu:hover .action-dropdown {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0);
+    }
+
+    .action-item {
+      padding: 8px 12px;
+      border: none;
+      background: transparent;
+      color: var(--text-primary);
+      font-family: var(--font-ui);
+      font-size: 12px;
+      cursor: pointer;
+      text-align: left;
+      width: 100%;
+      transition: background 0.2s;
+    }
+
+    .action-item:hover {
+      background: var(--bg-tertiary);
+    }
+
+    .action-item:first-child {
+      border-radius: 5px 5px 0 0;
+    }
+
+    .action-item:last-child {
+      border-radius: 0 0 5px 5px;
+    }
+
     /* ── Sparkline placeholder ── */
     .sparkline {
       width: 40px;
@@ -417,6 +556,26 @@
       background: linear-gradient(90deg, var(--color-success) 0%, var(--color-warning) 50%, var(--color-error) 100%);
       border-radius: 2px;
       opacity: 0.6;
+    }
+
+    /* ── Footer Status Bar ── */
+    .footer-bar {
+      background: var(--bg-secondary);
+      border-top: 1px solid var(--border-color);
+      padding: var(--space-2);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 48px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-tertiary);
+    }
+
+    .footer-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-1);
     }
 
     /* ── Empty State ── */
@@ -491,20 +650,29 @@
       </div>
 
       <!-- Content Grid -->
-      <div class="content">
+      <div class="content" style="flex: 1; overflow-y: auto;">
         <!-- Quick Status Panel -->
         <div class="panel">
           <div class="panel-title">💾 Context & Costs</div>
           <div class="data-row">
-            <span class="data-label">Session Context</span>
+            <span class="data-label tooltip-trigger">
+              Session Context
+              <div class="tooltip" id="ctxTooltip">~42k tokens remaining</div>
+            </span>
             <span class="data-value" id="ctxValue">37%</span>
           </div>
           <div class="data-row">
-            <span class="data-label">Today's Cost</span>
+            <span class="data-label tooltip-trigger">
+              Today's Cost
+              <div class="tooltip">Billed hourly</div>
+            </span>
             <span class="data-value" id="dayCost">$--</span>
           </div>
           <div class="data-row">
-            <span class="data-label">This Month</span>
+            <span class="data-label tooltip-trigger">
+              This Month
+              <div class="tooltip">Month-to-date</div>
+            </span>
             <span class="data-value" id="monthCost">$--</span>
           </div>
         </div>
@@ -518,7 +686,8 @@
                 <td class="col-name">Project</td>
                 <td class="col-branch">Branch</td>
                 <td class="col-status">Status</td>
-                <td>Bot Metrics</td>
+                <td class="col-metrics" style="text-align: right;">Bot Metrics</td>
+                <td style="text-align: center; width: 32px;">⋮</td>
               </tr>
             </thead>
             <tbody id="projectsList">
@@ -542,6 +711,17 @@
             <span class="data-label">Disk Free</span>
             <span class="data-value" id="diskValue">--</span>
           </div>
+        </div>
+      </div>
+
+      <!-- Footer Status Bar -->
+      <div class="footer-bar">
+        <div class="footer-item">
+          <span>Updated:</span>
+          <span id="lastUpdate" style="font-weight: 500;">--:--</span>
+        </div>
+        <div class="footer-item">
+          <span id="footerStatus">All systems nominal</span>
         </div>
       </div>
     </div>
@@ -590,7 +770,15 @@
     function updateDashboard(data) {
       // Update context
       const ctx = data.context || {};
-      document.getElementById('ctxValue').textContent = `${Math.round(ctx.pct || 0)}%`;
+      const ctxPct = Math.round(ctx.pct || 0);
+      document.getElementById('ctxValue').textContent = `${ctxPct}%`;
+
+      // Update context tooltip with token estimate (200k token window assumed)
+      const tokensRemaining = Math.round(200000 * (1 - ctxPct / 100));
+      const ctxTooltip = document.getElementById('ctxTooltip');
+      if (ctxTooltip) {
+        ctxTooltip.textContent = `~${(tokensRemaining / 1000).toFixed(0)}k tokens remaining`;
+      }
 
       // Update costs
       const usage = data.usage || {};
@@ -606,36 +794,66 @@
       // Update projects table
       const projects = data.projects || [];
       const tbody = document.getElementById('projectsList');
-      tbody.innerHTML = projects.map(p => `
-        <tr>
-          <td class="col-name">${p.name}</td>
-          <td class="col-branch">${p.git?.branch || '—'}</td>
-          <td class="col-status">
-            <span class="status-badge ${p.online ? 'online' : 'error'}">
-              ${p.online ? '🟢 Online' : '🔴 Offline'}
-            </span>
-          </td>
-          <td>
-            ${p.bot_stats ? `
-              <span class="status-badge ${p.bot_stats.status === 'running' ? 'online' : 'error'}">
-                ${p.bot_stats.status}
+      tbody.innerHTML = projects.map(p => {
+        const isTradingBot = p.name.includes('Kalshi') || p.name.includes('trader');
+        const botStatus = p.bot_stats?.status || 'offline';
+        const heartbeatClass = botStatus === 'running' ? 'success' : (botStatus === 'paused' ? 'warning' : 'error');
+        const statusBadgeClass = p.online ? 'online' : 'offline';
+
+        return `
+          <tr>
+            <td class="col-name">
+              ${isTradingBot ? `<span class="heartbeat ${heartbeatClass}"></span>&nbsp;` : ''}${p.name}
+            </td>
+            <td class="col-branch">${p.git?.branch || '—'}</td>
+            <td class="col-status">
+              <span class="status-badge ${statusBadgeClass}">
+                ${p.online ? '🟢 Online' : '⚪ Offline'}
               </span>
-            ` : '—'}
-          </td>
-        </tr>
-      `).join('');
+            </td>
+            <td style="text-align: right;">
+              ${p.bot_stats ? `
+                <span class="status-badge ${p.bot_stats.status === 'running' ? 'online' : 'warning'}">
+                  ${p.bot_stats.status}
+                </span>
+              ` : '—'}
+            </td>
+            <td style="text-align: center;">
+              <div class="action-menu">
+                <button class="action-btn" title="More actions">⋮</button>
+                <div class="action-dropdown">
+                  <button class="action-item" onclick="alert('Clear logs for ${p.name}')">Clear Logs</button>
+                  <button class="action-item" onclick="alert('Restart ${p.name}')">Restart</button>
+                  <button class="action-item" onclick="alert('View details for ${p.name}')">View Details</button>
+                </div>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
 
       // Update global status
       const hasErrors = projects.some(p => !p.online);
       const statusDot = document.getElementById('globalStatus');
       const statusText = document.getElementById('globalStatusText');
+      const footerStatus = document.getElementById('footerStatus');
 
       if (hasErrors) {
         statusDot.className = 'status-dot error';
         statusText.textContent = 'Warning: Projects offline';
+        if (footerStatus) footerStatus.textContent = '⚠️ ' + statusText.textContent;
       } else {
         statusDot.className = 'status-dot';
         statusText.textContent = 'All systems nominal';
+        if (footerStatus) footerStatus.textContent = statusText.textContent;
+      }
+
+      // Update last update time
+      const lastUpdateEl = document.getElementById('lastUpdate');
+      if (lastUpdateEl) {
+        const now = new Date();
+        const time = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+        lastUpdateEl.textContent = time;
       }
     }
 
