@@ -40,6 +40,7 @@ PROJECTS = [
     {"name": "KodeKeeper",  "slug": "kodekeeper",  "port": 5560, "path": "~/kodekeeper",          "repo": None,                       "needs_env": False, "assets": "~/kodekeeper/kodekeeper/static"},
     {"name": "Pipeline",    "slug": "pipeline",    "port": 5561, "path": "~/pipeline",            "repo": None,                       "needs_env": False, "assets": "~/pipeline/static"},
     {"name": "5i",          "slug": "5i",          "port": 5562, "path": "~/5i",                  "repo": "papjamzzz/5i",             "needs_env": True,  "bw_item": "5i — API Keys",          "assets": "~/5i/static"},
+    {"name": "KK Konnektor","slug": "kk-konnektor","port": None, "path": "~/Documents/New project/Kalshi-Konnektor2", "repo": None, "needs_env": True, "process": "kalshi_bot.py", "log": "~/Documents/New project/Kalshi-Konnektor2/bot.log"},
 ]
 
 
@@ -91,6 +92,46 @@ def _git_status(path):
         }
     except Exception:
         return None
+
+
+def _process_running(process_name):
+    try:
+        out = subprocess.check_output(
+            ["pgrep", "-f", process_name], stderr=subprocess.DEVNULL
+        ).decode().strip()
+        return bool(out)
+    except Exception:
+        return False
+
+
+def _bot_log_stats(log_path):
+    """Parse last few lines of bot.log for key status fields."""
+    full = os.path.expanduser(log_path)
+    if not os.path.exists(full):
+        return {}
+    try:
+        lines = subprocess.check_output(
+            ["tail", "-n", "50", full], text=True, stderr=subprocess.DEVNULL
+        )
+        stats = {}
+        for line in reversed(lines.splitlines()):
+            if "quoted_markets=" in line and "quoted_markets" not in stats:
+                m = re.search(r"quoted_markets=(\d+)", line)
+                if m:
+                    stats["quoted_markets"] = int(m.group(1))
+            if "candidates=" in line and "candidates" not in stats:
+                m = re.search(r"candidates=(\d+)", line)
+                if m:
+                    stats["candidates"] = int(m.group(1))
+            if "Sleeping" in line and "last_poll" not in stats:
+                m = re.search(r"(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})", line)
+                if m:
+                    stats["last_poll"] = m.group(1)
+            if "DRY_RUN=" in line and "dry_run" not in stats:
+                stats["dry_run"] = "True" in line
+        return stats
+    except Exception:
+        return {}
 
 
 def _estimate_cost(total_tokens, model="default"):
@@ -328,9 +369,17 @@ def get_status():
 
     projects = []
     for p in PROJECTS:
-        online = _port_open(p["port"])
-        git    = _git_status(p["path"])
-        projects.append({**p, "online": online, "git": git})
+        if p.get("port") is not None:
+            online = _port_open(p["port"])
+        elif p.get("process"):
+            online = _process_running(p["process"])
+        else:
+            online = False
+        git = _git_status(p["path"])
+        extra = {}
+        if p.get("log"):
+            extra["bot_stats"] = _bot_log_stats(p["log"])
+        projects.append({**p, "online": online, "git": git, **extra})
 
     session_start = usage.get("session_start")
     session_mins  = None
