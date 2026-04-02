@@ -105,33 +105,58 @@ def _process_running(process_name):
 
 
 def _bot_log_stats(log_path):
-    """Parse last few lines of bot.log for key status fields."""
+    """Parse bot.log for status fields: status, last_sync, quote_freshness, etc."""
     full = os.path.expanduser(log_path)
     if not os.path.exists(full):
-        return {}
+        return {"status": "offline"}
     try:
         lines = subprocess.check_output(
-            ["tail", "-n", "50", full], text=True, stderr=subprocess.DEVNULL
-        )
-        stats = {}
-        for line in reversed(lines.splitlines()):
-            if "quoted_markets=" in line and "quoted_markets" not in stats:
+            ["tail", "-n", "100", full], text=True, stderr=subprocess.DEVNULL
+        ).splitlines()
+
+        stats = {"status": "unknown"}
+
+        # Scan from most recent line backwards
+        for line in reversed(lines):
+            # Bot status: Running, Paused, Error
+            if "DRY_RUN=" in line and "status" not in stats:
+                stats["status"] = "running"
+
+            # Last API sync time (e.g., "Could not fetch icehockey_nhl odds from Pinnacle")
+            if "timestamp" in line.lower() or ("2026-04-01" in line):
+                m = re.search(r"(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})", line)
+                if m and "last_sync" not in stats:
+                    stats["last_sync"] = m.group(1)
+
+            # Quote freshness: check if quoted_markets > 0
+            if "quoted_markets=" in line and "quote_freshness" not in stats:
                 m = re.search(r"quoted_markets=(\d+)", line)
                 if m:
-                    stats["quoted_markets"] = int(m.group(1))
-            if "candidates=" in line and "candidates" not in stats:
-                m = re.search(r"candidates=(\d+)", line)
-                if m:
-                    stats["candidates"] = int(m.group(1))
+                    count = int(m.group(1))
+                    stats["quote_freshness"] = "fresh" if count > 0 else "stale"
+                    stats["quoted_markets"] = count
+
+            # Poll timing
             if "Sleeping" in line and "last_poll" not in stats:
                 m = re.search(r"(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})", line)
                 if m:
                     stats["last_poll"] = m.group(1)
-            if "DRY_RUN=" in line and "dry_run" not in stats:
-                stats["dry_run"] = "True" in line
+
+            # Candidates count
+            if "candidates=" in line and "candidates" not in stats:
+                m = re.search(r"candidates=(\d+)", line)
+                if m:
+                    stats["candidates"] = int(m.group(1))
+
+        # Default values if not found
+        if "status" not in stats:
+            stats["status"] = "running"
+        if "quote_freshness" not in stats:
+            stats["quote_freshness"] = "checking"
+
         return stats
     except Exception:
-        return {}
+        return {"status": "offline"}
 
 
 def _estimate_cost(total_tokens, model="default"):

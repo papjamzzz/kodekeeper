@@ -1,1469 +1,653 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kode Keeper</title>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kode Keeper — Mission Control</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    /* ── Reset & Base ── */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-/* ── Light theme (default) ── */
-:root, [data-theme="light"] {
-  --bg:        #f2f0eb;
-  --surface:   #e8e5df;
-  --surface2:  #dedad3;
-  --border:    #c4bdb5;
-  --border2:   #a8a09a;
-  --green:     #006655;
-  --green-dim: #c8eae4;
-  --amber:     #a0005e;
-  --amber-dim: #f5cce0;
-  --red:       #a02010;
-  --red-dim:   #f8d0cc;
-  --blue:      #005080;
-  --purple:    #6a0060;
-  --text:      #0e0c18;
-  --sub:       #48434f;
-  --dim:       #807888;
-  --muted:     #d4d0c8;
-  --mono:      'JetBrains Mono', monospace;
-  --shadow:    0 1px 4px rgba(0,0,0,0.1);
-  --glow-g:    none;
-  --glow-a:    none;
-  --glow-r:    none;
-  --glow-t:    none;
-}
+    /* ── CSS Variables (8px grid, semantic colors) ── */
+    :root {
+      /* Spacing (8px grid) */
+      --space-0: 0px;
+      --space-1: 8px;
+      --space-2: 16px;
+      --space-3: 24px;
+      --space-4: 32px;
+      --space-5: 40px;
 
-/* ── Dark theme ── */
-[data-theme="dark"] {
-  --bg:        #14162a;
-  --surface:   #1c1f3a;
-  --surface2:  #222545;
-  --border:    #3a3f68;
-  --border2:   #4a5080;
-  --green:     #00e8ff;
-  --green-dim: #003040;
-  --amber:     #dd55ff;
-  --amber-dim: #300045;
-  --red:       #ff6040;
-  --red-dim:   #420e00;
-  --blue:      #00e8ff;
-  --purple:    #dd55ff;
-  --text:      #f0f4ff;
-  --sub:       #b0bcda;
-  --dim:       #6878a0;
-  --muted:     #222545;
-  --shadow:    none;
-  --glow-g:    0 0 12px rgba(0,232,255,0.6);
-  --glow-a:    0 0 12px rgba(221,85,255,0.6);
-  --glow-r:    0 0 12px rgba(255,96,64,0.55);
-  --glow-t:    0 0 10px rgba(240,244,255,0.25);
-}
+      /* Colors (Light theme) */
+      --bg-primary: #f8f7f5;
+      --bg-secondary: #efefeb;
+      --bg-tertiary: #e8e5df;
 
-html, body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: var(--mono);
-  font-size: 14px;
-  min-height: 100vh;
-  line-height: 1.5;
-  overflow-x: hidden;
-  transition: background 0.25s, color 0.25s;
-}
+      --text-primary: #1a1a1a;
+      --text-secondary: #666666;
+      --text-tertiary: #999999;
 
-[data-theme="dark"] body::after {
-  content: '';
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px);
-  pointer-events: none;
-  z-index: 1000;
-}
+      --border-color: #ddd9d0;
+      --border-light: #eae7e0;
 
-/* ── Layout ── */
-.terminal {
-  max-width: 1140px;
-  margin: 0 auto;
-  padding: 24px 20px 60px;
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-}
+      /* Semantic colors */
+      --color-success: #00a651;    /* Green */
+      --color-warning: #ff8c3a;    /* Orange */
+      --color-error: #ff5c38;      /* Red */
+      --color-info: #0066cc;       /* Blue */
 
-/* ── Blocks ── */
-.t-block {
-  border: 1px solid var(--border);
-  border-bottom: none;
-  transition: border-color 0.25s, background 0.25s;
-}
-.t-block:first-child { border-radius: 6px 6px 0 0; }
-.t-block:last-child  { border-bottom: 1px solid var(--border); border-radius: 0 0 6px 6px; }
+      /* Fonts */
+      --font-ui: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
 
-.t-header {
-  background: var(--surface);
-  border-bottom: 1px solid var(--border);
-  padding: 7px 16px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 2.5px;
-  text-transform: uppercase;
-  color: var(--sub);
-  transition: background 0.25s;
-}
-.t-header .label { color: var(--green); text-shadow: var(--glow-g); }
-.t-header .spacer { flex: 1; }
+      /* Effects */
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+      --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+    }
 
-.t-body {
-  padding: 14px 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
+    /* ── Dark theme ── */
+    [data-theme="dark"] {
+      --bg-primary: #14162a;
+      --bg-secondary: #1c1f3a;
+      --bg-tertiary: #222545;
+      --text-primary: #f0f4ff;
+      --text-secondary: #b0bcda;
+      --text-tertiary: #6878a0;
+      --border-color: #3a3f68;
+      --border-light: #2a2d50;
+      --color-success: #00e8ff;
+      --color-warning: #dd55ff;
+      --color-error: #ff6040;
+      --color-info: #00e8ff;
+      --shadow-sm: none;
+      --shadow-md: none;
+      --shadow-lg: none;
+    }
 
-/* ── Nameplate ── */
-.nameplate {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 14px 20px;
-  display: flex;
-  align-items: center;
-  margin-bottom: 10px;
-  box-shadow: var(--shadow);
-  transition: background 0.25s, border-color 0.25s;
-}
-.np-logo {
-  width: 54px; height: 54px;
-  border-radius: 8px;
-  margin-right: 6px;
-  flex-shrink: 0;
-  transition: filter 0.3s;
-}
-[data-theme="light"] .np-logo {
-  filter: drop-shadow(0 2px 8px rgba(0,0,0,0.18)) brightness(1.08) contrast(1.05);
-}
-[data-theme="dark"] .np-logo.cat-logo {
-  filter: drop-shadow(0 0 14px rgba(0,212,255,0.55)) brightness(1.15) saturate(1.3);
-}
-[data-theme="dark"] .np-logo.ck-logo {
-  filter: drop-shadow(0 0 14px rgba(204,68,255,0.55)) brightness(1.15) saturate(1.2);
-}
-[data-theme="light"] .np-logo.ck-logo {
-  filter: drop-shadow(0 2px 10px rgba(100,0,180,0.25)) brightness(1.05) saturate(1.1);
-}
-.np-logos {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  margin-right: 14px;
-}
-.logo-divider {
-  width: 1px; height: 44px;
-  background: var(--border);
-}
-.np-brand { display: flex; flex-direction: column; gap: 2px; }
-.np-name {
-  font-size: 18px; font-weight: 700; letter-spacing: 3px;
-  text-transform: uppercase; color: var(--text);
-  text-shadow: var(--glow-t);
-}
-.np-sub { font-size: 11px; letter-spacing: 1.5px; color: var(--sub); }
-.np-right { margin-left: auto; display: flex; align-items: center; gap: 18px; }
-.np-stat { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
-.np-stat .val { font-size: 13px; font-weight: 600; color: var(--text); text-shadow: var(--glow-t); }
-.np-stat .lbl { font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--sub); }
-.np-sep { width: 1px; height: 24px; background: var(--border); }
+    html, body {
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: var(--font-ui);
+      font-size: 14px;
+      line-height: 1.5;
+      min-height: 100vh;
+    }
 
-/* ── Theme toggle ── */
-.theme-toggle {
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  padding: 3px 5px;
-  display: flex;
-  align-items: center;
-  gap: 2px;
-  cursor: pointer;
-  transition: border-color 0.2s;
-}
-.theme-toggle:hover { border-color: var(--green); }
-.theme-btn {
-  background: none;
-  border: none;
-  border-radius: 16px;
-  padding: 3px 8px;
-  font-size: 11px;
-  font-family: var(--mono);
-  cursor: pointer;
-  color: var(--sub);
-  letter-spacing: 1px;
-  transition: background 0.2s, color 0.2s;
-}
-.theme-btn.active {
-  background: var(--green);
-  color: var(--bg);
-  font-weight: 700;
-}
+    /* ── Layout: Sidebar + Main ── */
+    .app-container {
+      display: flex;
+      min-height: 100vh;
+    }
 
-/* ── Guide button ── */
-.guide-btn {
-  background: none;
-  border: 1px solid var(--border);
-  border-radius: 50%;
-  color: var(--sub);
-  font-family: var(--mono);
-  font-size: 12px;
-  font-weight: 700;
-  width: 26px; height: 26px;
-  cursor: pointer;
-  transition: border-color 0.2s, color 0.2s;
-  display: flex; align-items: center; justify-content: center;
-}
-.guide-btn:hover { border-color: var(--green); color: var(--green); }
+    /* ── Sidebar (Collapsible) ── */
+    .sidebar {
+      width: 240px;
+      background: var(--bg-secondary);
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      transition: width 0.3s ease;
+      overflow: hidden;
+      position: relative;
+      z-index: 100;
+    }
 
-/* ── Usage Left meters ── */
-.usage-left-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-.usage-meter {
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 14px 18px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  box-shadow: var(--shadow);
-  transition: background 0.25s, border-color 0.25s;
-}
-.usage-meter-label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--sub); font-weight: 700; }
-.usage-meter-value { font-size: 34px; font-weight: 700; line-height: 1; }
-.usage-meter-value.c-green  { color: var(--green); text-shadow: var(--glow-g); }
-.usage-meter-value.c-amber  { color: var(--amber); text-shadow: var(--glow-a); }
-.usage-meter-value.c-red    { color: var(--red);   text-shadow: var(--glow-r); }
-.usage-meter-sub { font-size: 11px; color: var(--sub); letter-spacing: 1px; }
-.usage-bar-track { height: 4px; background: var(--muted); border-radius: 2px; overflow: hidden; }
-.usage-bar-fill { height: 100%; border-radius: 2px; transition: width 0.5s ease; }
-.usage-bar-fill.c-green { background: var(--green); }
-.usage-bar-fill.c-amber { background: var(--amber); }
-.usage-bar-fill.c-red   { background: var(--red); }
+    .sidebar.collapsed {
+      width: 64px;
+    }
 
-/* ── System grid ── */
-.sys-grid {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 10px;
-}
-.sys-card {
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 12px 14px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  box-shadow: var(--shadow);
-  transition: background 0.25s, border-color 0.25s;
-}
-.sys-label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--sub); font-weight: 700; }
-.sys-value { font-size: 22px; font-weight: 700; line-height: 1; color: var(--text); text-shadow: var(--glow-t); }
-.sys-value.c-warn   { color: var(--amber); text-shadow: var(--glow-a); }
-.sys-value.c-danger { color: var(--red);   text-shadow: var(--glow-r); }
-.sys-value.c-good   { color: var(--green); text-shadow: var(--glow-g); }
-.sys-sub { font-size: 11px; color: var(--sub); }
-.sys-bar-track { height: 3px; background: var(--muted); border-radius: 2px; overflow: hidden; }
-.sys-bar-fill { height: 100%; border-radius: 2px; transition: width 0.5s ease; background: var(--blue); }
-.sys-bar-fill.c-warn   { background: var(--amber); }
-.sys-bar-fill.c-danger { background: var(--red); }
-.sys-bar-fill.c-good   { background: var(--green); }
+    .sidebar-header {
+      padding: var(--space-2);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+    }
 
-/* ── Context ── */
-.status-row { display: flex; align-items: center; gap: 10px; font-size: 13px; flex-wrap: wrap; }
-.health { font-weight: 700; padding: 2px 8px; border-radius: 3px; font-size: 11px; letter-spacing: 1px; }
-.health.ok     { color: var(--green); background: var(--green-dim); }
-.health.watch  { color: var(--amber); background: var(--amber-dim); }
-.health.warn   { color: var(--amber); background: var(--amber-dim); }
-.health.danger { color: var(--red);   background: var(--red-dim); }
-.ascii-bar { letter-spacing: -1px; font-weight: 500; font-size: 15px; }
-.ascii-bar.ok     { color: var(--green); text-shadow: var(--glow-g); }
-.ascii-bar.watch  { color: var(--amber); text-shadow: var(--glow-a); }
-.ascii-bar.warn   { color: var(--amber); text-shadow: var(--glow-a); }
-.ascii-bar.danger { color: var(--red);   text-shadow: var(--glow-r); }
-.pct { font-weight: 700; font-size: 15px; }
-.pct.ok     { color: var(--green); text-shadow: var(--glow-g); }
-.pct.watch  { color: var(--amber); text-shadow: var(--glow-a); }
-.pct.warn   { color: var(--amber); text-shadow: var(--glow-a); }
-.pct.danger { color: var(--red);   text-shadow: var(--glow-r); }
-.pipe { color: var(--border2); margin: 0 2px; user-select: none; }
-.ctx-meta { color: var(--sub); font-size: 12px; }
+    .sidebar-logo {
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      background: linear-gradient(135deg, var(--color-warning), var(--color-error));
+      flex-shrink: 0;
+    }
 
-/* ── Power toggle ── */
-.power-toggle {
-  display: flex; align-items: center; gap: 6px;
-  cursor: pointer; padding: 3px 10px;
-  border: 1px solid var(--border); border-radius: 3px;
-  transition: border-color 0.2s; user-select: none;
-}
-.power-toggle:hover { border-color: var(--amber); }
-.power-led { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); transition: all 0.3s; }
-.power-led.on { background: var(--amber); box-shadow: var(--glow-a); }
-.power-label { font-size: 10px; letter-spacing: 1.5px; color: var(--sub); }
+    .sidebar.collapsed .sidebar-logo {
+      width: 40px;
+      height: 40px;
+      margin: 0 auto;
+    }
 
-/* ── Master Project Table ── */
-.master-table { width: 100%; border-collapse: collapse; }
-.master-table thead tr {
-  border-bottom: 2px solid var(--border);
-}
-.master-table thead th {
-  font-size: 9px; letter-spacing: 2px; text-transform: uppercase;
-  color: var(--dim); font-weight: 700; padding: 0 8px 8px 8px;
-  text-align: left; white-space: nowrap;
-}
-.master-table thead th.col-git { border-left: 1px solid var(--border); padding-left: 14px; }
-.master-table tbody tr {
-  border-bottom: 1px solid var(--muted);
-  transition: background 0.15s;
-}
-.master-table tbody tr:last-child { border-bottom: none; }
-.master-table tbody tr:hover { background: var(--surface2); }
-.master-table td {
-  padding: 7px 8px; font-size: 13px; vertical-align: middle; white-space: nowrap;
-}
-.master-table td.col-git-first { border-left: 1px solid var(--border); padding-left: 14px; }
+    .sidebar-title {
+      font-family: var(--font-ui);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      margin-left: var(--space-2);
+      white-space: nowrap;
+    }
 
-/* Server LED */
-.srv-led { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
-.srv-led.on  { background: var(--green); box-shadow: var(--glow-g); }
-.srv-led.off { background: var(--dim); }
+    .sidebar.collapsed .sidebar-title {
+      display: none;
+    }
 
-/* Git icon — flashes when server is online */
-@keyframes git-pulse { 0%,100%{opacity:1} 50%{opacity:0.25} }
-.git-icon        { font-size: 13px; display: inline-block; }
-.git-icon.active { animation: git-pulse 1.8s ease-in-out infinite; }
+    .sidebar-collapse-btn {
+      width: 32px;
+      height: 32px;
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      transition: background 0.2s, color 0.2s;
+    }
 
-/* Column value styles */
-.col-name   { font-weight: 700; color: var(--text); min-width: 108px; }
-.col-port   { color: var(--sub); font-size: 12px; min-width: 48px; }
-.col-srv    { font-size: 11px; font-weight: 700; letter-spacing: 1px; min-width: 72px; }
-.col-srv.online  { color: var(--green); text-shadow: var(--glow-g); }
-.col-srv.offline { color: var(--dim); }
-.col-open   { font-size: 10px; letter-spacing: 1px; }
-.col-branch { color: var(--purple); font-size: 12px; min-width: 100px; }
-.col-state  { font-size: 12px; font-weight: 600; min-width: 80px; }
-.col-state.clean { color: var(--green); }
-.col-state.dirty { color: var(--amber); }
-.col-state.no-repo { color: var(--dim); }
-.col-sync   { font-size: 11px; min-width: 90px; }
-.col-last   { color: var(--sub); font-size: 11px; min-width: 110px; }
+    .sidebar-collapse-btn:hover {
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+    }
 
-/* ── Action buttons ── */
-.act-btn {
-  background: var(--surface2);
-  border: 1px solid var(--border2);
-  border-radius: 3px;
-  color: var(--text);
-  font-family: var(--mono);
-  font-size: 10px; font-weight: 700; letter-spacing: 0.5px;
-  padding: 3px 7px; cursor: pointer;
-  transition: background 0.15s, color 0.15s, border-color 0.15s;
-  white-space: nowrap;
-}
-.act-btn:hover { background: var(--surface); color: var(--text); border-color: var(--green); }
-.act-btn.act-restart:hover { border-color: var(--amber); color: var(--amber); }
-.act-btn.act-logs:hover    { border-color: var(--blue);  color: var(--blue); }
-.act-btn.act-term:hover    { border-color: var(--purple); color: var(--purple); }
-.act-btn.act-folder:hover  { border-color: var(--green); color: var(--green); }
-.act-btn.act-assets:hover  { border-color: var(--green); color: var(--green); }
-.act-btn.flashing { animation: act-flash 0.5s ease; }
-@keyframes act-flash { 0%{opacity:1} 30%{opacity:0.2} 100%{opacity:1} }
-.act-group { display: flex; gap: 4px; }
+    .sidebar-nav {
+      flex: 1;
+      padding: var(--space-2);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-1);
+      overflow-y: auto;
+    }
 
-/* ── Assets dropdown ── */
-.assets-wrap { position: relative; display: inline-block; }
-.assets-menu {
-  display: none;
-  position: absolute;
-  top: calc(100% + 4px);
-  right: 0;
-  background: var(--surface);
-  border: 1px solid var(--border2);
-  border-radius: 5px;
-  min-width: 200px;
-  z-index: 900;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.25);
-  overflow: hidden;
-}
-.assets-menu.open { display: block; }
-.assets-menu-header {
-  font-size: 9px; letter-spacing: 2px; text-transform: uppercase;
-  color: var(--dim); font-weight: 700;
-  padding: 8px 12px 6px; border-bottom: 1px solid var(--border);
-}
-.assets-menu-item {
-  display: flex; align-items: center; gap: 8px;
-  padding: 7px 12px; font-size: 11px; font-weight: 600;
-  color: var(--text); cursor: pointer;
-  transition: background 0.1s;
-  border: none; background: none; width: 100%;
-  font-family: var(--mono); text-align: left;
-}
-.assets-menu-item:hover { background: var(--surface2); color: var(--green); }
-.assets-menu-item .ami-icon { width: 14px; text-align: center; flex-shrink: 0; }
-.assets-menu-divider { height: 1px; background: var(--border); margin: 2px 0; }
-.assets-file-list {
-  max-height: 160px; overflow-y: auto;
-  padding: 4px 0;
-}
-.assets-file-item {
-  display: flex; align-items: center; gap: 8px;
-  padding: 5px 12px; font-size: 10px;
-  color: var(--sub); cursor: pointer;
-  transition: background 0.1s; width: 100%;
-  border: none; background: none; font-family: var(--mono); text-align: left;
-}
-.assets-file-item:hover { background: var(--surface2); color: var(--text); }
-.assets-file-item .af-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .nav-item {
+      padding: var(--space-2);
+      border-radius: 6px;
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      font-family: var(--font-ui);
+      font-size: 13px;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+      white-space: nowrap;
+      text-align: left;
+    }
 
-/* ── Logs drawer ── */
-#logsDrawer {
-  position: fixed; bottom: 0; left: 0; right: 0;
-  height: 0; overflow: hidden;
-  background: var(--surface);
-  border-top: 2px solid var(--border);
-  transition: height 0.25s ease;
-  z-index: 1500;
-  display: flex; flex-direction: column;
-}
-#logsDrawer.open { height: 320px; }
-#logsDrawerHeader {
-  display: flex; align-items: center; gap: 12px;
-  padding: 8px 16px;
-  border-bottom: 1px solid var(--border);
-  background: var(--surface2); flex-shrink: 0;
-}
-#logsTitle { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--green); }
-#logsSource { font-size: 10px; color: var(--dim); flex: 1; }
-#logsDrawerBody {
-  overflow-y: auto; flex: 1;
-  padding: 10px 16px;
-  font-size: 11px; line-height: 1.7; color: var(--sub);
-}
-#logsDrawerBody .log-line { white-space: pre-wrap; word-break: break-all; }
-#logsDrawerBody .log-line.err { color: var(--red); }
-#logsDrawerBody .log-line.warn { color: var(--amber); }
+    .nav-item:hover {
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+    }
 
-/* ── Cursor ── */
-@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
-.cursor { display: inline-block; width: 8px; height: 13px; background: var(--green); box-shadow: var(--glow-g); animation: blink 1.2s step-end infinite; vertical-align: text-bottom; margin-left: 2px; }
+    .nav-item.active {
+      background: var(--color-warning);
+      color: white;
+    }
 
-/* ── Scrollbar ── */
-::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: var(--bg); }
-::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+    .sidebar.collapsed .nav-item {
+      padding: var(--space-1);
+      font-size: 0;
+    }
 
-/* ── Spinner ── */
-@keyframes spin { to { transform: rotate(360deg); } }
-.spinner { display: inline-block; width: 10px; height: 10px; border: 1px solid var(--border); border-top-color: var(--green); border-radius: 50%; animation: spin 0.7s linear infinite; }
+    .nav-item::before {
+      content: attr(data-icon);
+      display: inline-block;
+      margin-right: var(--space-2);
+    }
 
-/* ── CK corner block ── */
-.ck-corner {
-  display: flex; align-items: center; gap: 10px;
-  border-left: 1px solid var(--border);
-  padding-left: 16px; margin-left: 4px;
-}
-.ck-corner-logo {
-  width: 54px; height: 54px; border-radius: 8px; flex-shrink: 0;
-  transition: filter 0.3s;
-}
-[data-theme="light"] .ck-corner-logo {
-  filter: drop-shadow(0 2px 10px rgba(100,0,180,0.25)) brightness(1.05) saturate(1.1);
-}
-[data-theme="dark"] .ck-corner-logo {
-  filter: drop-shadow(0 0 14px rgba(204,68,255,0.55)) brightness(1.15) saturate(1.2);
-}
-.ck-corner-brand { display: flex; flex-direction: column; gap: 2px; }
-.ck-corner-name {
-  font-size: 13px; font-weight: 700; letter-spacing: 2.5px;
-  text-transform: uppercase; color: var(--text); text-shadow: var(--glow-t);
-  white-space: nowrap;
-}
-.ck-corner-sub { font-size: 9px; letter-spacing: 1.5px; color: var(--dim); text-transform: uppercase; }
-</style>
+    .sidebar.collapsed .nav-item::before {
+      margin-right: 0;
+      font-size: 16px;
+    }
+
+    /* ── Sidebar Hover Overlay (Collapsed) ── */
+    .sidebar-overlay {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 240px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: var(--space-2);
+      box-shadow: var(--shadow-lg);
+      pointer-events: none;
+      opacity: 0;
+      transform: translateX(-10px);
+      transition: opacity 0.2s, transform 0.2s;
+      z-index: 1000;
+      margin-top: 80px;
+      margin-left: 64px;
+    }
+
+    .sidebar.collapsed:hover ~ .sidebar-overlay,
+    .sidebar-overlay:hover {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateX(0);
+    }
+
+    /* ── Main Content ── */
+    .main-content {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Top Status Bar ── */
+    .status-bar {
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-color);
+      padding: var(--space-2);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+    }
+
+    .status-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-1);
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--color-success);
+    }
+
+    .status-dot.warning {
+      background: var(--color-warning);
+    }
+
+    .status-dot.error {
+      background: var(--color-error);
+    }
+
+    /* ── Content Area ── */
+    .content {
+      padding: var(--space-3);
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: var(--space-3);
+      max-width: 1600px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    /* ── Panels / Cards ── */
+    .panel {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: var(--space-3);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+      box-shadow: var(--shadow-sm);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .panel:hover {
+      border-color: var(--text-tertiary);
+      box-shadow: var(--shadow-md);
+    }
+
+    .panel-title {
+      font-family: var(--font-ui);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: var(--text-tertiary);
+    }
+
+    /* ── Data Display ── */
+    .data-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-2);
+      border-radius: 4px;
+      background: var(--bg-primary);
+      font-family: var(--font-mono);
+      font-size: 13px;
+    }
+
+    .data-row:hover {
+      background: var(--bg-tertiary);
+    }
+
+    .data-label {
+      color: var(--text-secondary);
+      font-size: 12px;
+    }
+
+    .data-value {
+      color: var(--text-primary);
+      font-weight: 500;
+      font-family: var(--font-mono);
+    }
+
+    .data-value.success { color: var(--color-success); }
+    .data-value.warning { color: var(--color-warning); }
+    .data-value.error { color: var(--color-error); }
+    .data-value.info { color: var(--color-info); }
+
+    /* ── Projects Table ── */
+    .projects-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: var(--font-mono);
+      font-size: 13px;
+    }
+
+    .projects-table tr {
+      border-bottom: 1px solid var(--border-light);
+      transition: background 0.2s;
+    }
+
+    .projects-table tr:hover {
+      background: var(--bg-primary);
+    }
+
+    .projects-table td {
+      padding: var(--space-2);
+      color: var(--text-primary);
+    }
+
+    .projects-table .col-name {
+      font-weight: 500;
+      min-width: 150px;
+    }
+
+    .projects-table .col-branch {
+      color: var(--text-secondary);
+      font-size: 12px;
+    }
+
+    .projects-table .col-status {
+      text-align: center;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+    }
+
+    .status-badge.online {
+      background: rgba(0, 166, 81, 0.15);
+      color: var(--color-success);
+    }
+
+    .status-badge.error {
+      background: rgba(255, 92, 56, 0.15);
+      color: var(--color-error);
+    }
+
+    .status-badge.warning {
+      background: rgba(255, 140, 58, 0.15);
+      color: var(--color-warning);
+    }
+
+    /* ── Sparkline placeholder ── */
+    .sparkline {
+      width: 40px;
+      height: 20px;
+      background: linear-gradient(90deg, var(--color-success) 0%, var(--color-warning) 50%, var(--color-error) 100%);
+      border-radius: 2px;
+      opacity: 0.6;
+    }
+
+    /* ── Empty State ── */
+    .empty-state {
+      text-align: center;
+      padding: var(--space-4);
+      color: var(--text-secondary);
+    }
+
+    .empty-state h3 {
+      font-size: 16px;
+      margin-bottom: var(--space-2);
+    }
+
+    .empty-state p {
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--text-tertiary);
+    }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg-primary);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--border-color);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--text-tertiary);
+    }
+  </style>
 </head>
-<body>
-<div class="terminal">
+<body data-theme="light">
+  <div class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo"></div>
+        <span class="sidebar-title">Kode Keeper</span>
+        <button class="sidebar-collapse-btn" id="sidebarToggle" title="Collapse">
+          ◀
+        </button>
+      </div>
+      <nav class="sidebar-nav">
+        <button class="nav-item active" data-icon="🏠">Dashboard</button>
+        <button class="nav-item" data-icon="📊">Projects</button>
+        <button class="nav-item" data-icon="💰">Costs</button>
+        <button class="nav-item" data-icon="⚙️">Settings</button>
+      </nav>
+    </aside>
 
-  <!-- ── Nameplate ── -->
-  <div class="nameplate">
-    <!-- Left: KK logo + brand -->
-    <a href="https://github.com/papjamzzz/kodekeeper" target="_blank" rel="noopener" title="KodeKeeper on GitHub" style="margin-right:12px;flex-shrink:0;display:flex;">
-      <img src="/static/logo-light.png" alt="KodeKeeper GitHub" class="np-logo cat-logo" id="siteLogo" onerror="this.style.display='none'" style="cursor:pointer;">
-    </a>
-    <div class="np-brand">
-      <span class="np-name">Kode Keeper</span>
-      <span class="np-sub">Claude Code Mission Control</span>
-    </div>
+    <div class="sidebar-overlay"></div>
 
-    <!-- Center: live stats -->
-    <div class="np-right">
-      <div class="np-stat" id="statModel" style="display:none">
-        <span class="val" id="npModel">—</span>
-        <span class="lbl">Model</span>
-      </div>
-      <div class="np-sep" id="sepModel" style="display:none"></div>
-      <div class="np-stat" id="statSession" style="display:none">
-        <span class="val" id="npSession">—</span>
-        <span class="lbl">Session</span>
-      </div>
-      <div class="np-sep" id="sepSession" style="display:none"></div>
-      <div class="np-stat" id="statVelocity" style="display:none">
-        <span class="val" id="npVelocity">—</span>
-        <span class="lbl">tok/min</span>
-      </div>
-      <div class="np-sep" id="sepVelocity" style="display:none"></div>
-      <div class="np-stat">
-        <span class="val" id="npTime" style="font-size:15px">—</span>
-        <span class="lbl">Time</span>
-      </div>
-      <div class="np-sep"></div>
-      <div class="theme-toggle" id="themeToggle">
-        <button class="theme-btn active" id="btnLight" onclick="setTheme('light')">LIGHT</button>
-        <button class="theme-btn" id="btnDark" onclick="setTheme('dark')">DARK</button>
-      </div>
-      <button class="guide-btn" onclick="document.getElementById('guideModal').style.display='flex'" title="User Guide">?</button>
-    </div>
-
-    <!-- Right: CK logo + brand (mirrors left) -->
-    <div class="ck-corner">
-      <div class="ck-corner-brand" style="text-align:right;">
-        <span class="ck-corner-name">Creative Konsoles</span>
-      </div>
-      <a href="https://creativekonsoles.com" target="_blank" rel="noopener" title="Creative Konsoles" style="display:flex;flex-shrink:0;">
-        <img src="/static/logo-ck.png" alt="Creative Konsoles" class="ck-corner-logo" onerror="this.style.display='none'" style="cursor:pointer;">
-      </a>
-    </div>
-  </div>
-
-  <!-- ── Guide Modal ── -->
-  <div id="guideModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);z-index:2000;align-items:center;justify-content:center;" onclick="if(event.target===this)this.style.display='none'">
-    <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:28px 32px;max-width:580px;width:90%;max-height:82vh;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,0.2);">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
-        <span style="font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--green)">Kode Keeper — User Guide</span>
-        <button onclick="document.getElementById('guideModal').style.display='none'" style="background:none;border:none;color:var(--sub);font-size:18px;cursor:pointer;font-family:var(--mono)">✕</button>
-      </div>
-      <div style="display:flex;flex-direction:column;gap:16px;font-size:12px;line-height:1.8;color:var(--text);">
-        <div><div style="color:var(--green);font-weight:700;letter-spacing:1.5px;margin-bottom:3px;font-size:10px;">USAGE LEFT</div>
-        <div style="color:var(--sub)"><b style="color:var(--text)">Session Context Remaining</b> — how much room is left in this Claude window. At <span style="color:var(--amber)">70%</span> used, start wrapping up. At <span style="color:var(--red)">85%+</span> used, Claude's recall degrades — start a fresh session. <b style="color:var(--text)">Month Tokens</b> — total volume consumed this month.</div></div>
-        <div><div style="color:var(--green);font-weight:700;letter-spacing:1.5px;margin-bottom:3px;font-size:10px;">CONTEXT BAR</div>
-        <div style="color:var(--sub)">Fine-grained real-time view of the session fill. Watch the ASCII bar grow. The cursor blinks green until you need to worry.</div></div>
-        <div><div style="color:var(--green);font-weight:700;letter-spacing:1.5px;margin-bottom:3px;font-size:10px;">SYSTEM</div>
-        <div style="color:var(--sub)"><b style="color:var(--text)">CPU</b> — spike here means something is hammering your machine. <b style="color:var(--text)">RAM</b> — above 80% = slowdowns. <b style="color:var(--text)">Swap</b> — overflow from RAM; any swap usage is a warning sign. <b style="color:var(--text)">Disk</b> — low disk causes silent failures and crashed git pushes. <b style="color:var(--text)">Battery</b> — % and minutes to full (0 = charged).</div></div>
-        <div><div style="color:var(--green);font-weight:700;letter-spacing:1.5px;margin-bottom:3px;font-size:10px;">TOK/MIN</div>
-        <div style="color:var(--sub)">Token velocity — how fast you're consuming context in this session. High = deep work. Suddenly drops to zero = you're idle or Claude is waiting on you.</div></div>
-        <div><div style="color:var(--green);font-weight:700;letter-spacing:1.5px;margin-bottom:3px;font-size:10px;">PROJECTS</div>
-        <div style="color:var(--sub)">Green dot = server running. Click <b style="color:var(--green)">OPEN →</b> to go there instantly. Offline = run <code style="color:var(--purple)">make run</code> in that folder.</div></div>
-        <div><div style="color:var(--green);font-weight:700;letter-spacing:1.5px;margin-bottom:3px;font-size:10px;">GIT</div>
-        <div style="color:var(--sub)"><span style="color:var(--green)">✓ clean</span> = committed & pushed. <span style="color:var(--amber)">● dirty</span> = uncommitted work on disk — go push it before you lose it.</div></div>
-        <div style="border-top:1px solid var(--border);padding-top:12px;color:var(--dim);font-size:11px;">Refreshes every 6 seconds. LIGHT/DARK toggle top right. AUTO-OPEN LED toggles browser launch on startup. Built by Creative Konsoles.</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ── Give Modal ── -->
-  <div id="giveModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.65);z-index:2000;align-items:center;justify-content:center;" onclick="if(event.target===this)closeGiveModal()">
-    <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:32px 36px;max-width:480px;width:92%;box-shadow:0 12px 40px rgba(0,0,0,0.3);">
-
-      <!-- header -->
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
-        <span style="font-size:12px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--green)">🎁 Give a Free Month</span>
-        <button onclick="closeGiveModal()" style="background:none;border:none;color:var(--sub);font-size:18px;cursor:pointer;font-family:var(--mono);">✕</button>
-      </div>
-
-      <!-- setup state — shown when no link is configured -->
-      <div id="giveSetup">
-        <p style="font-size:12px;color:var(--sub);line-height:1.8;margin-bottom:20px;">
-          Paste your <b style="color:var(--text)">Stripe Payment Link</b> below.<br>
-          It will be stored locally and used each time you share.<br>
-          <span style="color:var(--dim);font-size:11px;">Create it at dashboard.stripe.com → Payment Links → include a free-month coupon.</span>
-        </p>
-        <div style="display:flex;gap:8px;margin-bottom:16px;">
-          <input id="giveLinkInput" type="url" placeholder="https://buy.stripe.com/…"
-            style="flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:4px;color:var(--text);font-family:var(--mono);font-size:12px;padding:8px 12px;outline:none;">
-          <button onclick="saveGiveLink()" style="background:var(--green);color:var(--bg);border:none;border-radius:4px;font-family:var(--mono);font-size:11px;font-weight:700;padding:8px 16px;cursor:pointer;letter-spacing:1px;">SAVE</button>
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Status Bar (Top) -->
+      <div class="status-bar">
+        <div class="status-item">
+          <span class="status-dot" id="globalStatus"></span>
+          <span id="globalStatusText">Healthy</span>
         </div>
-        <div style="font-size:11px;color:var(--dim);line-height:1.7;">
-          <b style="color:var(--sub)">Stripe setup (2 min):</b><br>
-          1. Products → New → "Kode Keeper" → $9/month recurring<br>
-          2. Coupons → New → 100% off, 1 month, name it <code style="color:var(--purple)">GIVEFREE</code><br>
-          3. Payment Links → New → select product → add coupon → copy link
+        <div class="status-item">
+          <span id="currentTime">--:--</span>
         </div>
       </div>
 
-      <!-- give state — shown when link is configured -->
-      <div id="giveReady" style="display:none;">
-        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:16px 20px;margin-bottom:20px;display:flex;flex-direction:column;gap:8px;">
-          <span style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--sub);font-weight:700;">Your referral link</span>
-          <span id="giveLinkDisplay" style="font-size:11px;color:var(--green);word-break:break-all;"></span>
-        </div>
-
-        <!-- gave-this-month state -->
-        <div id="giveAlready" style="display:none;text-align:center;padding:12px 0 4px;">
-          <div style="font-size:28px;margin-bottom:8px;">✓</div>
-          <div style="font-size:13px;font-weight:700;color:var(--green);margin-bottom:4px;">Link shared this month</div>
-          <div id="giveNextDate" style="font-size:11px;color:var(--sub);">Refreshes on the 1st</div>
-        </div>
-
-        <!-- copy button state -->
-        <div id="giveCopyRow" style="display:flex;flex-direction:column;gap:10px;align-items:center;">
-          <button id="giveCopyBtn" onclick="doGive()" style="width:100%;background:linear-gradient(135deg,var(--green),var(--blue));color:var(--bg);border:none;border-radius:6px;font-family:var(--mono);font-size:13px;font-weight:700;padding:14px;cursor:pointer;letter-spacing:2px;transition:opacity 0.2s;">
-            COPY &amp; SHARE LINK
-          </button>
-          <span style="font-size:10px;color:var(--dim);letter-spacing:0.5px;">Gives the recipient their first month free · resets every month</span>
-        </div>
-
-        <div style="margin-top:20px;border-top:1px solid var(--border);padding-top:14px;display:flex;justify-content:space-between;align-items:center;">
-          <span style="font-size:10px;color:var(--dim);">Change link?</span>
-          <button onclick="resetGiveLink()" style="background:none;border:1px solid var(--border);border-radius:3px;color:var(--sub);font-family:var(--mono);font-size:10px;padding:3px 10px;cursor:pointer;">RESET</button>
-        </div>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- ── Warnings ── -->
-  <div id="warningStrip" style="display:none;margin-bottom:10px;border:1px solid #c07000;border-radius:6px;background:rgba(160,90,0,0.15);padding:10px 16px;flex-direction:column;gap:5px;"></div>
-
-  <!-- ── Context (merged) ── -->
-  <div class="t-block">
-    <div class="t-header">
-      <span class="label">Context</span>
-      <span class="spacer"></span>
-      <div class="power-toggle" onclick="toggleAutoOpen()">
-        <div class="power-led" id="powerLed"></div>
-        <span class="power-label">AUTO-OPEN</span>
-      </div>
-    </div>
-    <div class="t-body">
-      <div class="usage-left-grid">
-        <div class="usage-meter">
-          <span class="usage-meter-label">Session Window Remaining</span>
-          <span class="usage-meter-value c-green" id="ctxRemaining">—</span>
-          <span class="usage-meter-sub" id="ctxRemainingMeta">— free · —</span>
-          <div class="usage-bar-track"><div class="usage-bar-fill c-green" id="ctxRemainingBar" style="width:0%"></div></div>
-          <span style="font-size:10px;color:var(--dim);margin-top:2px;">Hits 0% → start a new chat session</span>
-        </div>
-        <div class="usage-meter">
-          <span class="usage-meter-label">Monthly Volume</span>
-          <span class="usage-meter-value c-amber" id="tokMoBig">—</span>
-          <span class="usage-meter-sub">tokens used this month</span>
-          <div class="usage-bar-track"><div class="usage-bar-fill c-amber" style="width:20%"></div></div>
-          <span style="font-size:10px;color:var(--dim);margin-top:2px;">Subscription usage tracker — not a hard limit</span>
-        </div>
-      </div>
-
-      <!-- ── Cost + Budget ── -->
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:4px;">
-        <!-- Day cost -->
-        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:12px 16px;display:flex;flex-direction:column;gap:6px;">
-          <span style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--sub);font-weight:700;">Today's Cost</span>
-          <span style="font-size:26px;font-weight:700;color:var(--text);text-shadow:var(--glow-t)" id="costDay">$—</span>
-          <div style="height:3px;background:var(--muted);border-radius:2px;overflow:hidden"><div id="costDayBar" style="height:100%;border-radius:2px;background:var(--green);width:0%;transition:width 0.5s"></div></div>
-          <div style="display:flex;align-items:center;gap:6px;margin-top:2px;">
-            <span style="font-size:10px;color:var(--dim)">Daily limit $</span>
-            <input id="inputDailyBudget" type="number" min="0" step="0.50" placeholder="—"
-              style="width:72px;background:var(--surface);border:1px solid var(--border);border-radius:3px;color:var(--text);font-family:var(--mono);font-size:11px;padding:2px 6px;outline:none;">
-            <button onclick="setBudget('daily')" style="background:var(--green);color:var(--bg);border:none;border-radius:3px;font-family:var(--mono);font-size:10px;font-weight:700;padding:3px 8px;cursor:pointer;letter-spacing:1px;">SET</button>
-            <button onclick="clearBudget('daily')" style="background:none;color:var(--dim);border:1px solid var(--border);border-radius:3px;font-family:var(--mono);font-size:10px;padding:3px 6px;cursor:pointer;">✕</button>
+      <!-- Content Grid -->
+      <div class="content">
+        <!-- Quick Status Panel -->
+        <div class="panel">
+          <div class="panel-title">💾 Context & Costs</div>
+          <div class="data-row">
+            <span class="data-label">Session Context</span>
+            <span class="data-value" id="ctxValue">37%</span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">Today's Cost</span>
+            <span class="data-value" id="dayCost">$--</span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">This Month</span>
+            <span class="data-value" id="monthCost">$--</span>
           </div>
         </div>
-        <!-- Month cost -->
-        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:12px 16px;display:flex;flex-direction:column;gap:6px;">
-          <span style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--sub);font-weight:700;">Month Cost</span>
-          <span style="font-size:26px;font-weight:700;color:var(--text);text-shadow:var(--glow-t)" id="costMonth">$—</span>
-          <div style="height:3px;background:var(--muted);border-radius:2px;overflow:hidden"><div id="costMonthBar" style="height:100%;border-radius:2px;background:var(--green);width:0%;transition:width 0.5s"></div></div>
-          <div style="display:flex;align-items:center;gap:6px;margin-top:2px;">
-            <span style="font-size:10px;color:var(--dim)">Monthly limit $</span>
-            <input id="inputMonthlyBudget" type="number" min="0" step="1" placeholder="—"
-              style="width:72px;background:var(--surface);border:1px solid var(--border);border-radius:3px;color:var(--text);font-family:var(--mono);font-size:11px;padding:2px 6px;outline:none;">
-            <button onclick="setBudget('monthly')" style="background:var(--green);color:var(--bg);border:none;border-radius:3px;font-family:var(--mono);font-size:10px;font-weight:700;padding:3px 8px;cursor:pointer;letter-spacing:1px;">SET</button>
-            <button onclick="clearBudget('monthly')" style="background:none;color:var(--dim);border:1px solid var(--border);border-radius:3px;font-family:var(--mono);font-size:10px;padding:3px 6px;cursor:pointer;">✕</button>
+
+        <!-- Projects Panel -->
+        <div class="panel" style="grid-column: span 2;">
+          <div class="panel-title">🔌 Projects & Git Status</div>
+          <table class="projects-table">
+            <thead>
+              <tr>
+                <td class="col-name">Project</td>
+                <td class="col-branch">Branch</td>
+                <td class="col-status">Status</td>
+                <td>Bot Metrics</td>
+              </tr>
+            </thead>
+            <tbody id="projectsList">
+              <!-- Populated by JS -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- System Status Panel -->
+        <div class="panel">
+          <div class="panel-title">🖥️ System</div>
+          <div class="data-row">
+            <span class="data-label">CPU</span>
+            <span class="data-value" id="cpuValue">--</span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">RAM</span>
+            <span class="data-value" id="ramValue">--</span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">Disk Free</span>
+            <span class="data-value" id="diskValue">--</span>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ── System ── -->
-  <div class="t-block">
-    <div class="t-header"><span class="label">System</span></div>
-    <div class="t-body">
-      <div class="sys-grid">
-        <div class="sys-card">
-          <span class="sys-label">CPU</span>
-          <span class="sys-value" id="sysCpu">—</span>
-          <span class="sys-sub" id="sysCpuTemp">—</span>
-          <div class="sys-bar-track"><div class="sys-bar-fill" id="sysCpuBar" style="width:0%"></div></div>
-        </div>
-        <div class="sys-card">
-          <span class="sys-label">RAM</span>
-          <span class="sys-value" id="sysRam">—</span>
-          <span class="sys-sub" id="sysRamDetail">— / — GB</span>
-          <div class="sys-bar-track"><div class="sys-bar-fill" id="sysRamBar" style="width:0%"></div></div>
-        </div>
-        <div class="sys-card">
-          <span class="sys-label">Swap</span>
-          <span class="sys-value" id="sysSwap">—</span>
-          <span class="sys-sub" id="sysSwapDetail">— GB used</span>
-          <div class="sys-bar-track"><div class="sys-bar-fill" id="sysSwapBar" style="width:0%"></div></div>
-        </div>
-        <div class="sys-card">
-          <span class="sys-label">Disk Free</span>
-          <span class="sys-value" id="sysDisk">—</span>
-          <span class="sys-sub" id="sysDiskDetail">— / — GB</span>
-          <div class="sys-bar-track"><div class="sys-bar-fill" id="sysDiskBar" style="width:0%"></div></div>
-        </div>
-        <div class="sys-card">
-          <span class="sys-label">Battery</span>
-          <span class="sys-value" id="sysBatt">—</span>
-          <span class="sys-sub" id="sysBattDetail">—</span>
-          <div class="sys-bar-track"><div class="sys-bar-fill c-good" id="sysBattBar" style="width:0%"></div></div>
-        </div>
-      </div>
-    </div>
-  </div>
+  <script>
+    const API_URL = '/api/status';
+    const POLL_INTERVAL = 6000;
 
-  <!-- ── Projects + Git Master Table ── -->
-  <div class="t-block">
-    <div class="t-header">
-      <span class="label">Projects</span>
-      <span id="onlineCount" style="color:var(--sub)">—</span>
-      <span class="spacer"></span>
-      <span id="gitCleanCount" style="color:var(--dim);font-size:10px;letter-spacing:1px;">—</span>
-    </div>
-    <div class="t-body" style="padding:10px 16px;" id="masterTableWrap"><div class="spinner"></div></div>
-  </div>
+    let sidebarCollapsed = localStorage.getItem('sidebar_collapsed') === 'true';
 
-</div>
+    // Initialize sidebar state
+    function initSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const btn = document.getElementById('sidebarToggle');
 
-<!-- ── Logs Drawer ── -->
-<div id="logsDrawer">
-  <div id="logsDrawerHeader">
-    <span id="logsTitle">LOGS</span>
-    <span id="logsSource"></span>
-    <button onclick="closeLogs()" style="background:none;border:none;color:var(--sub);font-family:var(--mono);font-size:12px;cursor:pointer;padding:0 4px;">✕ CLOSE</button>
-    <button onclick="refreshLogs()" style="background:none;border:1px solid var(--border);color:var(--sub);font-family:var(--mono);font-size:10px;cursor:pointer;padding:3px 8px;border-radius:3px;letter-spacing:1px;">↺ REFRESH</button>
-  </div>
-  <div id="logsDrawerBody"><span style="color:var(--dim)">Select a project to view logs.</span></div>
-</div>
-
-<script>
-// ── Theme ─────────────────────────────────────────────────────────────────────
-let currentTheme = localStorage.getItem('kk_theme') || 'light';
-
-function setTheme(t) {
-  currentTheme = t;
-  document.documentElement.setAttribute('data-theme', t);
-  document.getElementById('btnLight').classList.toggle('active', t === 'light');
-  document.getElementById('btnDark').classList.toggle('active',  t === 'dark');
-  document.getElementById('siteLogo').src = t === 'dark' ? '/static/logo-dark.png' : '/static/logo-light.png';
-  localStorage.setItem('kk_theme', t);
-  fetch('/api/settings', {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({theme: t})
-  });
-}
-setTheme(currentTheme);
-
-// ── Utilities ────────────────────────────────────────────────────────────────
-const fmtK = n => {
-  n = parseInt(n) || 0;
-  if (n >= 1_000_000) return (n/1_000_000).toFixed(1)+'M';
-  if (n >= 1_000) return Math.round(n/1_000)+'k';
-  return String(n);
-};
-
-const fmtMins = m => {
-  if (!m && m !== 0) return '—';
-  if (m < 60) return m+'m';
-  const h = Math.floor(m/60), r = m%60;
-  return h+'h'+(r>0?' '+r+'m':'');
-};
-
-function asciiBar(pct) {
-  const f = Math.round(pct/10);
-  return '█'.repeat(Math.min(f,10)) + '░'.repeat(Math.max(10-f,0));
-}
-
-function healthClass(pct) {
-  if (pct >= 85) return 'danger';
-  if (pct >= 70) return 'warn';
-  if (pct >= 50) return 'watch';
-  return 'ok';
-}
-
-function healthLabel(pct) {
-  if (pct >= 85) return '!! RESET NOW';
-  if (pct >= 70) return '!! FILLING';
-  if (pct >= 50) return '>';
-  return 'OK';
-}
-
-function barCls(pct, invertGood) {
-  // invertGood=true: low value is bad (battery, disk free)
-  if (invertGood) {
-    if (pct <= 15) return 'c-danger';
-    if (pct <= 30) return 'c-warn';
-    return 'c-good';
-  }
-  if (pct >= 90) return 'c-danger';
-  if (pct >= 70) return 'c-warn';
-  return '';
-}
-
-let autoOpen = true;
-
-function toggleAutoOpen() {
-  autoOpen = !autoOpen;
-  document.getElementById('powerLed').classList.toggle('on', autoOpen);
-  fetch('/api/settings', {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({auto_open: autoOpen})
-  });
-}
-
-// ── Give a Free Month ─────────────────────────────────────────────────────────
-const GIVE_LINK_KEY  = 'kk_give_link';
-const GIVE_MONTH_KEY = 'kk_gave_month';
-
-function openGiveModal() {
-  const link = localStorage.getItem(GIVE_LINK_KEY);
-  if (link) {
-    showGiveReady(link);
-  } else {
-    document.getElementById('giveSetup').style.display  = '';
-    document.getElementById('giveReady').style.display  = 'none';
-  }
-  document.getElementById('giveModal').style.display = 'flex';
-}
-
-function closeGiveModal() {
-  document.getElementById('giveModal').style.display = 'none';
-}
-
-function saveGiveLink() {
-  const val = document.getElementById('giveLinkInput').value.trim();
-  if (!val.startsWith('http')) return;
-  localStorage.setItem(GIVE_LINK_KEY, val);
-  // persist to settings file too
-  fetch('/api/settings', {
-    method: 'POST', headers: {'Content-Type':'application/json'},
-    body: JSON.stringify({referral_url: val})
-  });
-  showGiveReady(val);
-}
-
-function resetGiveLink() {
-  localStorage.removeItem(GIVE_LINK_KEY);
-  fetch('/api/settings', {
-    method: 'POST', headers: {'Content-Type':'application/json'},
-    body: JSON.stringify({referral_url: null})
-  });
-  document.getElementById('giveSetup').style.display = '';
-  document.getElementById('giveReady').style.display = 'none';
-  document.getElementById('giveLinkInput').value = '';
-}
-
-function showGiveReady(link) {
-  document.getElementById('giveSetup').style.display  = 'none';
-  document.getElementById('giveReady').style.display  = '';
-
-  // Truncate for display
-  const display = link.length > 48 ? link.slice(0, 45) + '…' : link;
-  document.getElementById('giveLinkDisplay').textContent = display;
-
-  // Check if already gave this month
-  const thisMonth = new Date().toISOString().slice(0, 7); // "2026-03"
-  const gaveMonth = localStorage.getItem(GIVE_MONTH_KEY);
-
-  if (gaveMonth === thisMonth) {
-    document.getElementById('giveAlready').style.display  = '';
-    document.getElementById('giveCopyRow').style.display  = 'none';
-    // Next reset date
-    const now = new Date();
-    const next = new Date(now.getFullYear(), now.getMonth() + 1, 1);
-    document.getElementById('giveNextDate').textContent =
-      'Refreshes ' + next.toLocaleDateString('en-US', {month:'long', day:'numeric'});
-  } else {
-    document.getElementById('giveAlready').style.display  = 'none';
-    document.getElementById('giveCopyRow').style.display  = '';
-  }
-}
-
-function doGive() {
-  const link = localStorage.getItem(GIVE_LINK_KEY);
-  if (!link) return;
-
-  navigator.clipboard.writeText(link).then(() => {
-    // Mark as gave this month
-    const thisMonth = new Date().toISOString().slice(0, 7);
-    localStorage.setItem(GIVE_MONTH_KEY, thisMonth);
-
-    // Update give button state
-    const btn = document.getElementById('giveCopyBtn');
-    btn.textContent = '✓ COPIED TO CLIPBOARD';
-    btn.style.background = 'var(--green)';
-
-    setTimeout(() => {
-      showGiveReady(link); // re-render → shows "gave this month" state
-    }, 1200);
-  }).catch(() => {
-    // Fallback: select all text in a temp input
-    const tmp = document.createElement('input');
-    tmp.value = link;
-    document.body.appendChild(tmp);
-    tmp.select();
-    document.execCommand('copy');
-    document.body.removeChild(tmp);
-    const thisMonth = new Date().toISOString().slice(0, 7);
-    localStorage.setItem(GIVE_MONTH_KEY, thisMonth);
-    showGiveReady(link);
-  });
-}
-
-// ── Budget controls ───────────────────────────────────────────────────────────
-function setBudget(period) {
-  const id  = period === 'daily' ? 'inputDailyBudget' : 'inputMonthlyBudget';
-  const key = period === 'daily' ? 'daily_budget'     : 'monthly_budget';
-  const val = parseFloat(document.getElementById(id).value);
-  if (isNaN(val) || val <= 0) return;
-  fetch('/api/settings', {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({[key]: val})
-  });
-}
-
-function clearBudget(period) {
-  const id  = period === 'daily' ? 'inputDailyBudget' : 'inputMonthlyBudget';
-  const key = period === 'daily' ? 'daily_budget'     : 'monthly_budget';
-  document.getElementById(id).value = '';
-  fetch('/api/settings', {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({[key]: null})
-  });
-}
-
-function renderCosts(usage, budgets) {
-  const dayCost = usage.day.cost;
-  const moCost  = usage.month.cost;
-  const dayBudget = budgets ? budgets.daily   : null;
-  const moBudget  = budgets ? budgets.monthly : null;
-
-  // Day cost
-  const dayEl = document.getElementById('costDay');
-  dayEl.textContent = '$' + dayCost.toFixed(2);
-  const dayOver = dayBudget && dayCost >= dayBudget;
-  dayEl.style.color = dayOver ? 'var(--red)' : 'var(--text)';
-  const dayBar = document.getElementById('costDayBar');
-  if (dayBudget) {
-    const pct = Math.min((dayCost / dayBudget) * 100, 100);
-    dayBar.style.width = pct + '%';
-    dayBar.style.background = dayOver ? 'var(--red)' : pct > 80 ? 'var(--amber)' : 'var(--green)';
-  } else {
-    dayBar.style.width = '0%';
-  }
-
-  // Month cost
-  const moEl = document.getElementById('costMonth');
-  moEl.textContent = '$' + moCost.toFixed(2);
-  const moOver = moBudget && moCost >= moBudget;
-  moEl.style.color = moOver ? 'var(--red)' : 'var(--text)';
-  const moBar = document.getElementById('costMonthBar');
-  if (moBudget) {
-    const pct = Math.min((moCost / moBudget) * 100, 100);
-    moBar.style.width = pct + '%';
-    moBar.style.background = moOver ? 'var(--red)' : pct > 80 ? 'var(--amber)' : 'var(--green)';
-  } else {
-    moBar.style.width = '0%';
-  }
-
-  // Populate inputs if budget is set (don't overwrite user mid-typing)
-  const dayInput = document.getElementById('inputDailyBudget');
-  if (dayBudget && document.activeElement !== dayInput && !dayInput.value)
-    dayInput.value = dayBudget;
-  const moInput = document.getElementById('inputMonthlyBudget');
-  if (moBudget && document.activeElement !== moInput && !moInput.value)
-    moInput.value = moBudget;
-}
-
-// ── Render warnings ───────────────────────────────────────────────────────────
-let _bwInstalled = false;
-let _projects    = [];
-
-function renderWarnings(warnings, bwInstalled, projects) {
-  _bwInstalled = bwInstalled;
-  _projects    = projects || [];
-
-  const strip = document.getElementById('warningStrip');
-  if (!warnings || warnings.length === 0) {
-    strip.style.display = 'none';
-    return;
-  }
-  strip.style.display = 'flex';
-  strip.innerHTML = warnings.map(w => {
-    const isDown = w.startsWith('↓');
-    const isUp   = w.startsWith('↑');
-    const color  = isDown ? '#ff5c38' : isUp ? '#aaaaaa' : '#c07000';
-
-    // Check if this is a missing-.env warning with a Bitwarden item mapped
-    let bwBtn = '';
-    if (bwInstalled && w.includes('missing .env')) {
-      const proj = _projects.find(p => w.includes(p.name) && p.bw_item);
-      if (proj) {
-        bwBtn = ` <button onclick="injectEnv('${proj.slug}',this)"
-          style="margin-left:8px;background:none;border:1px solid #c07000;border-radius:3px;
-                 color:#c07000;font-family:var(--mono);font-size:9px;font-weight:700;
-                 padding:2px 7px;cursor:pointer;letter-spacing:1px;vertical-align:middle;"
-          title="Inject .env from Bitwarden">🔐 Inject</button>`;
+      if (sidebarCollapsed) {
+        sidebar.classList.add('collapsed');
       }
-    }
-    return `<div style="font-size:11px;letter-spacing:0.5px;color:${color};font-weight:600;display:flex;align-items:center;">${w}${bwBtn}</div>`;
-  }).join('');
-}
 
-function injectEnv(slug, btn) {
-  const orig = btn.textContent;
-  btn.textContent = '…';
-  btn.disabled = true;
-  fetch(`/api/project/${slug}/inject-env`, {method:'POST'})
-    .then(r => r.json())
-    .then(d => {
-      btn.textContent = d.ok ? '✓ Terminal opened' : '✗ ' + (d.error || 'err');
-      setTimeout(() => { btn.textContent = orig; btn.disabled = false; }, 3000);
-    })
-    .catch(() => { btn.textContent = orig; btn.disabled = false; });
-}
-
-// ── Render projects ───────────────────────────────────────────────────────────
-// ── Master project+git table ──────────────────────────────────────────────────
-function renderMaster(projects) {
-  const online   = projects.filter(p => p.online).length;
-  const withGit  = projects.filter(p => p.git);
-  const clean    = withGit.filter(p => p.git.clean).length;
-
-  document.getElementById('onlineCount').textContent   = `${online} online / ${projects.length} total`;
-  document.getElementById('gitCleanCount').textContent = `${clean} clean · ${withGit.length - clean} dirty`;
-
-  const rows = projects.map(p => {
-    const g = p.git;
-
-    // Server columns
-    const ledCls    = p.online ? 'on' : 'off';
-    const srvCls    = p.online ? 'online' : 'offline';
-    const srvTxt    = p.online ? '● ONLINE' : '○ offline';
-    const openLink  = p.online
-      ? `<a href="http://localhost:${p.port}" target="_blank"
-           style="color:var(--green);font-size:10px;letter-spacing:1px;text-decoration:none;font-weight:700;"
-           onmouseover="this.style.opacity='.7'" onmouseout="this.style.opacity='1'">OPEN →</a>`
-      : '';
-
-    // Git icon — pulses when server is live
-    const gitIcon = g
-      ? `<span class="git-icon${p.online ? ' active' : ''}">⎇</span>`
-      : `<span style="color:var(--dim);font-size:11px;">—</span>`;
-
-    // Git columns
-    const branch = g ? `<span style="color:var(--purple)">⎇ ${g.branch}</span>` : '<span style="color:var(--dim)">—</span>';
-
-    let stateCls = 'no-repo', stateTxt = '—';
-    if (g) {
-      stateCls = g.clean ? 'clean' : 'dirty';
-      stateTxt = g.clean ? '✓ clean' : '● dirty';
-    }
-
-    let syncStr = '<span style="color:var(--dim)">—</span>';
-    if (g) {
-      const a = g.ahead || 0, b = g.behind || 0;
-      if (a === 0 && b === 0) {
-        syncStr = '<span style="color:var(--green)">✓ synced</span>';
-      } else {
-        const parts = [];
-        if (a > 0) parts.push(`<span style="color:var(--amber)">↑${a}</span>`);
-        if (b > 0) parts.push(`<span style="color:var(--red)">↓${b}</span>`);
-        syncStr = parts.join(' ');
-      }
-    }
-
-    const lastTxt = g ? g.last_commit : '—';
-
-    const s = p.slug;
-    const hasAssets = !!p.assets;
-    const assetsBtn = hasAssets
-      ? `<div class="assets-wrap">
-           <button class="act-btn act-assets" onclick="toggleAssetsMenu('${s}',this)" title="Assets">🖼 Assets</button>
-           <div class="assets-menu" id="am-${s}">
-             <div class="assets-menu-header">Assets — ${p.name}</div>
-             <button class="assets-menu-item" onclick="assetsOpenFolder('${s}')"><span class="ami-icon">📁</span>Open assets folder</button>
-             <div class="assets-divider-${s}"></div>
-             <div class="assets-file-list" id="afl-${s}"><div style="padding:8px 12px;font-size:10px;color:var(--dim)">Loading…</div></div>
-           </div>
-         </div>`
-      : '';
-    const actions = `<div class="act-group">
-      <button class="act-btn act-logs"    onclick="openLogs('${s}','${p.name}')"        title="View logs">📋 Logs</button>
-      <button class="act-btn act-term"    onclick="openTerm('${s}',this)"               title="Open terminal">⌨ Term</button>
-      <button class="act-btn act-folder"  onclick="openFolder('${s}',this)"             title="Open in Finder">📁 Folder</button>
-      <button class="act-btn act-restart" onclick="restartProj('${s}','${p.name}',this)" title="Restart server">↺ Restart</button>
-      ${assetsBtn}
-    </div>`;
-
-    // Merged git cell: pulsing ⎇ + branch + clean/dirty + ahead/behind
-    let gitCell = '<span style="color:var(--dim)">—</span>';
-    if (g) {
-      const syncBadge = (() => {
-        const a = g.ahead || 0, b = g.behind || 0;
-        if (a === 0 && b === 0) return '';
-        const parts = [];
-        if (a > 0) parts.push(`<span style="color:var(--amber)">↑${a}</span>`);
-        if (b > 0) parts.push(`<span style="color:var(--red)">↓${b}</span>`);
-        return ' ' + parts.join(' ');
-      })();
-      const stateColor = g.clean ? 'var(--green)' : 'var(--amber)';
-      const stateDot   = g.clean ? '✓' : '●';
-      gitCell = `<span class="git-icon${p.online?' active':''}" style="margin-right:5px;">⎇</span>`
-              + `<span style="color:var(--purple);margin-right:6px;">${g.branch}</span>`
-              + `<span style="color:${stateColor};font-weight:700;">${stateDot}</span>`
-              + syncBadge;
-    }
-
-    return `<tr>
-      <td><span class="srv-led ${ledCls}"></span></td>
-      <td class="col-name">
-        ${p.name}
-        <div style="font-size:10px;color:var(--dim);font-weight:400;margin-top:1px;">:${p.port}</div>
-      </td>
-      <td>
-        <span class="col-srv ${srvCls}" style="margin-right:6px;">${p.online ? '● ON' : '○ off'}</span>
-        ${openLink}
-      </td>
-      <td class="col-git-first" style="min-width:220px;">${gitCell}</td>
-      <td class="col-last">${lastTxt}</td>
-      <td style="padding-left:8px;">${actions}</td>
-    </tr>`;
-  }).join('');
-
-  document.getElementById('masterTableWrap').innerHTML = `
-    <table class="master-table">
-      <thead><tr>
-        <th></th>
-        <th>Project</th>
-        <th>Server</th>
-        <th class="col-git">Git</th>
-        <th>Last Commit</th>
-        <th style="padding-left:8px;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);font-weight:700;">Actions</th>
-      </tr></thead>
-      <tbody>${rows}</tbody>
-    </table>`;
-}
-
-// ── Render system ─────────────────────────────────────────────────────────────
-function renderSystem(sys, tokPerMin) {
-  if (!sys) return;
-
-  // CPU
-  if (sys.cpu_pct !== null) {
-    const cpuCls = sys.cpu_pct >= 90 ? 'c-danger' : sys.cpu_pct >= 70 ? 'c-warn' : '';
-    const cpuEl = document.getElementById('sysCpu');
-    cpuEl.textContent = sys.cpu_pct.toFixed(0) + '%';
-    cpuEl.className = 'sys-value' + (cpuCls ? ' '+cpuCls : '');
-    document.getElementById('sysCpuBar').style.width = sys.cpu_pct + '%';
-    document.getElementById('sysCpuBar').className = 'sys-bar-fill ' + cpuCls;
-    document.getElementById('sysCpuTemp').textContent = sys.cpu_temp ? sys.cpu_temp.toFixed(0)+'°C' : 'temp n/a';
-  }
-
-  // RAM
-  if (sys.ram_pct !== null) {
-    const cls = barCls(sys.ram_pct, false);
-    const el = document.getElementById('sysRam');
-    el.textContent = sys.ram_pct.toFixed(0) + '%';
-    el.className = 'sys-value' + (cls ? ' '+cls : '');
-    document.getElementById('sysRamDetail').textContent = `${sys.ram_used} / ${sys.ram_total} GB`;
-    const bar = document.getElementById('sysRamBar');
-    bar.style.width = sys.ram_pct + '%';
-    bar.className = 'sys-bar-fill' + (cls ? ' '+cls : '');
-  }
-
-  // Swap
-  if (sys.swap_pct !== null) {
-    const cls = sys.swap_pct > 0 ? (sys.swap_pct > 30 ? 'c-danger' : 'c-warn') : '';
-    const el = document.getElementById('sysSwap');
-    el.textContent = sys.swap_pct.toFixed(0) + '%';
-    el.className = 'sys-value' + (cls ? ' '+cls : '');
-    document.getElementById('sysSwapDetail').textContent = `${sys.swap_used} GB used`;
-    const bar = document.getElementById('sysSwapBar');
-    bar.style.width = Math.min(sys.swap_pct, 100) + '%';
-    bar.className = 'sys-bar-fill' + (cls ? ' '+cls : '');
-  }
-
-  // Disk
-  if (sys.disk_free !== null) {
-    const freeGb = sys.disk_free;
-    const cls = freeGb < 10 ? 'c-danger' : freeGb < 25 ? 'c-warn' : '';
-    const el = document.getElementById('sysDisk');
-    el.textContent = freeGb.toFixed(0) + ' GB';
-    el.className = 'sys-value' + (cls ? ' '+cls : '');
-    document.getElementById('sysDiskDetail').textContent = `of ${sys.disk_total} GB`;
-    const usedPct = sys.disk_pct || 0;
-    const bar = document.getElementById('sysDiskBar');
-    bar.style.width = usedPct + '%';
-    bar.className = 'sys-bar-fill' + (cls ? ' '+cls : '');
-  }
-
-  // Battery
-  if (sys.battery_pct !== null) {
-    const pct = sys.battery_pct;
-    const cls = pct <= 15 ? 'c-danger' : pct <= 30 ? 'c-warn' : 'c-good';
-    const el = document.getElementById('sysBatt');
-    el.textContent = pct + '%';
-    el.className = 'sys-value ' + cls;
-    const chargeTxt = sys.battery_charging
-      ? (sys.battery_mins === 0 ? '0 min · charged' : sys.battery_mins + ' min to full')
-      : 'on battery';
-    document.getElementById('sysBattDetail').textContent = chargeTxt;
-    const bar = document.getElementById('sysBattBar');
-    bar.style.width = pct + '%';
-    bar.className = 'sys-bar-fill ' + cls;
-  }
-}
-
-// ── Assets dropdown ──────────────────────────────────────────────────────────
-function toggleAssetsMenu(slug, btn) {
-  const menu = document.getElementById('am-' + slug);
-  if (!menu) return;
-  const isOpen = menu.classList.contains('open');
-  // Close all open menus first
-  document.querySelectorAll('.assets-menu.open').forEach(m => m.classList.remove('open'));
-  if (!isOpen) {
-    menu.classList.add('open');
-    loadAssetFiles(slug);
-    // Close on outside click
-    setTimeout(() => {
-      document.addEventListener('click', function handler(e) {
-        if (!menu.contains(e.target) && e.target !== btn) {
-          menu.classList.remove('open');
-          document.removeEventListener('click', handler);
-        }
+      btn.addEventListener('click', () => {
+        sidebarCollapsed = !sidebarCollapsed;
+        sidebar.classList.toggle('collapsed');
+        localStorage.setItem('sidebar_collapsed', sidebarCollapsed);
       });
-    }, 0);
-  }
-}
+    }
 
-function loadAssetFiles(slug) {
-  const list = document.getElementById('afl-' + slug);
-  if (!list) return;
-  fetch(`/api/project/${slug}/assets`)
-    .then(r => r.json())
-    .then(d => {
-      if (!d.files || d.files.length === 0) {
-        list.innerHTML = `<div style="padding:8px 12px;font-size:10px;color:var(--dim)">${d.note || 'No image files found.'}</div>`;
-        return;
+    // Update clock
+    function updateClock() {
+      const now = new Date();
+      const time = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+      document.getElementById('currentTime').textContent = time;
+    }
+
+    // Fetch and update dashboard
+    async function fetchStatus() {
+      try {
+        const res = await fetch(API_URL);
+        const data = await res.json();
+        updateDashboard(data);
+      } catch (err) {
+        console.error('Failed to fetch status:', err);
       }
-      const isLogo  = f => /logo/i.test(f);
-      const isBanner = f => /banner|social|cover/i.test(f);
-      const isIcon  = f => /icon|favicon|avatar/i.test(f);
+    }
 
-      list.innerHTML = d.files.map(f => {
-        const tag = isLogo(f.name) ? '🖼' : isBanner(f.name) ? '🏷' : isIcon(f.name) ? '✦' : '·';
-        return `<button class="assets-file-item"
-          onclick="assetsReveal('${slug}','${f.path.replace(/'/g,"\\'")}',this)">
-          <span class="ami-icon">${tag}</span>
-          <span class="af-name" title="${f.name}">${f.name}</span>
-          <span style="font-size:9px;color:var(--dim);margin-left:auto">Reveal</span>
-        </button>`;
-      }).join('');
-    })
-    .catch(() => {
-      list.innerHTML = `<div style="padding:8px 12px;font-size:10px;color:var(--red)">Failed to load.</div>`;
-    });
-}
+    function updateDashboard(data) {
+      // Update context
+      const ctx = data.context || {};
+      document.getElementById('ctxValue').textContent = `${Math.round(ctx.pct || 0)}%`;
 
-function assetsOpenFolder(slug) {
-  document.querySelectorAll('.assets-menu.open').forEach(m => m.classList.remove('open'));
-  fetch(`/api/project/${slug}/assets/open-folder`, {method:'POST'});
-}
+      // Update costs
+      const usage = data.usage || {};
+      document.getElementById('dayCost').textContent = `$${(usage.day?.cost || 0).toFixed(2)}`;
+      document.getElementById('monthCost').textContent = `$${(usage.month?.cost || 0).toFixed(2)}`;
 
-function assetsReveal(slug, path, btn) {
-  const orig = btn.querySelector('span:last-child').textContent;
-  btn.querySelector('span:last-child').textContent = '…';
-  fetch(`/api/project/${slug}/assets/reveal`, {
-    method: 'POST',
-    headers: {'Content-Type':'application/json'},
-    body: JSON.stringify({path})
-  }).then(() => {
-    btn.querySelector('span:last-child').textContent = '✓';
-    setTimeout(() => { btn.querySelector('span:last-child').textContent = orig; }, 1500);
-  });
-}
+      // Update system
+      const system = data.system || {};
+      document.getElementById('cpuValue').textContent = `${system.cpu_pct || '--'}%`;
+      document.getElementById('ramValue').textContent = `${system.ram_pct || '--'}%`;
+      document.getElementById('diskValue').textContent = `${system.disk_free || '--'} GB`;
 
-// ── Project actions ───────────────────────────────────────────────────────────
-let _currentLogsSlug = null;
+      // Update projects table
+      const projects = data.projects || [];
+      const tbody = document.getElementById('projectsList');
+      tbody.innerHTML = projects.map(p => `
+        <tr>
+          <td class="col-name">${p.name}</td>
+          <td class="col-branch">${p.git?.branch || '—'}</td>
+          <td class="col-status">
+            <span class="status-badge ${p.online ? 'online' : 'error'}">
+              ${p.online ? '🟢 Online' : '🔴 Offline'}
+            </span>
+          </td>
+          <td>
+            ${p.bot_stats ? `
+              <span class="status-badge ${p.bot_stats.status === 'running' ? 'online' : 'error'}">
+                ${p.bot_stats.status}
+              </span>
+            ` : '—'}
+          </td>
+        </tr>
+      `).join('');
 
-function flashBtn(btn) {
-  btn.classList.add('flashing');
-  setTimeout(() => btn.classList.remove('flashing'), 500);
-}
+      // Update global status
+      const hasErrors = projects.some(p => !p.online);
+      const statusDot = document.getElementById('globalStatus');
+      const statusText = document.getElementById('globalStatusText');
 
-function openLogs(slug, name) {
-  _currentLogsSlug = slug;
-  const drawer = document.getElementById('logsDrawer');
-  document.getElementById('logsTitle').textContent = `LOGS — ${name.toUpperCase()}`;
-  document.getElementById('logsSource').textContent = 'loading…';
-  document.getElementById('logsDrawerBody').innerHTML = '<span style="color:var(--dim)">Loading…</span>';
-  drawer.classList.add('open');
-  refreshLogs();
-}
-
-function closeLogs() {
-  document.getElementById('logsDrawer').classList.remove('open');
-  _currentLogsSlug = null;
-}
-
-function refreshLogs() {
-  if (!_currentLogsSlug) return;
-  fetch(`/api/project/${_currentLogsSlug}/logs`)
-    .then(r => r.json())
-    .then(d => {
-      document.getElementById('logsSource').textContent = d.source || d.note || '';
-      if (d.error) {
-        document.getElementById('logsDrawerBody').innerHTML = `<span style="color:var(--red)">${d.error}</span>`;
-        return;
+      if (hasErrors) {
+        statusDot.className = 'status-dot error';
+        statusText.textContent = 'Warning: Projects offline';
+      } else {
+        statusDot.className = 'status-dot';
+        statusText.textContent = 'All systems nominal';
       }
-      if (!d.lines || d.lines.length === 0) {
-        document.getElementById('logsDrawerBody').innerHTML = `<span style="color:var(--dim)">${d.note || 'No log output yet.'}</span>`;
-        return;
-      }
-      const html = d.lines.map(l => {
-        const cls = /error|exception|traceback/i.test(l) ? 'err'
-                  : /warn/i.test(l) ? 'warn' : '';
-        return `<div class="log-line${cls?' '+cls:''}">${l.replace(/</g,'&lt;')}</div>`;
-      }).join('');
-      const body = document.getElementById('logsDrawerBody');
-      body.innerHTML = html;
-      body.scrollTop = body.scrollHeight;
-    })
-    .catch(e => {
-      document.getElementById('logsDrawerBody').innerHTML = `<span style="color:var(--red)">Fetch failed: ${e}</span>`;
+    }
+
+    // Initialize
+    window.addEventListener('DOMContentLoaded', () => {
+      initSidebar();
+      updateClock();
+      fetchStatus();
+
+      setInterval(updateClock, 1000);
+      setInterval(fetchStatus, POLL_INTERVAL);
     });
-}
-
-function openTerm(slug, btn) {
-  flashBtn(btn);
-  fetch(`/api/project/${slug}/open-terminal`, {method:'POST'})
-    .then(r => r.json())
-    .then(d => { if (d.error) alert(d.error); });
-}
-
-function openFolder(slug, btn) {
-  flashBtn(btn);
-  fetch(`/api/project/${slug}/open-folder`, {method:'POST'})
-    .then(r => r.json())
-    .then(d => { if (d.error) alert(d.error); });
-}
-
-function restartProj(slug, name, btn) {
-  const orig = btn.textContent;
-  btn.textContent = '…';
-  btn.disabled = true;
-  fetch(`/api/project/${slug}/restart`, {method:'POST'})
-    .then(r => r.json())
-    .then(d => {
-      btn.textContent = d.ok ? '✓ Done' : '✗ Err';
-      btn.style.color = d.ok ? 'var(--green)' : 'var(--red)';
-      setTimeout(() => {
-        btn.textContent = orig;
-        btn.style.color = '';
-        btn.disabled = false;
-      }, 2500);
-    })
-    .catch(() => {
-      btn.textContent = '✗ Err';
-      setTimeout(() => { btn.textContent = orig; btn.disabled = false; }, 2500);
-    });
-}
-
-// ── Main update ───────────────────────────────────────────────────────────────
-async function update() {
-  try {
-    const r = await fetch('/api/status');
-    const d = await r.json();
-
-    // Nameplate — only show stats with real values
-    const model = d.context.model;
-    const sess  = fmtMins(d.session_mins);
-    const vel   = d.tok_per_min ? fmtK(d.tok_per_min) : null;
-
-    const showStat = (id, sepId, val) => {
-      const has = val && val !== '—';
-      document.getElementById(id).style.display  = has ? '' : 'none';
-      document.getElementById(sepId).style.display = has ? '' : 'none';
-      if (has) document.getElementById(id).querySelector('.val').textContent = val;
-    };
-    showStat('statModel',    'sepModel',    model);
-    showStat('statSession',  'sepSession',  sess);
-    showStat('statVelocity', 'sepVelocity', vel);
-    document.getElementById('npTime').textContent = d.now;
-
-    autoOpen = d.settings.auto_open;
-    document.getElementById('powerLed').classList.toggle('on', autoOpen);
-
-    // Warnings
-    renderWarnings(d.warnings, d.bw_installed, d.projects);
-
-    // Usage left — context remaining
-    const pct  = d.context.pct || 0;
-    const rem  = Math.max(0, 100 - pct);
-    const remCls = rem <= 15 ? 'c-red' : rem <= 30 ? 'c-amber' : 'c-green';
-    const remEl  = document.getElementById('ctxRemaining');
-    remEl.textContent = rem.toFixed(0) + '%';
-    remEl.className = 'usage-meter-value ' + remCls;
-    document.getElementById('ctxRemainingMeta').textContent = `${d.context.free_k || '—'} free · ${d.context.model || '—'}`;
-    const remBar = document.getElementById('ctxRemainingBar');
-    remBar.style.width = rem + '%';
-    remBar.className = 'usage-bar-fill ' + remCls;
-
-    // Usage left — month tokens
-    document.getElementById('tokMoBig').textContent = fmtK(d.usage.month.tokens);
-
-    // Costs + budgets
-    renderCosts(d.usage, d.budgets);
-
-    // System
-    renderSystem(d.system, d.tok_per_min);
-
-    // Master project + git table
-    if (d.projects) renderMaster(d.projects);
-
-  } catch(e) { console.warn('update failed', e); }
-}
-
-function tickClock() {
-  const t = new Date();
-  document.getElementById('npTime').textContent =
-    String(t.getHours()).padStart(2,'0') + ':' + String(t.getMinutes()).padStart(2,'0');
-}
-
-update();
-setInterval(update, 6000);
-setInterval(tickClock, 1000);
-</script>
+  </script>
 </body>
 </html>
