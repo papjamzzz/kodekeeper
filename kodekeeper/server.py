@@ -4,13 +4,20 @@ Port 5560 | 127.0.0.1 only
 Works both as `python server.py` (repo) and `kodekeeper start` (pip install).
 """
 
+import json as _json
 import os
 import signal
 import socket
 import subprocess
 import threading
+import urllib.request
 import webbrowser
-from flask import Flask, jsonify, render_template, request
+from flask import Flask, Response, jsonify, render_template, request, stream_with_context
+from dotenv import load_dotenv
+
+load_dotenv()
+
+ANTHROPIC_KEY = os.getenv("ANTHROPIC_API_KEY", "")
 
 # Absolute paths so Flask finds templates/static when pip-installed
 _PKG = os.path.dirname(os.path.abspath(__file__))
@@ -224,6 +231,203 @@ def project_restart(slug):
         return jsonify({"ok": True, "killed": killed, "log": log_path})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
+# ── Call on Claude routes ─────────────────────────────────────────────────────
+
+def _claude_system(status):
+    """Build a system prompt from live dashboard state."""
+    projects = status.get("projects", [])
+    ctx_pct  = status.get("context", {}).get("pct", 0)
+
+    proj_lines = "\n".join(
+        f"  - {p['name']}: path={p.get('path','?')} port={p.get('port','—')} "
+        f"{'online' if p.get('online') else 'OFFLINE'} "
+        f"{'dirty' if not p.get('git', {}).get('clean', True) else 'clean'}"
+        for p in projects
+    )
+
+    return f"""You are Call on Claude — an AI assistant embedded directly in Kode Keeper, \
+a developer mission control dashboard. You have real-time visibility into the developer's \
+projects and can take action.
+
+LIVE STATE:
+- Context window: {ctx_pct}% used
+- Projects:
+{proj_lines}
+
+When you need to run a shell command (git commit, server restart, run tests, etc.), \
+embed it in your response using this exact format — the dashboard will extract it and \
+offer to execute it:
+
+<execute>
+{{"command": "shell command here", "description": "one line describing what this does"}}
+</execute>
+
+Rules for <execute> blocks:
+- Use absolute-style paths starting with ~ (e.g. cd ~/kalshi-edge && ...)
+- Chain steps with && so they fail fast
+- For git commits, generate a short meaningful commit message based on context
+- Never put secrets or passwords in commands
+- You may include multiple <execute> blocks if needed
+
+Be direct and concise. The developer is in flow — don't pad responses."""
+
+
+@app.route("/api/claude/suggestions", methods=["POST"])
+def claude_suggestions():
+    """Return 3 context-aware action suggestions from Claude Haiku (fast)."""
+    if not ANTHROPIC_KEY:
+        return jsonify({"suggestions": [
+            {"label": "Commit all dirty repos to GitHub", "prompt": "commit all dirty repositories to GitHub with an auto-generated commit message", "type": "execute"},
+            {"label": "Why are projects offline?",        "prompt": "which projects are offline and what's likely causing it?",                        "type": "ask"},
+            {"label": "Context window check",             "prompt": "how is my context window usage looking and should I start a fresh session?",      "type": "ask"},
+        ]})
+
+    from kodekeeper.tracker import get_status
+    status   = get_status()
+    projects = status.get("projects", [])
+    dirty    = [p["name"] for p in projects if not p.get("git", {}).get("clean", True)]
+    offline  = [p["name"] for p in projects if not p.get("online")]
+    ctx_pct  = status.get("context", {}).get("pct", 0)
+
+    state_summary = (
+        f"Context: {ctx_pct}% used. "
+        f"Offline: {', '.join(offline) or 'none'}. "
+        f"Dirty repos: {', '.join(dirty) or 'none'}. "
+        f"Projects: {', '.join(p['name'] for p in projects[:6])}."
+    )
+
+    prompt = (
+        f"Developer dashboard state: {state_summary}\n\n"
+        "Generate exactly 3 short, specific, actionable suggestions for right now. "
+        "Return ONLY a JSON array — no markdown, no prose.\n"
+        'Each item: {"label":"short label","prompt":"full instruction","type":"execute|ask"}\n'
+        "Use type execute for git/server/shell actions, ask for analysis/questions.\n"
+        "JSON only:"
+    )
+
+    try:
+        payload = _json.dumps({
+            "model": "claude-haiku-4-5-20251001",
+            "max_tokens": 350,
+            "messages": [{"role": "user", "content": prompt}]
+        }).encode()
+        req = urllib.request.Request(
+            "https://api.anthropic.com/v1/messages",
+            data=payload,
+            headers={"x-api-key": ANTHROPIC_KEY, "anthropic-version": "2023-06-01",
+                     "content-type": "application/json"},
+        )
+        with urllib.request.urlopen(req, timeout=12) as resp:
+            data = _json.loads(resp.read())
+            raw  = data["content"][0]["text"].strip()
+            # Strip markdown fences if present
+            if "```" in raw:
+                raw = raw.split("```")[1]
+                if raw.startswith("json"):
+                    raw = raw[4:]
+            suggestions = _json.loads(raw.strip())
+            return jsonify({"suggestions": suggestions[:3]})
+    except Exception as exc:
+        print(f"[COC suggestions] {exc}")
+        return jsonify({"suggestions": [
+            {"label": f"Commit {dirty[0]} to GitHub" if dirty else "Check git status", "prompt": f"commit {dirty[0]} to github" if dirty else "show git status for all projects", "type": "execute"},
+            {"label": "Why is something offline?" if offline else "Open project terminal", "prompt": f"why is {offline[0]} offline?" if offline else "open a terminal for kalshi-edge", "type": "ask"},
+            {"label": "Analyze context usage", "prompt": "how is my context window usage and should I start fresh?", "type": "ask"},
+        ]})
+
+
+@app.route("/api/claude/ask", methods=["POST"])
+def claude_ask():
+    """Stream a Claude Sonnet response for any developer prompt."""
+    if not ANTHROPIC_KEY:
+        def _no_key():
+            yield f"data: {_json.dumps({'text': 'ANTHROPIC_API_KEY not set in .env'})}\n\n"
+            yield "data: [DONE]\n\n"
+        return Response(stream_with_context(_no_key()), content_type="text/event-stream",
+                        headers={"X-Accel-Buffering": "no", "Cache-Control": "no-cache"})
+
+    data   = request.get_json(force=True) or {}
+    prompt = data.get("prompt", "").strip()
+    if not prompt:
+        return jsonify({"error": "empty prompt"}), 400
+
+    from kodekeeper.tracker import get_status
+    status = get_status()
+    system = _claude_system(status)
+
+    def _stream():
+        payload = _json.dumps({
+            "model": "claude-sonnet-4-5-20251101",
+            "max_tokens": 700,
+            "stream": True,
+            "system": system,
+            "messages": [{"role": "user", "content": prompt}]
+        }).encode()
+        req = urllib.request.Request(
+            "https://api.anthropic.com/v1/messages",
+            data=payload,
+            headers={"x-api-key": ANTHROPIC_KEY, "anthropic-version": "2023-06-01",
+                     "content-type": "application/json"},
+        )
+        try:
+            with urllib.request.urlopen(req, timeout=45) as resp:
+                for raw_line in resp:
+                    line = raw_line.decode().strip()
+                    if not line.startswith("data: "):
+                        continue
+                    chunk = line[6:]
+                    if chunk == "[DONE]":
+                        break
+                    try:
+                        ev = _json.loads(chunk)
+                        if ev.get("type") == "content_block_delta":
+                            text = ev.get("delta", {}).get("text", "")
+                            if text:
+                                yield f"data: {_json.dumps({'text': text})}\n\n"
+                    except Exception:
+                        pass
+        except Exception as exc:
+            yield f"data: {_json.dumps({'error': str(exc)})}\n\n"
+        yield "data: [DONE]\n\n"
+
+    return Response(stream_with_context(_stream()), content_type="text/event-stream",
+                    headers={"X-Accel-Buffering": "no", "Cache-Control": "no-cache"})
+
+
+@app.route("/api/claude/execute", methods=["POST"])
+def claude_execute():
+    """Execute a shell command and stream its output line by line."""
+    data    = request.get_json(force=True) or {}
+    command = data.get("command", "").strip()
+    if not command:
+        return jsonify({"error": "no command"}), 400
+
+    # Block genuinely destructive patterns
+    _blocked = ["rm -rf /", "rm -rf ~", "sudo rm", "mkfs", "dd if=/dev/zero",
+                "> /dev/sd", "chmod -R 777 /", ":(){ :|:& };:"]
+    for b in _blocked:
+        if b in command:
+            return jsonify({"error": f"Blocked for safety: '{b}'"}), 403
+
+    def _stream():
+        try:
+            proc = subprocess.Popen(
+                command, shell=True,
+                stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                text=True, bufsize=1,
+                cwd=os.path.expanduser("~"),
+            )
+            for line in iter(proc.stdout.readline, ""):
+                yield f"data: {_json.dumps({'line': line.rstrip()})}\n\n"
+            proc.wait()
+            yield f"data: {_json.dumps({'done': True, 'exit_code': proc.returncode})}\n\n"
+        except Exception as exc:
+            yield f"data: {_json.dumps({'error': str(exc)})}\n\n"
+
+    return Response(stream_with_context(_stream()), content_type="text/event-stream",
+                    headers={"X-Accel-Buffering": "no", "Cache-Control": "no-cache"})
 
 
 def _open_browser():

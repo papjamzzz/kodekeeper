@@ -135,6 +135,9 @@
       margin-bottom: calc(var(--space-1) * 1.2);
       padding: 0 calc(var(--space-1) * 1.2);
       letter-spacing: 1.2px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
     .nav-item {
@@ -151,6 +154,9 @@
       transition: all 0.2s;
       text-align: left;
       width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
 
     .nav-item:hover {
@@ -512,6 +518,161 @@
     ::-webkit-scrollbar-track { background: var(--bg-primary); }
     ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
     ::-webkit-scrollbar-thumb:hover { background: var(--text-tertiary); }
+
+    /* ── CALL ON CLAUDE BUTTON ── */
+    .coc-btn {
+      display: flex; align-items: center; gap: 7px;
+      padding: 8px 16px;
+      background: #ff8c3a;
+      border: 2px solid #00b4ff;
+      box-shadow: 0 0 14px rgba(0,180,255,0.35), 0 0 4px rgba(0,180,255,0.15);
+      color: white;
+      font-family: var(--font-ui);
+      font-size: 13px; font-weight: 700;
+      border-radius: 6px; cursor: pointer;
+      transition: all 0.2s; letter-spacing: 0.3px;
+    }
+    .coc-btn:hover {
+      background: #e67e2e;
+      box-shadow: 0 0 22px rgba(0,180,255,0.55), 0 0 8px rgba(0,180,255,0.25);
+      transform: translateY(-1px);
+    }
+
+    /* ── CALL ON CLAUDE MODAL ── */
+    .coc-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.55);
+      backdrop-filter: blur(3px);
+      z-index: 1000; align-items: center; justify-content: center;
+    }
+    .coc-overlay.open { display: flex; }
+
+    .coc-panel {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 12px; width: 600px; max-height: 82vh;
+      display: flex; flex-direction: column; overflow: hidden;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.32), 0 0 0 1px rgba(0,180,255,0.12);
+      animation: cocSlideIn 0.18s ease-out;
+    }
+    @keyframes cocSlideIn {
+      from { opacity: 0; transform: scale(0.96) translateY(-8px); }
+      to   { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    .coc-header {
+      background: linear-gradient(135deg, #ff8c3a 0%, #e06820 100%);
+      padding: 16px 20px;
+      display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 2px solid #00b4ff; flex-shrink: 0;
+    }
+    .coc-header-title {
+      font-size: 16px; font-weight: 700; color: white;
+      display: flex; align-items: center; gap: 9px;
+    }
+    .coc-close {
+      background: none; border: none; color: rgba(255,255,255,0.75);
+      cursor: pointer; font-size: 18px; line-height: 1;
+      padding: 3px 7px; border-radius: 4px; transition: all 0.15s;
+    }
+    .coc-close:hover { background: rgba(255,255,255,0.18); color: white; }
+
+    .coc-body { padding: 20px; overflow-y: auto; flex: 1; }
+
+    .coc-suggestions-label {
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 1px; color: var(--text-tertiary); margin-bottom: 10px;
+    }
+    .coc-suggestions { display: flex; flex-direction: column; gap: 7px; margin-bottom: 20px; }
+
+    .coc-suggestion {
+      padding: 10px 14px;
+      background: var(--bg-secondary); border: 1px solid var(--border-color);
+      border-radius: 6px; font-size: 13px; font-weight: 600;
+      color: var(--text-primary); cursor: pointer; text-align: left;
+      transition: all 0.15s; display: flex; align-items: center; gap: 10px;
+      width: 100%;
+    }
+    .coc-suggestion:hover { border-color: #00b4ff; background: var(--bg-tertiary); }
+    .sug-type {
+      font-size: 10px; font-weight: 700; padding: 2px 6px;
+      border-radius: 3px; flex-shrink: 0; font-family: var(--font-mono);
+    }
+    .sug-type.execute { background: rgba(255,140,58,0.15); color: #ff8c3a; }
+    .sug-type.ask     { background: rgba(0,180,255,0.15);  color: #00b4ff; }
+
+    .coc-loading-dots { display: flex; gap: 6px; align-items: center; padding: 10px 0; }
+    .coc-loading-dots span {
+      width: 8px; height: 8px; background: var(--text-tertiary);
+      border-radius: 50%; animation: dotPulse 1.2s infinite;
+    }
+    .coc-loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .coc-loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes dotPulse {
+      0%,80%,100% { opacity: 0.3; transform: scale(0.8); }
+      40%          { opacity: 1;   transform: scale(1); }
+    }
+
+    .coc-input-row { display: flex; gap: 8px; margin-bottom: 14px; }
+    .coc-input {
+      flex: 1; padding: 10px 14px;
+      border: 1px solid var(--border-color); border-radius: 6px;
+      font-family: var(--font-ui); font-size: 14px; font-weight: 500;
+      background: var(--bg-secondary); color: var(--text-primary);
+      transition: border-color 0.15s;
+    }
+    .coc-input:focus { outline: none; border-color: #00b4ff; box-shadow: 0 0 0 3px rgba(0,180,255,0.1); }
+    .coc-send {
+      padding: 10px 18px; background: #ff8c3a; border: none;
+      border-radius: 6px; color: white; font-weight: 700;
+      font-size: 13px; cursor: pointer; transition: all 0.15s; white-space: nowrap;
+    }
+    .coc-send:hover { background: #e67e2e; }
+    .coc-send:disabled { opacity: 0.45; cursor: not-allowed; }
+
+    .coc-response {
+      display: none;
+      background: var(--bg-secondary); border: 1px solid var(--border-color);
+      border-radius: 6px; padding: 14px; font-size: 13px;
+      line-height: 1.65; color: var(--text-primary);
+      word-break: break-word; min-height: 60px; max-height: 220px;
+      overflow-y: auto; font-family: var(--font-ui);
+    }
+    .coc-response.active { display: block; }
+    .coc-cursor {
+      display: inline-block; width: 2px; height: 1em;
+      background: var(--text-primary); margin-left: 1px;
+      vertical-align: text-bottom; animation: blink 1s step-end infinite;
+    }
+    @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0; } }
+
+    .coc-exec-box {
+      display: none; margin-top: 12px;
+      background: #08100a; border: 1px solid #1c3020; border-radius: 6px; overflow: hidden;
+    }
+    .coc-exec-box.active { display: block; }
+    .coc-exec-header {
+      padding: 8px 14px; background: #0d1a0f;
+      font-family: var(--font-mono); font-size: 11px; color: #4a7a54;
+      border-bottom: 1px solid #1c3020;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .coc-exec-run {
+      padding: 4px 12px; background: #ff8c3a; border: none;
+      border-radius: 3px; color: white; font-size: 11px; font-weight: 700;
+      cursor: pointer; font-family: var(--font-mono); transition: background 0.15s;
+    }
+    .coc-exec-run:hover { background: #e67e2e; }
+    .coc-exec-run:disabled { opacity: 0.5; cursor: not-allowed; }
+    .coc-exec-cmd {
+      padding: 10px 14px; font-family: var(--font-mono); font-size: 12px;
+      color: #6ecf7e; border-bottom: 1px solid #1c3020; white-space: pre-wrap;
+    }
+    .coc-exec-output {
+      padding: 10px 14px; font-family: var(--font-mono); font-size: 12px;
+      color: #8abf94; min-height: 32px; max-height: 160px;
+      overflow-y: auto; white-space: pre-wrap; line-height: 1.5;
+    }
   </style>
 </head>
 <body data-theme="light">
@@ -520,31 +681,64 @@
     <aside class="sidebar">
       <div class="sidebar-header">
         <div>
-          <div class="sidebar-title">🎛 Kode Keeper</div>
+          <div class="sidebar-title" style="display:flex;align-items:center;gap:8px;">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="8" height="8" rx="1"/><path d="M6 2v2M10 2v2M6 12v2M10 12v2M2 6h2M12 6h2M2 10h2M12 10h2"/></svg>
+            Kode Keeper
+          </div>
           <div class="sidebar-subtitle">Mission Control v2.0</div>
         </div>
       </div>
 
-      <!-- Dashboard Section -->
+      <!-- Core Section -->
       <div class="nav-section">
-        <div class="nav-section-title">🎛 Core</div>
-        <button class="nav-item active" data-tab="dashboard">📊 Dashboard</button>
-        <button class="nav-item" data-tab="projects">🔌 Projects</button>
+        <div class="nav-section-title">
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="8" height="8" rx="1"/><path d="M6 2v2M10 2v2M6 12v2M10 12v2M2 6h2M12 6h2M2 10h2M12 10h2"/></svg>
+          Core
+        </div>
+        <button class="nav-item active" data-tab="dashboard">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>
+          Dashboard
+        </button>
+        <button class="nav-item" data-tab="projects">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 5a1 1 0 011-1h4l1.5 2H14a1 1 0 011 1v6a1 1 0 01-1 1H2a1 1 0 01-1-1V5z"/></svg>
+          Projects
+        </button>
       </div>
 
       <!-- Tooling Section -->
       <div class="nav-section">
-        <div class="nav-section-title">🔧 Tooling</div>
-        <button class="nav-item" data-tab="tests">✓ Tests</button>
-        <button class="nav-item" data-tab="logs">📝 Logs</button>
-        <button class="nav-item" data-tab="assets">🗂️ Assets</button>
+        <div class="nav-section-title">
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12.5 2.5a3 3 0 00-3.9 4.1L3.4 11.8a1.5 1.5 0 002.1 2.1l5.2-5.2a3 3 0 004.1-3.9L13.3 6.3l-2.1-2.1 1.3-1.7z"/></svg>
+          Tooling
+        </div>
+        <button class="nav-item" data-tab="tests">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="6.5"/><path d="M5.5 8l2 2 3-3"/></svg>
+          Tests
+        </button>
+        <button class="nav-item" data-tab="logs">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="2" width="14" height="12" rx="2"/><path d="M4 6.5l2.5 1.5L4 9.5M9 9.5h3"/></svg>
+          Logs
+        </button>
+        <button class="nav-item" data-tab="assets">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2l6 3-6 3-6-3 6-3z"/><path d="M2 8.5l6 3 6-3"/><path d="M2 11.5l6 3 6-3"/></svg>
+          Assets
+        </button>
       </div>
 
-      <!-- Settings Section -->
+      <!-- System Section -->
       <div class="nav-section">
-        <div class="nav-section-title">⚙️ System</div>
-        <button class="nav-item" data-tab="search">🔍 Search</button>
-        <button class="nav-item" data-tab="settings">⚙️ Settings</button>
+        <div class="nav-section-title">
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="2" width="14" height="5" rx="1"/><rect x="1" y="9" width="14" height="5" rx="1"/><circle cx="12.5" cy="4.5" r="0.8" fill="currentColor" stroke="none"/><circle cx="12.5" cy="11.5" r="0.8" fill="currentColor" stroke="none"/></svg>
+          System
+        </div>
+        <button class="nav-item" data-tab="search">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="6.5" cy="6.5" r="4.5"/><path d="M10 10l3.5 3.5"/></svg>
+          Search
+        </button>
+        <button class="nav-item" data-tab="settings">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4h12M2 8h12M2 12h12"/><circle cx="5" cy="4" r="1.5" fill="currentColor" stroke="none"/><circle cx="10" cy="8" r="1.5" fill="currentColor" stroke="none"/><circle cx="7" cy="12" r="1.5" fill="currentColor" stroke="none"/></svg>
+          Settings
+        </button>
       </div>
 
       <div style="flex: 1;"></div>
@@ -569,6 +763,10 @@
           <span id="topBarTime">--:--</span>
         </div>
         <div class="top-bar-right">
+          <button class="coc-btn" onclick="openClaude()">
+            <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2L5 9h4l-2 5 6-7H9l1-5z"/></svg>
+            Call on Claude
+          </button>
           <a href="https://creativekonsoles.com" target="_blank" rel="noopener noreferrer" class="top-bar-logo" title="Creative Konsoles">
             <img src="/static/logo-ck.png" alt="Creative Konsoles">
           </a>
@@ -1022,6 +1220,232 @@
         </tr>
       `).join('');
     }
+  </script>
+
+  <!-- ── CALL ON CLAUDE MODAL ── -->
+  <div class="coc-overlay" id="cocOverlay" onclick="handleOverlayClick(event)">
+    <div class="coc-panel" id="cocPanel">
+      <div class="coc-header">
+        <span>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:6px;"><path d="M9 2L5 9h4l-2 5 6-7H9l1-5z"/></svg>
+          Call on Claude
+        </span>
+        <button class="coc-close" onclick="closeClaude()" title="Close">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="2" y1="2" x2="14" y2="14"/><line x1="14" y1="2" x2="2" y2="14"/></svg>
+        </button>
+      </div>
+      <div class="coc-body">
+        <!-- Suggestions -->
+        <div class="coc-suggestions" id="cocSuggestions">
+          <div class="coc-loading-dots">
+            <span></span><span></span><span></span>
+          </div>
+        </div>
+        <!-- Response area -->
+        <div class="coc-response" id="cocResponse" style="display:none;"></div>
+        <!-- Execute box -->
+        <div class="coc-exec-box" id="cocExecBox" style="display:none;">
+          <div class="coc-exec-header">
+            <span>
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" style="vertical-align:-2px;margin-right:4px;"><polyline points="4 6 2 8 4 10"/><polyline points="12 6 14 8 12 10"/><line x1="9" y1="4" x2="7" y2="12"/></svg>
+              Terminal
+            </span>
+            <button class="coc-exec-run" id="cocExecRun" onclick="runExtractedCommand()">Run</button>
+          </div>
+          <div class="coc-exec-cmd" id="cocExecCmd"></div>
+          <div class="coc-exec-output" id="cocExecOutput"></div>
+        </div>
+        <!-- Input row -->
+        <div class="coc-input-row">
+          <input class="coc-input" id="cocInput" type="text" placeholder="Ask Claude anything about this project…" onkeydown="if(event.key==='Enter')sendToClaude()">
+          <button class="coc-send" onclick="sendToClaude()">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="14" y1="2" x2="2" y2="8"/><line x1="14" y1="2" x2="8" y2="14"/><line x1="2" y1="8" x2="8" y2="14"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  // ── CALL ON CLAUDE ──────────────────────────────────────────────────────────
+
+  let _pendingCommand = null;
+
+  function openClaude() {
+    document.getElementById('cocOverlay').classList.add('open');
+    loadSuggestions();
+    setTimeout(() => document.getElementById('cocInput').focus(), 300);
+  }
+
+  function closeClaude() {
+    document.getElementById('cocOverlay').classList.remove('open');
+    resetClaude();
+  }
+
+  function handleOverlayClick(e) {
+    if (e.target === document.getElementById('cocOverlay')) closeClaude();
+  }
+
+  function resetClaude() {
+    document.getElementById('cocResponse').style.display = 'none';
+    document.getElementById('cocResponse').innerHTML = '';
+    document.getElementById('cocExecBox').style.display = 'none';
+    document.getElementById('cocExecOutput').innerHTML = '';
+    document.getElementById('cocExecCmd').textContent = '';
+    document.getElementById('cocInput').value = '';
+    _pendingCommand = null;
+  }
+
+  async function loadSuggestions() {
+    const el = document.getElementById('cocSuggestions');
+    el.innerHTML = '<div class="coc-loading-dots"><span></span><span></span><span></span></div>';
+    try {
+      const res = await fetch('/api/claude/suggestions', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({}) });
+      const data = await res.json();
+      if (data.suggestions && data.suggestions.length) {
+        el.innerHTML = data.suggestions.map(s => `
+          <div class="coc-suggestion" onclick="useSuggestion(this)" data-type="${s.type}" data-prompt="${encodeURIComponent(s.prompt)}">
+            <span class="sug-type ${s.type}">${s.type === 'execute' ? '⚡ Run' : '💬 Ask'}</span>
+            ${s.label}
+          </div>`).join('');
+      } else {
+        el.innerHTML = '<div style="color:var(--text-tertiary);font-size:12px;padding:8px;">No suggestions available right now.</div>';
+      }
+    } catch {
+      el.innerHTML = '<div style="color:var(--text-tertiary);font-size:12px;padding:8px;">Could not load suggestions.</div>';
+    }
+  }
+
+  function useSuggestion(el) {
+    const prompt = decodeURIComponent(el.dataset.prompt);
+    document.getElementById('cocInput').value = prompt;
+    sendToClaude();
+  }
+
+  async function sendToClaude() {
+    const input = document.getElementById('cocInput');
+    const prompt = input.value.trim();
+    if (!prompt) return;
+    input.value = '';
+
+    const responseEl = document.getElementById('cocResponse');
+    responseEl.style.display = 'block';
+    responseEl.innerHTML = '<span class="coc-cursor"></span>';
+    document.getElementById('cocExecBox').style.display = 'none';
+    document.getElementById('cocExecOutput').innerHTML = '';
+    _pendingCommand = null;
+
+    let fullText = '';
+    let execBlock = null;
+
+    try {
+      const res = await fetch('/api/claude/ask', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt })
+      });
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        const chunk = decoder.decode(value);
+        const lines = chunk.split('\n');
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            const raw = line.slice(6).trim();
+            if (raw === '[DONE]') continue;
+            try {
+              const obj = JSON.parse(raw);
+              if (obj.token) {
+                fullText += obj.token;
+                responseEl.innerHTML = formatResponse(fullText) + '<span class="coc-cursor"></span>';
+              }
+              if (obj.execute && !execBlock) {
+                execBlock = obj.execute;
+              }
+            } catch {}
+          }
+        }
+      }
+
+      // Final render without cursor
+      responseEl.innerHTML = formatResponse(fullText);
+
+      // Show execute box if a command was embedded
+      if (execBlock) {
+        showExecuteBox(execBlock.command, execBlock.description);
+      }
+    } catch (err) {
+      responseEl.innerHTML = `<span style="color:var(--color-error)">Error: ${err.message}</span>`;
+    }
+  }
+
+  function formatResponse(text) {
+    // Strip <execute>...</execute> blocks from display
+    return text
+      .replace(/<execute>[\s\S]*?<\/execute>/g, '')
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/\n/g, '<br>');
+  }
+
+  function showExecuteBox(cmd, desc) {
+    _pendingCommand = cmd;
+    const box = document.getElementById('cocExecBox');
+    document.getElementById('cocExecCmd').textContent = cmd;
+    document.getElementById('cocExecOutput').innerHTML = '';
+    document.getElementById('cocExecRun').disabled = false;
+    document.getElementById('cocExecRun').textContent = 'Run';
+    box.style.display = 'block';
+  }
+
+  async function runExtractedCommand() {
+    if (!_pendingCommand) return;
+    const outputEl = document.getElementById('cocExecOutput');
+    const runBtn = document.getElementById('cocExecRun');
+    runBtn.disabled = true;
+    runBtn.textContent = 'Running…';
+    outputEl.innerHTML = '';
+
+    try {
+      const res = await fetch('/api/claude/execute', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ command: _pendingCommand })
+      });
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        const chunk = decoder.decode(value);
+        const lines = chunk.split('\n');
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            const raw = line.slice(6).trim();
+            if (raw === '[DONE]') { runBtn.textContent = 'Done ✓'; return; }
+            try {
+              const obj = JSON.parse(raw);
+              if (obj.line !== undefined) {
+                outputEl.innerHTML += obj.line.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') + '\n';
+                outputEl.scrollTop = outputEl.scrollHeight;
+              }
+              if (obj.error) outputEl.innerHTML += `<span style="color:var(--color-error)">${obj.error}</span>\n`;
+            } catch {}
+          }
+        }
+      }
+      runBtn.textContent = 'Done ✓';
+    } catch (err) {
+      outputEl.innerHTML += `<span style="color:var(--color-error)">Error: ${err.message}</span>`;
+      runBtn.textContent = 'Error';
+      runBtn.disabled = false;
+    }
+  }
+
+  // Close on Escape
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeClaude(); });
   </script>
 </body>
 </html>
