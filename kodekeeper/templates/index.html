@@ -78,12 +78,35 @@
       margin-bottom: calc(var(--space-2) * 1.2);
     }
 
+    .sidebar-logo-container {
+      display: flex;
+      gap: calc(var(--space-1) * 0.8);
+      align-items: center;
+    }
+
     .sidebar-logo {
-      width: 38.4px;
-      height: 38.4px;
-      background: linear-gradient(135deg, var(--color-warning), var(--color-error));
+      width: 40px;
+      height: 40px;
       border-radius: 6px;
       flex-shrink: 0;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid transparent;
+    }
+
+    .sidebar-logo:hover {
+      transform: scale(1.05);
+      border-color: var(--color-warning);
+    }
+
+    .sidebar-logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
 
     .sidebar-title {
@@ -489,7 +512,14 @@
     <!-- SIDEBAR -->
     <aside class="sidebar">
       <div class="sidebar-header">
-        <div class="sidebar-logo"></div>
+        <div class="sidebar-logo-container">
+          <a href="https://github.com/papjamzzz/kodekeeper" target="_blank" rel="noopener noreferrer" class="sidebar-logo" title="Kode Keeper GitHub">
+            <img src="/static/logo-dark.png" alt="Kode Keeper">
+          </a>
+          <a href="https://creativekonsoles.com" target="_blank" rel="noopener noreferrer" class="sidebar-logo" title="Creative Konsoles">
+            <img src="/static/logo-ck.png" alt="Creative Konsoles">
+          </a>
+        </div>
         <div>
           <div class="sidebar-title">🎛 Kode Keeper</div>
           <div class="sidebar-subtitle">Mission Control v2.0</div>
