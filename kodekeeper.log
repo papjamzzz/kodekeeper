@@ -101,3 +101,60 @@
 127.0.0.1 - - [01/Apr/2026 22:48:48] "GET /api/status HTTP/1.1" 200 -
 127.0.0.1 - - [01/Apr/2026 22:48:48] "GET /api/status HTTP/1.1" 200 -
 127.0.0.1 - - [01/Apr/2026 22:49:08] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [01/Apr/2026 22:49:25] code 400, message Bad request version ('qW4\x91Ù\x00·§\x96\x07gê+\x9b1,³¨xoì]n\x03qÊ\x00\x844')
+127.0.0.1 - - [01/Apr/2026 22:49:25] "[35m[1m\x16\x03\x01\x06ò\x01\x00\x06î\x03\x03äõ\x86B÷Ø´r¹ëó\x9cbÃê¼©¶ãþ\x8bü|Ó\x03eÐÿ\x19Õ\x81§ ¦Ê\x7fñc\x1cº0¦)\x12¬Æ@IñÃ\x99\x98\x08+EÂP\x98Ø\x85ð\x8aXÈ\x89\x00 ªª\x13\x01\x13\x02\x13\x03À+À/À,À0Ì©Ì¨À\x13À\x14\x00\x9c\x00\x9d\x00/\x005\x01\x00\x06\x85zz\x00\x00\x00\x17\x00\x00\x00#\x00\x00\x003\x04ï\x04í\x9a\x9a\x00\x01\x00\x11ì\x04À9Ä"#°±gÓ\x03å\x8aD¡1!» 4Ç\x02&§UÍÀBªÓ¤\x8c7±\x03Åu,\x86µ\x12»Â\x90âL\x97Gi¢Õ#³X¡\x81\x91£ÁÚ\x8bÀ~ÙE[f±\x7f[s\x10Ê¢"\x92ÈÅ(¦T\x1aS}ØqzqTP\x97%\x99\x81<X\x04f\x04Ç¡\x8f\x0c\x03\x14\x1aoÛ£b\x1c©ckfKLÛ\x9f¦<·\x92äa\x85g½qü\x0cù\x99ÇÍpP\x7fÖ!\x92\x05¼A\x92%¦\x8cª!ic¥©6\x9a\x8aYMÙ\x8av\x14\x12òX!Zi:\x9c\x81Ìã\x88ª]Æ-¨\x94\x93BH\x8b\x0fIg$ÌÃÒ¨Z*è5\x87\x040Z \x87\x97zP\x89\x11_×Ø@õ#vAd´;CÇ7Ãh}'\x12'\x19¨OªNÎ\x1bfÞ'D¸\x8a5\x8cùÏèÁ¨¸F5*ù3­AEyC\x1c\x86{8\x87£¶µ\x92ní\x16Wå2AÒ¥\x07=<HÇP/\x8c\x90q\x98Äj+h³4zv\x86á\x87TyYaÅGz\x8c\x7f\x11ôw%µTO¡J±×\x0eÌÐZ>Ó6\x1b\x13º\x9a)&\x80¤\x0b²!\x1bòz\x96\x87P'ô\x9a¶^ÕiÁc©ÙØ\x98\x95\x89Lû\x99zVøÏÆù¸<ô¯þhµ\x07J\x95u©QÍ&¡\x85d &¦\x18Çë\x80ä\x98\x89è\x13\x1aGúM\x11y¦$\x8b±I\x0cs\x18û¿ç\x09qW4\x91Ù\x00·§\x96\x07gê+\x9b1,³¨xoì]n\x03qÊ\x00\x844[0m" HTTPStatus.BAD_REQUEST -
+127.0.0.1 - - [01/Apr/2026 22:49:25] code 400, message Bad request version ('Y{£%¹Hg')
+127.0.0.1 - - [01/Apr/2026 22:49:25] "[35m[1m\x16\x03\x01\x06Ò\x01\x00\x06Î\x03\x03§òÀ¬ô¨\x17ÚM#³\x86}ñæH*\x92Öº#ed"Ú¢\x837\x91\x0ej\x8e Ýð-U&\x8bÕ:\x93=\x1f\x09Èà\x0e¨Þ< ý\x93Ò=@º.\x0f(´ã\x8dé\x00 ºº\x13\x01\x13\x02\x13\x03À+À/À,À0Ì©Ì¨À\x13À\x14\x00\x9c\x00\x9d\x00/\x005\x01\x00\x06eJJ\x00\x00\x00+\x00\x07\x06ªª\x03\x04\x03\x03\x00\x05\x00\x05\x01\x00\x00\x00\x00þ\x0d\x00Ú\x00\x00\x01\x00\x01\x88\x00 ¶ÚEÏý®£3*Ô·>T\x96Ö\x0c*+5w\x96>\x91ð_bÔ¼R7Ô\x02\x00°\x83ïø\x9dGÉ\x03§§hÿÏ\x8aKÀy1ËûÃk\x9b\x99\x8e\x90*þ\x18\x17ßB\x1bxÓõX³£ØÂN^Þ\x07á\x9aµ\x9d\x0c±\x0bÙª`>ôÿ§\x0bY¿÷\x9cjríÒ\x06\x8c.\x0eI@\x8d­¹\x12½6Å\x87Ñ\x00`â"¤ÌBò*&\x1dv\x10\x00ä\x12ìjÝúÂtz¾\\øt\x91\x0c1\x8d_\x17,ó]Ïÿ\x8eÅ\x86òy6\x11\x83EÒ\x83\x9d¬DøÀÿõ\x81Ð\x1d²\x9d>¥\x0cëâF\x02\x00ëX\x91\x94C©W\x8dq@Jn6_&ÙÎðÚB ûÒÎy\x00\x17\x00\x00\x00\x0b\x00\x02\x01\x00\x00\x10\x00\x0e\x00\x0c\x02h2\x08http/1.1DÍ\x00\x05\x00\x03\x02h2\x00\x12\x00\x00ÿ\x01\x00\x01\x00\x003\x04ï\x04íÊÊ\x00\x01\x00\x11ì\x04À3\x98\x80KU]K8¦Rb¥\x1fe\x82Í\x98V\x11÷\x9f\x92\x97\x803ÂªÝ\x12$\x98\x10s\x12\x03¿7\x88l¹$¬³\x16(ÿ¨Vú\x98\x9cºÙ\x08\x8d3z/\x0bD$@\x0cY{£%¹Hg[0m" HTTPStatus.BAD_REQUEST -
+127.0.0.1 - - [01/Apr/2026 22:49:25] code 400, message Bad request version ('æ±:\x9f9\x08\x97\x17\x81\x14fzV93Fáo#§?\x16\x15S:\x92:&\x0049eW\x19\x13¬\\\x10\x94ºBÆ\x81º\x011p¿³9tù¤cÔåÉÄ')
+127.0.0.1 - - [01/Apr/2026 22:49:25] code 400, message Bad request version ('Ú7mXº¼ó')
+127.0.0.1 - - [01/Apr/2026 22:49:25] "[35m[1m\x16\x03\x01\x07\x12\x01\x00\x07\x0e\x03\x03\x95¹\x00Ì\x1fç\x8e½ê¹j§\x88G×'\x9e5\x8d\x1c\x00£(¬\x8c®\x90\x151ÒH\x89 \x85Ò2\x94\x900~iàÉ\x163f0\x05Év\x05][8ZP\x8a´\x92¨Âïà\x89 \x00 zz\x13\x01\x13\x02\x13\x03À+À/À,À0Ì©Ì¨À\x13À\x14\x00\x9c\x00\x9d\x00/\x005\x01\x00\x06¥::\x00\x00\x00\x12\x00\x00\x00\x10\x00\x0e\x00\x0c\x02h2\x08http/1.1\x00\x00\x00\x0e\x00\x0c\x00\x00\x09localhost\x003\x04ï\x04í\x8a\x8a\x00\x01\x00\x11ì\x04ÀÐD\x1fªRlÕy\x04k«\x88\x01\x82oEªR\x8a\x12¾Z\x16\x15(\x87\x9dê\x8c¨|eD¢\x94*ä\x00\x0b­\x87w¾\x18+ç\x89R"d\x8c·å\x12åÆ°\x04\x91\x97¹¨\x9a\x8cZ¤5¶»m\x94 \x8abumHo}s%©#\x01\x96\\\x00îÂ\x9a&H\x1cì\x12µÌÊ4þ÷¨­\x83Q\x8a\x98¥\x8b\x14\x9fëXiì&\x15s\x82ºG¡~á\x91\x84³"[>4\x87ü\x8c"*\x8b\x14yÈe£üPG\x16\x13Ai]à¬8\x0b\x90ÂÈ\\¾\x08uO:ä^~µsQæ5:é&\x0cÌ\x90t!v÷\x91X¬\x01tu|\x8c\x0fÒf\x08d\x89ÉT"rõdÃc;sw\x0c(#\x13öû!\x09&g3\x19\x19æ,pðwKdi\x87?óË\x18Êq>¡|KÇNU8;ÿ\x82P¹Ä ë&ySÈ7\x1d\x04L#g\x19\x8bL¬S\x9c\x13P\x833\x9eµÎdÛ\x82·r½¢(x{³\x16ÔöËeQM@\x92bo\x8770k8]\x95W\x1b«\x1cdÇ$$|r,Beÿû>\x0dÓ\x8d\x81Ì\x96*\x9c>n\x18 OÓ\x91DåRß1\x04ò9'\x7f\x19L&X,Ç\x07b\x12çU7àx^öI<³J\x18Û¯oÂÀ\x96Qo\x062\x7fÌ÷Ï±v®Z\x891)Ëm,ºH{'#\x1c\x0bB±Q@0BL?±I6\x84iòp½d\\y$ábh\x06Ð\x8b\x08\x88»b\x01\x95\x90&\x82¢]\x17ÙQ\x04&Ç¥\x84\x98Çf¦dG«çûÀ3{\x89²òDr\x06\x88\x84¬,ò¬O]cZ¹8 æ±:\x9f9\x08\x97\x17\x81\x14fzV93Fáo#§?\x16\x15S:\x92:&\x0049eW\x19\x13¬\\\x10\x94ºBÆ\x81º\x011p¿³9tù¤cÔåÉÄ[0m" HTTPStatus.BAD_REQUEST -
+127.0.0.1 - - [01/Apr/2026 22:49:25] "[35m[1m\x16\x03\x01\x06Ò\x01\x00\x06Î\x03\x03\x83<\x1f»2\x1bJ.\x01>?Nê£ÒÞÑK1,´N\x80>\x84\x84P©ÕB.ñ ?Z4A§Xoño\x0e¿Bâ¯\x00u)\x86Õ0r\x14÷´ã¸\\\x93)âæÌ\x00 \x9a\x9a\x13\x01\x13\x02\x13\x03À+À/À,À0Ì©Ì¨À\x13À\x14\x00\x9c\x00\x9d\x00/\x005\x01\x00\x06eºº\x00\x00\x00\x12\x00\x00\x00+\x00\x07\x06ºº\x03\x04\x03\x03\x00\x17\x00\x00\x003\x04ï\x04í\x9a\x9a\x00\x01\x00\x11ì\x04À\x91 ÆÅÛ\x9f\x96u\x91\x05©¶\x03ão'pTì¡w\x05G4|)9~\x04.\x1f\x8aºr+gOØGv&Q"¶\x1f\x93\x07{í\x92\x9a\x8a³}J\x99Y(\x95I\x12ö"Öw>)Æ*\x8f'¤\x99u0¦û½SkÄü\x91QJQ\x81Ç¡p=Ì¸ñXwéy=ÇÕÈÓæ\x1dÃû\x7fp\x16B-e§\x12\x9b\x8e,ô\x95Ó»§\x01T¢\x80[j\x9e\x99ytÑZÂ\x98\x93#¶ÈbÖ\x9f´J\x1a¸Ù\x89\x0e¶.¿@g5A\x1f¦ÃUs¹À?Û©ÐÌ\x95\x11§Ì\\q½\x065\x06Ø\x99\x859 #]ÌÉ(\x96¸ h\x0c\x8b;\x03\x83@\x0b«Iríã\x11\x9bÄ\x15û\x09 9raºa\x02T[5eË£<V8\x00%¨\x12Åb\x7f\x11¸\x8dL8Dæ\x10\x0fÐdú\x07zvæÇ\x02£\x8b¥æTýq\x030\x17\x9fØ:%qSz\x84Ì3\x18Z\x15Å\x09SÃäµÝ'\\\x98\x93\x93º\x95Ql²¸\x148/»è\x1c\x1fk^Ï\x1c·#¼k©Á3Á{®µ\x01Ç\x19\x18\x92ÔãVïû«(\\§\x12ð\x04\x95¹\x8c\x07Ú¦öD­/\x80º\x1fT\x82\x12é\x94`('j\x85e\x04Ð"¯Q8U¦±&×6\x98\x9cÈ4´\x08Ñ6Xêµ¼\x9e\x8b\x00xÒc\x8aé>ì$~³Vd*º\x7f\x97\x09OK&\x069â½\x10õ¹\x09YC\x9cÆcÒ\x01\x08b³Î\x95ªkX\x91!þõ\x03Á×ªgW\x83\x96\x07^èv\x0dÚ7mXº¼ó[0m" HTTPStatus.BAD_REQUEST -
+127.0.0.1 - - [01/Apr/2026 22:49:28] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [01/Apr/2026 22:49:29] "GET /api/status HTTP/1.1" 200 -
+127.0.0.1 - - [01/Apr/2026 22:49:35] "GET /api/status HTTP/1.1" 200 -
+127.0.0.1 - - [01/Apr/2026 22:49:41] "GET /api/status HTTP/1.1" 200 -
+127.0.0.1 - - [01/Apr/2026 22:49:45] "GET /api/status HTTP/1.1" 200 -
+127.0.0.1 - - [01/Apr/2026 22:49:45] "GET /api/status HTTP/1.1" 200 -
+127.0.0.1 - - [01/Apr/2026 22:49:46] "GET /api/status HTTP/1.1" 200 -
+127.0.0.1 - - [01/Apr/2026 22:49:47] "GET /api/status HTTP/1.1" 200 -
+127.0.0.1 - - [01/Apr/2026 22:49:48] "GET /api/status HTTP/1.1" 200 -
+127.0.0.1 - - [01/Apr/2026 22:49:49] "GET /api/status HTTP/1.1" 200 -
+127.0.0.1 - - [01/Apr/2026 22:49:50] "GET /api/status HTTP/1.1" 200 -
+127.0.0.1 - - [01/Apr/2026 22:49:53] "GET /api/status HTTP/1.1" 200 -
+127.0.0.1 - - [01/Apr/2026 22:49:59] "GET /api/status HTTP/1.1" 200 -
+127.0.0.1 - - [01/Apr/2026 22:50:05] "GET /api/status HTTP/1.1" 200 -
+127.0.0.1 - - [01/Apr/2026 22:50:11] "GET /api/status HTTP/1.1" 200 -
+127.0.0.1 - - [01/Apr/2026 22:50:14] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [01/Apr/2026 22:50:15] "GET /api/status HTTP/1.1" 200 -
+127.0.0.1 - - [01/Apr/2026 22:50:22] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [01/Apr/2026 22:50:22] "GET /api/status HTTP/1.1" 200 -
+127.0.0.1 - - [01/Apr/2026 22:50:28] "GET /api/status HTTP/1.1" 200 -
+127.0.0.1 - - [01/Apr/2026 22:50:34] "GET /api/status HTTP/1.1" 200 -
+127.0.0.1 - - [01/Apr/2026 22:50:35] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [01/Apr/2026 22:50:40] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [01/Apr/2026 22:50:40] "GET /api/status HTTP/1.1" 200 -
+127.0.0.1 - - [01/Apr/2026 22:50:42] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [01/Apr/2026 22:50:45] "GET /api/status HTTP/1.1" 200 -
+127.0.0.1 - - [01/Apr/2026 22:50:45] "GET /api/status HTTP/1.1" 200 -
+127.0.0.1 - - [01/Apr/2026 22:50:46] "GET /api/status HTTP/1.1" 200 -
+127.0.0.1 - - [01/Apr/2026 22:50:47] "GET /api/status HTTP/1.1" 200 -
+127.0.0.1 - - [01/Apr/2026 22:50:48] "GET /api/status HTTP/1.1" 200 -
+127.0.0.1 - - [01/Apr/2026 22:50:49] "GET /api/status HTTP/1.1" 200 -
+127.0.0.1 - - [01/Apr/2026 22:50:50] "GET /api/status HTTP/1.1" 200 -
+127.0.0.1 - - [01/Apr/2026 22:50:52] "GET /api/status HTTP/1.1" 200 -
+127.0.0.1 - - [01/Apr/2026 22:50:58] "GET /api/status HTTP/1.1" 200 -
+127.0.0.1 - - [01/Apr/2026 22:50:58] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [01/Apr/2026 22:51:04] "GET /api/status HTTP/1.1" 200 -
+127.0.0.1 - - [01/Apr/2026 22:51:04] "GET /api/status HTTP/1.1" 200 -
+127.0.0.1 - - [01/Apr/2026 22:51:07] "GET /api/status HTTP/1.1" 200 -
+127.0.0.1 - - [01/Apr/2026 22:51:10] "GET /api/status HTTP/1.1" 200 -
+127.0.0.1 - - [01/Apr/2026 22:51:12] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [01/Apr/2026 22:51:45] "GET /api/status HTTP/1.1" 200 -
+127.0.0.1 - - [01/Apr/2026 22:51:45] "GET /api/status HTTP/1.1" 200 -
+127.0.0.1 - - [01/Apr/2026 22:51:46] "GET /api/status HTTP/1.1" 200 -
+127.0.0.1 - - [01/Apr/2026 22:51:47] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [01/Apr/2026 22:51:47] "GET /api/status HTTP/1.1" 200 -
+127.0.0.1 - - [01/Apr/2026 22:51:48] "GET /api/status HTTP/1.1" 200 -
+127.0.0.1 - - [01/Apr/2026 22:51:49] "GET /api/status HTTP/1.1" 200 -
+127.0.0.1 - - [01/Apr/2026 22:51:50] "GET /api/status HTTP/1.1" 200 -
+127.0.0.1 - - [01/Apr/2026 22:52:08] "GET / HTTP/1.1" 200 -
