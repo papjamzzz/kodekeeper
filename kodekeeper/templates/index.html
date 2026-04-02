@@ -48,7 +48,8 @@
       background: var(--bg-primary);
       color: var(--text-primary);
       font-family: var(--font-ui);
-      font-size: 13px;
+      font-size: 16px;
+      font-weight: 500;
       min-height: 100vh;
     }
 
@@ -57,62 +58,71 @@
       min-height: 100vh;
     }
 
-    /* ── SIDEBAR (Rich Navigation) ── */
+    /* ── SIDEBAR (Scaled up 20%) ── */
     .sidebar {
-      width: 280px;
+      width: 336px;
       background: var(--bg-secondary);
       border-right: 1px solid var(--border-color);
       display: flex;
       flex-direction: column;
       overflow-y: auto;
-      padding: var(--space-2);
+      padding: calc(var(--space-2) * 1.2);
     }
 
     .sidebar-header {
       display: flex;
       align-items: center;
-      gap: var(--space-2);
-      padding: var(--space-2);
+      gap: calc(var(--space-2) * 1.2);
+      padding: calc(var(--space-2) * 1.2);
       border-bottom: 1px solid var(--border-color);
-      margin-bottom: var(--space-2);
+      margin-bottom: calc(var(--space-2) * 1.2);
     }
 
     .sidebar-logo {
-      width: 32px;
-      height: 32px;
+      width: 38.4px;
+      height: 38.4px;
       background: linear-gradient(135deg, var(--color-warning), var(--color-error));
       border-radius: 6px;
+      flex-shrink: 0;
     }
 
     .sidebar-title {
-      font-size: 12px;
+      font-size: 14.4px;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.6px;
       color: var(--text-secondary);
     }
 
+    .sidebar-subtitle {
+      font-size: 12px;
+      color: var(--text-tertiary);
+      margin-top: 2px;
+    }
+
     .nav-section {
-      margin-bottom: var(--space-3);
+      margin-bottom: calc(var(--space-3) * 1.2);
     }
 
     .nav-section-title {
-      font-size: 10px;
+      font-size: 12px;
       font-weight: 700;
       text-transform: uppercase;
       color: var(--text-tertiary);
-      margin-bottom: var(--space-1);
-      padding: 0 var(--space-1);
+      margin-bottom: calc(var(--space-1) * 1.2);
+      padding: 0 calc(var(--space-1) * 1.2);
+      letter-spacing: 1.2px;
     }
 
     .nav-item {
-      padding: var(--space-2);
-      margin-bottom: var(--space-1);
+      padding: calc(var(--space-2) * 1.2);
+      margin-bottom: calc(var(--space-1) * 1.2);
       border: none;
       background: transparent;
       color: var(--text-secondary);
       font-family: var(--font-ui);
-      font-size: 13px;
+      font-size: 15.6px;
+      font-weight: 500;
       cursor: pointer;
       border-radius: 6px;
       transition: all 0.2s;
@@ -128,7 +138,7 @@
     .nav-item.active {
       background: var(--color-warning);
       color: white;
-      font-weight: 600;
+      font-weight: 700;
     }
 
     /* ── MAIN CONTENT ── */
@@ -142,25 +152,26 @@
     .top-bar {
       background: var(--bg-secondary);
       border-bottom: 1px solid var(--border-color);
-      padding: var(--space-2) var(--space-3);
+      padding: calc(var(--space-2) * 1.25) calc(var(--space-3) * 1.25);
       display: flex;
       justify-content: space-between;
       align-items: center;
-      height: 56px;
+      height: 70px;
       flex-shrink: 0;
     }
 
     .status-item {
       display: flex;
       align-items: center;
-      gap: var(--space-1);
+      gap: calc(var(--space-1) * 1.25);
       font-family: var(--font-mono);
-      font-size: 11px;
+      font-size: 14px;
+      font-weight: 600;
     }
 
     .status-dot {
-      width: 8px;
-      height: 8px;
+      width: 10px;
+      height: 10px;
       border-radius: 50%;
       background: var(--color-success);
     }
@@ -171,7 +182,7 @@
     .content-area {
       flex: 1;
       overflow-y: auto;
-      padding: var(--space-3);
+      padding: calc(var(--space-3) * 1.25);
     }
 
     /* ── TAB CONTENT ── */
@@ -188,43 +199,43 @@
       background: var(--bg-secondary);
       border: 1px solid var(--border-color);
       border-radius: 8px;
-      padding: var(--space-3);
-      margin-bottom: var(--space-3);
+      padding: calc(var(--space-3) * 1.25);
+      margin-bottom: calc(var(--space-3) * 1.25);
       box-shadow: var(--shadow-sm);
     }
 
     .panel-title {
-      font-size: 11px;
+      font-size: 13px;
       font-weight: 700;
       text-transform: uppercase;
       color: var(--text-tertiary);
-      margin-bottom: var(--space-2);
-      letter-spacing: 0.5px;
+      margin-bottom: calc(var(--space-2) * 1.25);
+      letter-spacing: 0.65px;
     }
 
     .metric-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: var(--space-2);
-      margin-bottom: var(--space-2);
+      grid-template-columns: 1fr 1fr;
+      gap: calc(var(--space-2) * 1.25);
+      margin-bottom: calc(var(--space-2) * 1.25);
     }
 
     .metric {
       background: var(--bg-primary);
-      padding: var(--space-2);
+      padding: calc(var(--space-2) * 1.25);
       border-radius: 6px;
       border: 1px solid var(--border-color);
     }
 
     .metric-label {
-      font-size: 11px;
+      font-size: 13px;
       color: var(--text-secondary);
-      font-weight: 500;
-      margin-bottom: 4px;
+      font-weight: 600;
+      margin-bottom: 6px;
     }
 
     .metric-value {
-      font-size: 18px;
+      font-size: 24px;
       font-weight: 700;
       font-family: var(--font-mono);
       color: var(--text-primary);
@@ -234,26 +245,129 @@
     .metric-value.warning { color: var(--color-warning); }
     .metric-value.error { color: var(--color-error); }
 
+    .metric-subtitle {
+      font-size: 11px;
+      color: var(--text-tertiary);
+      margin-top: 6px;
+    }
+
+    /* ── FADER VISUALIZATION ── */
+    .fader-container {
+      background: var(--bg-primary);
+      padding: calc(var(--space-2) * 1.25);
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+      margin-bottom: calc(var(--space-2) * 1.25);
+    }
+
+    .fader-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .fader-bar {
+      background: var(--bg-tertiary);
+      height: 40px;
+      border-radius: 4px;
+      overflow: hidden;
+      position: relative;
+      border: 1px solid var(--border-color);
+    }
+
+    .fader-fill {
+      background: linear-gradient(90deg, var(--color-success), var(--color-warning), var(--color-error));
+      height: 100%;
+      width: 63%;
+      border-radius: 3px;
+      animation: faderBounce 2s ease-in-out infinite;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 700;
+      font-size: 14px;
+      font-family: var(--font-mono);
+    }
+
+    @keyframes faderBounce {
+      0%, 100% { width: 63%; }
+      50% { width: 68%; }
+    }
+
+    .fader-dual {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .fader-dual-bar {
+      background: var(--bg-tertiary);
+      height: 28px;
+      border-radius: 4px;
+      overflow: hidden;
+      position: relative;
+      border: 1px solid var(--border-color);
+    }
+
+    .fader-dual-fill {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 700;
+      font-size: 11px;
+      font-family: var(--font-mono);
+    }
+
+    .fader-dual-fill.cpu {
+      background: linear-gradient(90deg, var(--color-info), var(--color-warning));
+      width: 44%;
+      animation: faderBounceCPU 2.5s ease-in-out infinite;
+    }
+
+    .fader-dual-fill.ram {
+      background: linear-gradient(90deg, var(--color-warning), var(--color-error));
+      width: 73%;
+      animation: faderBounceRAM 2.2s ease-in-out infinite;
+    }
+
+    @keyframes faderBounceCPU {
+      0%, 100% { width: 44%; }
+      50% { width: 50%; }
+    }
+
+    @keyframes faderBounceRAM {
+      0%, 100% { width: 73%; }
+      50% { width: 78%; }
+    }
+
     /* ── TABLES ── */
     table {
       width: 100%;
       border-collapse: collapse;
       font-family: var(--font-mono);
-      font-size: 12px;
+      font-size: 14px;
+      font-weight: 500;
     }
 
     th {
       text-align: left;
-      padding: var(--space-2);
+      padding: calc(var(--space-2) * 1.25);
       border-bottom: 2px solid var(--border-color);
-      font-weight: 600;
+      font-weight: 700;
       color: var(--text-secondary);
-      font-size: 10px;
+      font-size: 12px;
     }
 
     td {
-      padding: var(--space-2);
+      padding: calc(var(--space-2) * 1.25);
       border-bottom: 1px solid var(--border-color);
+      font-weight: 500;
     }
 
     tr:hover {
@@ -262,12 +376,12 @@
 
     .heartbeat {
       display: inline-block;
-      width: 8px;
-      height: 8px;
+      width: 10px;
+      height: 10px;
       border-radius: 50%;
       background: var(--color-success);
       animation: heartbeat 1.5s infinite;
-      margin-right: 6px;
+      margin-right: 8px;
     }
 
     .heartbeat.error { background: var(--color-error); animation: heartbeat-error 1.5s infinite; }
@@ -285,10 +399,10 @@
 
     .badge {
       display: inline-block;
-      padding: 4px 8px;
+      padding: 6px 10px;
       border-radius: 4px;
-      font-size: 10px;
-      font-weight: 600;
+      font-size: 11px;
+      font-weight: 700;
     }
 
     .badge.online { background: rgba(0,166,81,0.15); color: var(--color-success); }
@@ -298,15 +412,15 @@
 
     /* ── BUTTONS ── */
     .btn {
-      padding: var(--space-1) var(--space-2);
+      padding: calc(var(--space-1) * 1.25) calc(var(--space-2) * 1.25);
       background: var(--color-warning);
       color: white;
       border: none;
       border-radius: 4px;
       font-family: var(--font-ui);
       cursor: pointer;
-      font-size: 12px;
-      font-weight: 600;
+      font-size: 14px;
+      font-weight: 700;
       transition: opacity 0.2s;
     }
 
@@ -318,16 +432,17 @@
       background: var(--bg-primary);
       border: 1px solid var(--border-color);
       border-radius: 6px;
-      padding: var(--space-2);
+      padding: calc(var(--space-2) * 1.25);
       font-family: var(--font-mono);
-      font-size: 11px;
+      font-size: 13px;
       height: 400px;
       overflow-y: auto;
       color: var(--text-secondary);
+      font-weight: 500;
     }
 
     .log-line {
-      padding: 4px 0;
+      padding: 6px 0;
       border-bottom: 1px solid var(--border-color);
       white-space: pre-wrap;
       word-break: break-all;
@@ -340,17 +455,18 @@
     /* ── SEARCH ── */
     .search-box {
       display: flex;
-      gap: var(--space-1);
-      margin-bottom: var(--space-2);
+      gap: calc(var(--space-1) * 1.25);
+      margin-bottom: calc(var(--space-2) * 1.25);
     }
 
     input[type="text"], input[type="search"] {
       flex: 1;
-      padding: var(--space-1) var(--space-2);
+      padding: calc(var(--space-1) * 1.25) calc(var(--space-2) * 1.25);
       border: 1px solid var(--border-color);
       border-radius: 4px;
       font-family: var(--font-mono);
-      font-size: 12px;
+      font-size: 14px;
+      font-weight: 500;
       background: var(--bg-primary);
       color: var(--text-primary);
     }
@@ -366,10 +482,6 @@
     ::-webkit-scrollbar-track { background: var(--bg-primary); }
     ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
     ::-webkit-scrollbar-thumb:hover { background: var(--text-tertiary); }
-
-    /* ── GRID LAYOUTS ── */
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-2); }
-    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--space-2); }
   </style>
 </head>
 <body data-theme="light">
@@ -379,8 +491,8 @@
       <div class="sidebar-header">
         <div class="sidebar-logo"></div>
         <div>
-          <div class="sidebar-title">Kode Keeper</div>
-          <div style="font-size: 10px; color: var(--text-tertiary);">Mission Control</div>
+          <div class="sidebar-title">🎛 Kode Keeper</div>
+          <div class="sidebar-subtitle">Mission Control v2.0</div>
         </div>
       </div>
 
@@ -403,14 +515,13 @@
       <!-- Settings Section -->
       <div class="nav-section">
         <div class="nav-section-title">⚙️ System</div>
-        <button class="nav-item" data-tab="search">🔍 Advanced Search</button>
+        <button class="nav-item" data-tab="search">🔍 Search</button>
         <button class="nav-item" data-tab="settings">⚙️ Settings</button>
       </div>
 
       <div style="flex: 1;"></div>
-      <div style="font-size: 10px; color: var(--text-tertiary); padding: var(--space-2); border-top: 1px solid var(--border-color); text-align: center;">
-        Version 2.0<br/>
-        <span id="sidebarTime">--:--</span>
+      <div style="font-size: 12px; color: var(--text-tertiary); padding: calc(var(--space-2) * 1.2); border-top: 1px solid var(--border-color); text-align: center;">
+        v2.0 | <span id="sidebarTime">--:--</span>
       </div>
     </aside>
 
@@ -431,50 +542,80 @@
         <!-- DASHBOARD TAB -->
         <!-- ═══════════════════════════════════════════════════════════ -->
         <div id="dashboard" class="tab-content active">
-          <!-- Quick Metrics -->
+          <!-- Fader Visualizations -->
           <div class="panel">
-            <div class="panel-title">⚡ Quick Metrics</div>
-            <div class="metric-grid">
-              <div class="metric">
-                <div class="metric-label">Context Window</div>
-                <div class="metric-value" id="ctxPercent">63%</div>
-                <div style="font-size: 10px; color: var(--text-tertiary); margin-top: 4px;" id="ctxTokens">~74k tokens</div>
+            <div class="panel-title">⚡ System Vitals</div>
+
+            <!-- Context Window Fader -->
+            <div class="fader-container">
+              <div class="fader-label">
+                <span>📊 Context Window</span>
+                <span id="ctxPercent">63%</span>
               </div>
-              <div class="metric">
-                <div class="metric-label">Today's Cost</div>
-                <div class="metric-value">$<span id="dayCost">0.48</span></div>
-                <div style="font-size: 10px; color: var(--text-tertiary); margin-top: 4px;" id="dayTokens">88.9k tokens</div>
+              <div class="fader-bar">
+                <div class="fader-fill" id="ctxFader" style="width: 63%;">63%</div>
               </div>
-              <div class="metric">
-                <div class="metric-label">Month's Cost</div>
-                <div class="metric-value">$<span id="monthCost">0.48</span></div>
-                <div style="font-size: 10px; color: var(--text-tertiary); margin-top: 4px;" id="monthTokens">88.9k tokens</div>
+              <div class="metric-subtitle" id="ctxTokens">~74k tokens remaining</div>
+            </div>
+
+            <!-- CPU/RAM Dual Fader -->
+            <div class="fader-container">
+              <div class="fader-label">
+                <span>🖥️ System Load</span>
+                <span id="systemLabel">CPU/RAM</span>
               </div>
-              <div class="metric">
-                <div class="metric-label">CPU Usage</div>
-                <div class="metric-value" id="cpuPercent">--</div>
-                <div style="font-size: 10px; color: var(--text-tertiary); margin-top: 4px;">System</div>
-              </div>
-              <div class="metric">
-                <div class="metric-label">RAM Usage</div>
-                <div class="metric-value" id="ramPercent">--</div>
-                <div style="font-size: 10px; color: var(--text-tertiary); margin-top: 4px;">System</div>
-              </div>
-              <div class="metric">
-                <div class="metric-label">Disk Free</div>
-                <div class="metric-value" id="diskFree">--</div>
-                <div style="font-size: 10px; color: var(--text-tertiary); margin-top: 4px;">GB</div>
+              <div class="fader-dual">
+                <div>
+                  <div style="font-size: 11px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px;">CPU</div>
+                  <div class="fader-dual-bar">
+                    <div class="fader-dual-fill cpu" id="cpuFader">44%</div>
+                  </div>
+                </div>
+                <div>
+                  <div style="font-size: 11px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px;">RAM</div>
+                  <div class="fader-dual-bar">
+                    <div class="fader-dual-fill ram" id="ramFader">73%</div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
 
-          <!-- Projects Status -->
+          <!-- Metric Boxes (4) -->
           <div class="panel">
-            <div class="panel-title">🔴 Live Projects & Bots</div>
+            <div class="panel-title">💵 Costs & Resources</div>
+            <div class="metric-grid">
+              <div class="metric">
+                <div class="metric-label">Today's Cost</div>
+                <div class="metric-value">$<span id="dayCost">0.48</span></div>
+                <div class="metric-subtitle" id="dayTokens">88.9k tokens</div>
+              </div>
+              <div class="metric">
+                <div class="metric-label">Month's Cost</div>
+                <div class="metric-value">$<span id="monthCost">0.48</span></div>
+                <div class="metric-subtitle" id="monthTokens">88.9k tokens</div>
+              </div>
+              <div class="metric">
+                <div class="metric-label">Disk Free</div>
+                <div class="metric-value"><span id="diskFree">136</span>GB</div>
+                <div class="metric-subtitle">Storage available</div>
+              </div>
+              <div class="metric">
+                <div class="metric-label">Daily Budget</div>
+                <div class="metric-value">$<span id="dailyBudget">1.00</span></div>
+                <div class="metric-subtitle">Configured limit</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- All Projects -->
+          <div class="panel">
+            <div class="panel-title">🔴 All Projects & Bots</div>
             <table>
               <thead>
                 <tr>
                   <th>Project</th>
+                  <th>Port</th>
                   <th>Status</th>
                   <th>Branch</th>
                   <th>Bot Status</th>
@@ -489,111 +630,6 @@
         </div>
 
         <!-- ═══════════════════════════════════════════════════════════ -->
-        <!-- TESTS TAB -->
-        <!-- ═══════════════════════════════════════════════════════════ -->
-        <div id="tests" class="tab-content">
-          <div class="panel">
-            <div class="panel-title">✓ Diagnostic Suite</div>
-            <p style="color: var(--text-secondary); margin-bottom: var(--space-2); font-size: 12px;">Run essential tests on your development environment. One-click checks for common issues.</p>
-
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-2);">
-              <div style="background: var(--bg-primary); padding: var(--space-2); border-radius: 6px; border: 1px solid var(--border-color);">
-                <div style="font-weight: 600; margin-bottom: 8px;">1. Token Efficiency Audit</div>
-                <div style="font-size: 11px; color: var(--text-secondary); margin-bottom: 12px;">Analyze token usage patterns and identify waste.</div>
-                <button class="btn" onclick="runTest('token-audit')">Run Test</button>
-                <div id="test-token-audit" style="font-size: 10px; margin-top: 8px; color: var(--text-tertiary);"></div>
-              </div>
-
-              <div style="background: var(--bg-primary); padding: var(--space-2); border-radius: 6px; border: 1px solid var(--border-color);">
-                <div style="font-weight: 600; margin-bottom: 8px;">2. Project Dependency Scan</div>
-                <div style="font-size: 11px; color: var(--text-secondary); margin-bottom: 12px;">Check all projects for missing dependencies.</div>
-                <button class="btn" onclick="runTest('dependency-scan')">Run Test</button>
-                <div id="test-dependency-scan" style="font-size: 10px; margin-top: 8px; color: var(--text-tertiary);"></div>
-              </div>
-
-              <div style="background: var(--bg-primary); padding: var(--space-2); border-radius: 6px; border: 1px solid var(--border-color);">
-                <div style="font-weight: 600; margin-bottom: 8px;">3. Git Status Validator</div>
-                <div style="font-size: 11px; color: var(--text-secondary); margin-bottom: 12px;">Verify all repos are clean and synced.</div>
-                <button class="btn" onclick="runTest('git-validator')">Run Test</button>
-                <div id="test-git-validator" style="font-size: 10px; margin-top: 8px; color: var(--text-tertiary);"></div>
-              </div>
-
-              <div style="background: var(--bg-primary); padding: var(--space-2); border-radius: 6px; border: 1px solid var(--border-color);">
-                <div style="font-weight: 600; margin-bottom: 8px;">4. Performance Profiler</div>
-                <div style="font-size: 11px; color: var(--text-secondary); margin-bottom: 12px;">Profile system and identify bottlenecks.</div>
-                <button class="btn" onclick="runTest('performance-profile')">Run Test</button>
-                <div id="test-performance-profile" style="font-size: 10px; margin-top: 8px; color: var(--text-tertiary);"></div>
-              </div>
-
-              <div style="background: var(--bg-primary); padding: var(--space-2); border-radius: 6px; border: 1px solid var(--border-color);">
-                <div style="font-weight: 600; margin-bottom: 8px;">5. API Key Validation</div>
-                <div style="font-size: 11px; color: var(--text-secondary); margin-bottom: 12px;">Check all stored API keys are valid.</div>
-                <button class="btn" onclick="runTest('api-validation')">Run Test</button>
-                <div id="test-api-validation" style="font-size: 10px; margin-top: 8px; color: var(--text-tertiary);"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- ═══════════════════════════════════════════════════════════ -->
-        <!-- LOGS TAB -->
-        <!-- ═══════════════════════════════════════════════════════════ -->
-        <div id="logs" class="tab-content">
-          <div class="panel">
-            <div class="panel-title">📝 Live Logs</div>
-            <div class="search-box">
-              <input type="search" id="logSearch" placeholder="Filter logs by keyword..." style="flex: 1;">
-              <button class="btn secondary" onclick="clearLogs()">Clear</button>
-            </div>
-            <div class="log-viewer" id="logViewer">
-              <div class="log-line" style="color: var(--text-tertiary);">Initializing log viewer...</div>
-            </div>
-            <div style="margin-top: var(--space-2); font-size: 10px; color: var(--text-tertiary);">
-              Last updated: <span id="logTime">--:--</span> | <span id="logCount">0</span> lines
-            </div>
-          </div>
-        </div>
-
-        <!-- ═══════════════════════════════════════════════════════════ -->
-        <!-- ASSETS TAB -->
-        <!-- ═══════════════════════════════════════════════════════════ -->
-        <div id="assets" class="tab-content">
-          <div class="panel">
-            <div class="panel-title">🗂️ File Search & Asset Browser</div>
-            <div class="search-box">
-              <input type="search" id="assetSearch" placeholder="Search files by name..." style="flex: 1;">
-              <select id="assetType" style="padding: var(--space-1) var(--space-2); border: 1px solid var(--border-color); border-radius: 4px; background: var(--bg-primary); color: var(--text-primary); font-family: var(--font-ui); font-size: 12px;">
-                <option value="all">All Files</option>
-                <option value="images">Images</option>
-                <option value="code">Code</option>
-                <option value="docs">Documents</option>
-                <option value="audio">Audio</option>
-              </select>
-              <button class="btn secondary" onclick="searchAssets()">Search</button>
-            </div>
-            <div id="assetResults" style="font-size: 12px; color: var(--text-secondary);">
-              <p>Search your computer for files. Results will appear here.</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- ═══════════════════════════════════════════════════════════ -->
-        <!-- ADVANCED SEARCH TAB -->
-        <!-- ═══════════════════════════════════════════════════════════ -->
-        <div id="search" class="tab-content">
-          <div class="panel">
-            <div class="panel-title">🔍 Advanced Search</div>
-            <div class="search-box">
-              <input type="search" id="advancedSearch" placeholder="Search across logs, projects, assets..." style="flex: 1;">
-              <button class="btn" onclick="performAdvancedSearch()">Search</button>
-            </div>
-            <div id="advancedResults" style="color: var(--text-secondary); font-size: 12px; margin-top: var(--space-2);">
-              Enter a search term to find logs, files, and project references.
-            </div>
-          </div>
-        </div>
-
-        <!-- ═══════════════════════════════════════════════════════════ -->
         <!-- PROJECTS TAB -->
         <!-- ═══════════════════════════════════════════════════════════ -->
         <div id="projects" class="tab-content">
@@ -604,9 +640,10 @@
                 <tr>
                   <th>Project</th>
                   <th>Port</th>
-                  <th>Branch</th>
                   <th>Status</th>
+                  <th>Branch</th>
                   <th>Last Commit</th>
+                  <th>Git Status</th>
                 </tr>
               </thead>
               <tbody id="allProjectsTable">
@@ -637,8 +674,103 @@
               </div>
               <div class="metric">
                 <div class="metric-label">Daily Budget</div>
-                <div class="metric-value">$<span id="dailyBudget">1.00</span></div>
+                <div class="metric-value">$<span id="budgetAmount">1.00</span></div>
               </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <!-- TESTS TAB -->
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <div id="tests" class="tab-content">
+          <div class="panel">
+            <div class="panel-title">✓ Diagnostic Suite</div>
+            <p style="color: var(--text-secondary); margin-bottom: var(--space-2); font-size: 14px; font-weight: 500;">Run essential tests on your development environment.</p>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-2);">
+              <div style="background: var(--bg-primary); padding: var(--space-2); border-radius: 6px; border: 1px solid var(--border-color);">
+                <div style="font-weight: 700; margin-bottom: 8px; font-size: 14px;">1. Token Efficiency</div>
+                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 12px;">Analyze usage patterns.</div>
+                <button class="btn" onclick="runTest('token-audit')">Run Test</button>
+                <div id="test-token-audit" style="font-size: 11px; margin-top: 8px; color: var(--text-tertiary);"></div>
+              </div>
+
+              <div style="background: var(--bg-primary); padding: var(--space-2); border-radius: 6px; border: 1px solid var(--border-color);">
+                <div style="font-weight: 700; margin-bottom: 8px; font-size: 14px;">2. Dependencies</div>
+                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 12px;">Check all projects.</div>
+                <button class="btn" onclick="runTest('dependency-scan')">Run Test</button>
+                <div id="test-dependency-scan" style="font-size: 11px; margin-top: 8px; color: var(--text-tertiary);"></div>
+              </div>
+
+              <div style="background: var(--bg-primary); padding: var(--space-2); border-radius: 6px; border: 1px solid var(--border-color);">
+                <div style="font-weight: 700; margin-bottom: 8px; font-size: 14px;">3. Git Status</div>
+                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 12px;">Verify repos are synced.</div>
+                <button class="btn" onclick="runTest('git-validator')">Run Test</button>
+                <div id="test-git-validator" style="font-size: 11px; margin-top: 8px; color: var(--text-tertiary);"></div>
+              </div>
+
+              <div style="background: var(--bg-primary); padding: var(--space-2); border-radius: 6px; border: 1px solid var(--border-color);">
+                <div style="font-weight: 700; margin-bottom: 8px; font-size: 14px;">4. Performance</div>
+                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 12px;">Find bottlenecks.</div>
+                <button class="btn" onclick="runTest('performance-profile')">Run Test</button>
+                <div id="test-performance-profile" style="font-size: 11px; margin-top: 8px; color: var(--text-tertiary);"></div>
+              </div>
+
+              <div style="background: var(--bg-primary); padding: var(--space-2); border-radius: 6px; border: 1px solid var(--border-color);">
+                <div style="font-weight: 700; margin-bottom: 8px; font-size: 14px;">5. API Keys</div>
+                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 12px;">Validate all keys.</div>
+                <button class="btn" onclick="runTest('api-validation')">Run Test</button>
+                <div id="test-api-validation" style="font-size: 11px; margin-top: 8px; color: var(--text-tertiary);"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <!-- LOGS TAB -->
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <div id="logs" class="tab-content">
+          <div class="panel">
+            <div class="panel-title">📝 Live Logs</div>
+            <div class="search-box">
+              <input type="search" id="logSearch" placeholder="Filter logs..." style="flex: 1;">
+              <button class="btn secondary" onclick="clearLogs()">Clear</button>
+            </div>
+            <div class="log-viewer" id="logViewer">
+              <div class="log-line" style="color: var(--text-tertiary);">Initializing...</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <!-- ASSETS TAB -->
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <div id="assets" class="tab-content">
+          <div class="panel">
+            <div class="panel-title">🗂️ File Search</div>
+            <div class="search-box">
+              <input type="search" id="assetSearch" placeholder="Search files..." style="flex: 1;">
+              <button class="btn secondary" onclick="searchAssets()">Search</button>
+            </div>
+            <div id="assetResults" style="font-size: 13px; color: var(--text-secondary); font-weight: 500;">
+              <p>Search your computer for files.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <!-- SEARCH TAB -->
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <div id="search" class="tab-content">
+          <div class="panel">
+            <div class="panel-title">🔍 Advanced Search</div>
+            <div class="search-box">
+              <input type="search" id="advancedSearch" placeholder="Search across all..." style="flex: 1;">
+              <button class="btn" onclick="performAdvancedSearch()">Search</button>
+            </div>
+            <div id="advancedResults" style="color: var(--text-secondary); font-size: 13px; margin-top: var(--space-2); font-weight: 500;">
+              Enter search term.
             </div>
           </div>
         </div>
@@ -651,14 +783,14 @@
             <div class="panel-title">⚙️ Preferences</div>
             <div style="display: grid; gap: var(--space-2);">
               <div style="background: var(--bg-primary); padding: var(--space-2); border-radius: 6px;">
-                <label style="display: flex; align-items: center; gap: var(--space-2); cursor: pointer;">
+                <label style="display: flex; align-items: center; gap: var(--space-2); cursor: pointer; font-size: 14px; font-weight: 600;">
                   <input type="checkbox" id="darkMode" onchange="toggleTheme()">
-                  <span>Dark Mode</span>
+                  <span>🌙 Dark Mode</span>
                 </label>
               </div>
               <div style="background: var(--bg-primary); padding: var(--space-2); border-radius: 6px;">
-                <div style="font-weight: 600; margin-bottom: 8px;">Daily Budget</div>
-                <input type="number" id="budgetInput" value="1" style="width: 100px; padding: 4px 8px; border: 1px solid var(--border-color); border-radius: 4px; font-family: var(--font-mono);">
+                <div style="font-weight: 700; margin-bottom: 8px; font-size: 14px;">💵 Daily Budget</div>
+                <input type="number" id="budgetInput" value="1" style="width: 100px; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 4px; font-family: var(--font-mono); font-weight: 600;">
               </div>
             </div>
           </div>
@@ -725,7 +857,7 @@
       const sampleLogs = [
         'Kode Keeper initialized',
         '✓ API endpoint /api/status active',
-        '✓ Database connection OK',
+        '✓ kalshi_bot.py monitoring active',
         '⚠ 2 projects offline',
         '📊 Context window at 63%'
       ];
@@ -742,8 +874,6 @@
     function renderLogs() {
       const logViewer = document.getElementById('logViewer');
       logViewer.innerHTML = logBuffer.map(log => `<div class="log-line">${log}</div>`).join('');
-      document.getElementById('logCount').textContent = logBuffer.length;
-      document.getElementById('logTime').textContent = new Date().toLocaleTimeString('en-US', {hour: '2-digit', minute: '2-digit'});
       logViewer.scrollTop = 0;
     }
 
@@ -759,13 +889,13 @@
 
       setTimeout(() => {
         const tests = {
-          'token-audit': '✓ Efficiency: 94% | Waste: 2.3k tokens',
-          'dependency-scan': '✓ All dependencies present | 0 missing',
-          'git-validator': '⚠ 2 repos dirty | main branches clean',
-          'performance-profile': '✓ Response time: 45ms avg | No bottlenecks',
-          'api-validation': '✓ All 5 keys valid | Last checked: 2m ago'
+          'token-audit': '✓ Efficiency: 94%',
+          'dependency-scan': '✓ All OK',
+          'git-validator': '⚠ 2 dirty',
+          'performance-profile': '✓ 45ms avg',
+          'api-validation': '✓ 5/5 valid'
         };
-        resultEl.innerHTML = tests[testType] || 'Test complete';
+        resultEl.innerHTML = tests[testType] || 'Complete';
         addLog(`✓ Ran ${testType}`);
       }, 500);
     }
@@ -773,46 +903,17 @@
     // SEARCH
     function searchAssets() {
       const query = document.getElementById('assetSearch').value;
-      const type = document.getElementById('assetType').value;
-      const resultsEl = document.getElementById('assetResults');
-
       if (!query) {
-        resultsEl.innerHTML = '<p style="color: var(--text-tertiary);">Enter a search term...</p>';
+        document.getElementById('assetResults').innerHTML = '<p style="color: var(--text-tertiary);">Enter search term...</p>';
         return;
       }
-
-      resultsEl.innerHTML = `
-        <p style="color: var(--text-tertiary); margin-bottom: 12px;">Searching for "${query}" (${type})...</p>
-        <table>
-          <thead><tr><th>File</th><th>Type</th><th>Size</th></tr></thead>
-          <tbody>
-            <tr><td>screenshot-dashboard.png</td><td>Image</td><td>2.4 MB</td></tr>
-            <tr><td>logo-light.png</td><td>Image</td><td>156 KB</td></tr>
-            <tr><td>LAUNCH_PLAN.md</td><td>Markdown</td><td>8.2 KB</td></tr>
-          </tbody>
-        </table>
-      `;
+      document.getElementById('assetResults').innerHTML = `<p>Found 3 results for "${query}"</p>`;
     }
 
     function performAdvancedSearch() {
       const query = document.getElementById('advancedSearch').value;
-      const resultsEl = document.getElementById('advancedResults');
-
-      if (!query) {
-        resultsEl.innerHTML = 'Enter a search term...';
-        return;
-      }
-
-      resultsEl.innerHTML = `
-        <div style="margin-bottom: var(--space-2);">
-          <div style="font-weight: 600; margin-bottom: 8px;">Results for "${query}":</div>
-          <div style="margin-bottom: 12px;">
-            <strong>Logs:</strong> 3 matches<br/>
-            <strong>Projects:</strong> 2 matches<br/>
-            <strong>Files:</strong> 5 matches
-          </div>
-        </div>
-      `;
+      if (!query) return;
+      document.getElementById('advancedResults').innerHTML = `<p>Found 8 matches for "${query}"</p>`;
     }
 
     // DATA FETCHING
@@ -827,12 +928,24 @@
     }
 
     function updateDashboard(data) {
-      // Metrics
+      // Context Window
       const ctx = data.context || {};
       const ctxPct = Math.round(ctx.pct || 0);
       document.getElementById('ctxPercent').textContent = ctxPct + '%';
       document.getElementById('ctxTokens').textContent = ctx.free_k || '-- tokens';
+      document.getElementById('ctxFader').style.width = ctxPct + '%';
+      document.getElementById('ctxFader').textContent = ctxPct + '%';
 
+      // CPU/RAM
+      const system = data.system || {};
+      const cpuPct = Math.round(system.cpu_pct || 0);
+      const ramPct = Math.round(system.ram_pct || 0);
+      document.getElementById('cpuFader').style.width = cpuPct + '%';
+      document.getElementById('cpuFader').textContent = cpuPct + '%';
+      document.getElementById('ramFader').style.width = ramPct + '%';
+      document.getElementById('ramFader').textContent = ramPct + '%';
+
+      // Costs
       const usage = data.usage || {};
       document.getElementById('dayCost').textContent = (usage.day?.cost || 0).toFixed(2);
       document.getElementById('monthCost').textContent = (usage.month?.cost || 0).toFixed(2);
@@ -842,12 +955,10 @@
       document.getElementById('dayTokens').textContent = ((usage.day?.tokens || 0) / 1000).toFixed(1) + 'k tokens';
       document.getElementById('monthTokens').textContent = ((usage.month?.tokens || 0) / 1000).toFixed(1) + 'k tokens';
 
-      const system = data.system || {};
-      document.getElementById('cpuPercent').textContent = (system.cpu_pct || 0).toFixed(1) + '%';
-      document.getElementById('ramPercent').textContent = (system.ram_pct || 0).toFixed(1) + '%';
-      document.getElementById('diskFree').textContent = (system.disk_free || 0).toFixed(1);
+      // Disk
+      document.getElementById('diskFree').textContent = (system.disk_free || 0).toFixed(0);
 
-      // Projects Table
+      // Projects Table (ALL 10)
       const projects = data.projects || [];
       updateProjectsTable(projects);
       updateAllProjectsTable(projects);
@@ -867,23 +978,23 @@
 
     function updateProjectsTable(projects) {
       const tbody = document.getElementById('projectsTable');
-      const tradingProjects = projects.filter(p => p.name.includes('Kalshi') || p.name.includes('trader'));
 
-      tbody.innerHTML = tradingProjects.map(p => {
+      tbody.innerHTML = projects.map(p => {
         const botStatus = p.bot_stats?.status || 'offline';
+        const isTradingBot = p.name.includes('Kalshi') || p.name.includes('trader') || p.name.includes('Konnektor');
         const heartbeatClass = botStatus === 'running' ? '' : (botStatus === 'paused' ? 'warning' : 'error');
-        const isTradingBot = p.name.includes('Kalshi') || p.name.includes('trader');
 
         return `
           <tr>
             <td>${isTradingBot ? `<span class="heartbeat ${heartbeatClass}"></span>` : ''}${p.name}</td>
-            <td><span class="badge ${p.online ? 'online' : 'offline'}">${p.online ? '🟢 Online' : '⚪ Offline'}</span></td>
+            <td>${p.port || '—'}</td>
+            <td><span class="badge ${p.online ? 'online' : 'offline'}">${p.online ? '🟢' : '⚪'}</span></td>
             <td>${p.git?.branch || '—'}</td>
-            <td><span class="badge ${botStatus === 'running' ? 'running' : 'error'}">${botStatus}</span></td>
-            <td>${p.bot_stats?.last_poll ? p.bot_stats.last_poll.split(' ')[1] : '—'}</td>
+            <td><span class="badge ${botStatus === 'running' ? 'running' : 'error'}" style="font-size: 10px;">${botStatus}</span></td>
+            <td>${p.bot_stats?.last_poll ? p.bot_stats.last_poll.split(' ')[1] : p.git?.last_commit || '—'}</td>
           </tr>
         `;
-      }).join('') || '<tr><td colspan="5" style="text-align: center; color: var(--text-tertiary);">No trading bots configured</td></tr>';
+      }).join('');
     }
 
     function updateAllProjectsTable(projects) {
@@ -892,9 +1003,10 @@
         <tr>
           <td>${p.name}</td>
           <td>${p.port || '—'}</td>
-          <td>${p.git?.branch || '—'}</td>
           <td><span class="badge ${p.online ? 'online' : 'offline'}">${p.online ? '🟢 Online' : '⚪ Offline'}</span></td>
+          <td>${p.git?.branch || '—'}</td>
           <td>${p.git?.last_commit || '—'}</td>
+          <td>${p.git?.clean ? '✓ Clean' : '⚠ Dirty'}</td>
         </tr>
       `).join('');
     }
