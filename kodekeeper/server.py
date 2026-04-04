@@ -274,6 +274,46 @@ Rules for <execute> blocks:
 Be direct and concise. The developer is in flow — don't pad responses."""
 
 
+@app.route("/api/search", methods=["POST"])
+def code_search():
+    """Grep across project source files for a query string."""
+    data  = request.get_json(force=True) or {}
+    query = data.get("query", "").strip()
+    slug  = data.get("slug", "").strip()
+    if len(query) < 2:
+        return jsonify({"error": "query too short"}), 400
+
+    from kodekeeper.tracker import PROJECTS
+    targets = [p for p in PROJECTS if not slug or p["slug"] == slug]
+
+    results = []
+    for p in targets:
+        path = os.path.expanduser(p["path"])
+        if not os.path.isdir(path):
+            continue
+        try:
+            out = subprocess.check_output(
+                ["grep", "-rn", "--include=*.py", "--include=*.html",
+                 "--include=*.js", "--include=*.css", "--include=*.md",
+                 "-m", "8", query, path],
+                text=True, stderr=subprocess.DEVNULL
+            )
+            for line in out.splitlines()[:20]:
+                parts = line.split(":", 2)
+                if len(parts) >= 3:
+                    file_rel = os.path.relpath(parts[0], path)
+                    results.append({
+                        "project": p["name"],
+                        "file": file_rel,
+                        "line": parts[1],
+                        "text": parts[2].strip()
+                    })
+        except Exception:
+            pass
+
+    return jsonify({"results": results[:60], "query": query})
+
+
 @app.route("/api/claude/suggestions", methods=["POST"])
 def claude_suggestions():
     """Return 3 context-aware action suggestions from Claude Haiku (fast)."""

@@ -180,11 +180,14 @@ def _load_usage():
 # ── Settings ──────────────────────────────────────────────────────────────────
 
 _DEFAULT_SETTINGS = {
-    "auto_open":       True,
-    "theme":           "light",
-    "daily_budget":    None,   # USD float or null
-    "monthly_budget":  None,   # USD float or null
-    "last_budget_alert": None, # ISO timestamp of last Mac notification
+    "auto_open":          True,
+    "theme":              "light",
+    "daily_budget":       None,   # USD float or null
+    "monthly_budget":     None,   # USD float or null
+    "last_budget_alert":  None,   # ISO timestamp of last Mac notification
+    "poll_interval":      6,      # seconds between dashboard refreshes
+    "alert_sound":        True,   # fire Mac notifications for budget/project issues
+    "coc_model":          "sonnet", # model for Call on Claude (sonnet/haiku/opus)
 }
 
 

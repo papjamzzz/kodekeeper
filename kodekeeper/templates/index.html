@@ -943,13 +943,18 @@
         <!-- ═══════════════════════════════════════════════════════════ -->
         <div id="logs" class="tab-content">
           <div class="panel">
-            <div class="panel-title">📝 Live Logs</div>
-            <div class="search-box">
-              <input type="search" id="logSearch" placeholder="Filter logs..." style="flex: 1;">
+            <div class="panel-title">📝 Project Logs</div>
+            <div style="display: flex; gap: var(--space-2); margin-bottom: var(--space-2); align-items: center; flex-wrap: wrap;">
+              <select id="logProjectSelect" onchange="loadProjectLogs(this.value)"
+                style="flex: 1; min-width: 160px; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 4px; font-family: var(--font-ui); font-size: 14px; background: var(--bg-secondary); color: var(--text-primary);">
+                <option value="">— select a project —</option>
+              </select>
+              <input type="search" id="logSearch" placeholder="Filter lines..." oninput="filterLogs()"
+                style="flex: 1; min-width: 120px; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 14px; background: var(--bg-secondary); color: var(--text-primary);">
               <button class="btn secondary" onclick="clearLogs()">Clear</button>
             </div>
             <div class="log-viewer" id="logViewer">
-              <div class="log-line" style="color: var(--text-tertiary);">Initializing...</div>
+              <div class="log-line" style="color: var(--text-tertiary);">Select a project above to load its logs.</div>
             </div>
           </div>
         </div>
@@ -959,13 +964,16 @@
         <!-- ═══════════════════════════════════════════════════════════ -->
         <div id="assets" class="tab-content">
           <div class="panel">
-            <div class="panel-title">🗂️ File Search</div>
-            <div class="search-box">
-              <input type="search" id="assetSearch" placeholder="Search files..." style="flex: 1;">
-              <button class="btn secondary" onclick="searchAssets()">Search</button>
+            <div class="panel-title">🗂️ Project Assets</div>
+            <div style="display: flex; gap: var(--space-2); margin-bottom: var(--space-2); align-items: center;">
+              <select id="assetProjectSelect" onchange="loadProjectAssets(this.value)"
+                style="flex: 1; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 4px; font-family: var(--font-ui); font-size: 14px; background: var(--bg-secondary); color: var(--text-primary);">
+                <option value="">— select a project —</option>
+              </select>
+              <button class="btn secondary" onclick="openAssetFolder()">Open in Finder</button>
             </div>
             <div id="assetResults" style="font-size: 13px; color: var(--text-secondary); font-weight: 500;">
-              <p>Search your computer for files.</p>
+              <p style="color: var(--text-tertiary);">Select a project to browse its static assets (logos, icons, images).</p>
             </div>
           </div>
         </div>
@@ -975,13 +983,19 @@
         <!-- ═══════════════════════════════════════════════════════════ -->
         <div id="search" class="tab-content">
           <div class="panel">
-            <div class="panel-title">🔍 Advanced Search</div>
-            <div class="search-box">
-              <input type="search" id="advancedSearch" placeholder="Search across all..." style="flex: 1;">
+            <div class="panel-title">🔍 Code Search</div>
+            <div style="display: flex; gap: var(--space-2); margin-bottom: var(--space-2); flex-wrap: wrap;">
+              <input type="search" id="advancedSearch" placeholder="Search across project files..."
+                onkeydown="if(event.key==='Enter') performAdvancedSearch()"
+                style="flex: 2; min-width: 200px; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 14px; background: var(--bg-secondary); color: var(--text-primary);">
+              <select id="searchProject"
+                style="flex: 1; min-width: 140px; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 14px; background: var(--bg-secondary); color: var(--text-primary);">
+                <option value="">All projects</option>
+              </select>
               <button class="btn" onclick="performAdvancedSearch()">Search</button>
             </div>
             <div id="advancedResults" style="color: var(--text-secondary); font-size: 13px; margin-top: var(--space-2); font-weight: 500;">
-              Enter search term.
+              Search Python, HTML, JS, CSS, and Markdown across your projects.
             </div>
           </div>
         </div>
@@ -990,21 +1004,90 @@
         <!-- SETTINGS TAB -->
         <!-- ═══════════════════════════════════════════════════════════ -->
         <div id="settings" class="tab-content">
+
           <div class="panel">
-            <div class="panel-title">⚙️ Preferences</div>
-            <div style="display: grid; gap: var(--space-2);">
-              <div style="background: var(--bg-primary); padding: var(--space-2); border-radius: 6px;">
-                <label style="display: flex; align-items: center; gap: var(--space-2); cursor: pointer; font-size: 14px; font-weight: 600;">
-                  <input type="checkbox" id="darkMode" onchange="toggleTheme()">
-                  <span>🌙 Dark Mode</span>
-                </label>
+            <div class="panel-title">⚙️ Appearance</div>
+            <div style="background: var(--bg-primary); padding: var(--space-2); border-radius: 6px; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between;">
+              <div>
+                <div style="font-weight: 700; font-size: 14px;">🌙 Dark Mode</div>
+                <div style="font-size: 12px; color: var(--text-secondary); margin-top: 2px;">Switch between light and dark interface</div>
               </div>
-              <div style="background: var(--bg-primary); padding: var(--space-2); border-radius: 6px;">
-                <div style="font-weight: 700; margin-bottom: 8px; font-size: 14px;">💵 Daily Budget</div>
-                <input type="number" id="budgetInput" value="1" style="width: 100px; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 4px; font-family: var(--font-mono); font-weight: 600;">
+              <input type="checkbox" id="darkMode" onchange="toggleTheme()" style="width: 18px; height: 18px; cursor: pointer;">
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-title">💰 Budget Alerts</div>
+            <div style="display: grid; gap: var(--space-2);">
+              <div style="background: var(--bg-primary); padding: var(--space-2); border-radius: 6px; border: 1px solid var(--border-color);">
+                <div style="font-weight: 700; margin-bottom: 4px; font-size: 14px;">💵 Daily Budget (USD)</div>
+                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 10px;">Mac alert fires when daily spend hits this limit. Leave blank to disable.</div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <span style="color: var(--text-secondary); font-size: 16px; font-weight: 600;">$</span>
+                  <input type="number" id="dailyBudgetInput" min="0" step="0.50" placeholder="e.g. 2.00"
+                    style="width: 130px; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 4px; font-family: var(--font-mono); font-size: 14px; background: var(--bg-secondary); color: var(--text-primary);">
+                </div>
+              </div>
+              <div style="background: var(--bg-primary); padding: var(--space-2); border-radius: 6px; border: 1px solid var(--border-color);">
+                <div style="font-weight: 700; margin-bottom: 4px; font-size: 14px;">📅 Monthly Budget (USD)</div>
+                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 10px;">Mac alert fires when monthly spend hits this limit. Leave blank to disable.</div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <span style="color: var(--text-secondary); font-size: 16px; font-weight: 600;">$</span>
+                  <input type="number" id="monthlyBudgetInput" min="0" step="1" placeholder="e.g. 50.00"
+                    style="width: 130px; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 4px; font-family: var(--font-mono); font-size: 14px; background: var(--bg-secondary); color: var(--text-primary);">
+                </div>
               </div>
             </div>
           </div>
+
+          <div class="panel">
+            <div class="panel-title">🔄 Behavior</div>
+            <div style="display: grid; gap: var(--space-2);">
+              <div style="background: var(--bg-primary); padding: var(--space-2); border-radius: 6px; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between;">
+                <div>
+                  <div style="font-weight: 700; font-size: 14px;">🚀 Auto-open on start</div>
+                  <div style="font-size: 12px; color: var(--text-secondary); margin-top: 2px;">Automatically open browser when Kode Keeper launches</div>
+                </div>
+                <input type="checkbox" id="autoOpenInput" style="width: 18px; height: 18px; cursor: pointer;">
+              </div>
+              <div style="background: var(--bg-primary); padding: var(--space-2); border-radius: 6px; border: 1px solid var(--border-color);">
+                <div style="font-weight: 700; margin-bottom: 4px; font-size: 14px;">⏱ Refresh Interval</div>
+                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 10px;">How often the dashboard polls for fresh data</div>
+                <select id="pollIntervalInput" style="padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 4px; font-family: var(--font-ui); font-size: 14px; background: var(--bg-secondary); color: var(--text-primary);">
+                  <option value="3">3s — fast</option>
+                  <option value="6">6s — default</option>
+                  <option value="15">15s — relaxed</option>
+                  <option value="30">30s — minimal</option>
+                </select>
+              </div>
+              <div style="background: var(--bg-primary); padding: var(--space-2); border-radius: 6px; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between;">
+                <div>
+                  <div style="font-weight: 700; font-size: 14px;">🔔 Mac Notifications</div>
+                  <div style="font-size: 12px; color: var(--text-secondary); margin-top: 2px;">System alerts for budget exceeded and project issues</div>
+                </div>
+                <input type="checkbox" id="alertSoundInput" style="width: 18px; height: 18px; cursor: pointer;">
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-title">🤖 Call on Claude</div>
+            <div style="background: var(--bg-primary); padding: var(--space-2); border-radius: 6px; border: 1px solid var(--border-color);">
+              <div style="font-weight: 700; margin-bottom: 4px; font-size: 14px;">Response Model</div>
+              <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 10px;">Model used for AI responses in the dashboard</div>
+              <select id="cocModelInput" style="padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 4px; font-family: var(--font-ui); font-size: 14px; background: var(--bg-secondary); color: var(--text-primary);">
+                <option value="sonnet">Claude Sonnet 4.6 — default</option>
+                <option value="haiku">Claude Haiku 4.5 — faster, cheaper</option>
+                <option value="opus">Claude Opus 4.6 — most capable</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: var(--space-2); align-items: center; padding-bottom: var(--space-3);">
+            <button class="btn" onclick="saveSettings()" id="saveSettingsBtn">Save Settings</button>
+            <span id="saveSettingsMsg" style="font-size: 13px; color: var(--color-success); opacity: 0; transition: opacity 0.4s;">✓ Saved</span>
+          </div>
+
         </div>
       </div>
     </div>
@@ -1022,6 +1105,7 @@
       setupClock();
       setupDarkMode();
       setupLogs();
+      loadSettings();
       fetchAndUpdate();
       setInterval(fetchAndUpdate, POLL_INTERVAL);
       setInterval(setupClock, 1000);
@@ -1064,17 +1148,9 @@
     }
 
     // LOGS
-    function setupLogs() {
-      const sampleLogs = [
-        'Kode Keeper initialized',
-        '✓ API endpoint /api/status active',
-        '✓ kalshi_bot.py monitoring active',
-        '⚠ 2 projects offline',
-        '📊 Context window at 63%'
-      ];
-      logBuffer = sampleLogs;
-      renderLogs();
-    }
+    let _allLogLines = [];
+
+    function setupLogs() { /* populated on project select */ }
 
     function addLog(msg) {
       logBuffer.unshift(`[${new Date().toLocaleTimeString()}] ${msg}`);
@@ -1082,49 +1158,190 @@
       renderLogs();
     }
 
-    function renderLogs() {
+    function renderLogs(lines) {
       const logViewer = document.getElementById('logViewer');
-      logViewer.innerHTML = logBuffer.map(log => `<div class="log-line">${log}</div>`).join('');
+      const src = lines || logBuffer;
+      if (!src.length) {
+        logViewer.innerHTML = '<div class="log-line" style="color: var(--text-tertiary);">No log lines found.</div>';
+        return;
+      }
+      logViewer.innerHTML = src.map(log => `<div class="log-line">${log}</div>`).join('');
       logViewer.scrollTop = 0;
     }
 
     function clearLogs() {
       logBuffer = [];
+      _allLogLines = [];
       renderLogs();
+    }
+
+    async function loadProjectLogs(slug) {
+      if (!slug) return;
+      const logViewer = document.getElementById('logViewer');
+      logViewer.innerHTML = '<div class="log-line" style="color: var(--text-tertiary);">Loading...</div>';
+      try {
+        const res  = await fetch(`/api/project/${slug}/logs`);
+        const data = await res.json();
+        if (data.error) {
+          logViewer.innerHTML = `<div class="log-line" style="color:var(--color-error);">Error: ${data.error}</div>`;
+          return;
+        }
+        if (data.note && !data.lines.length) {
+          logViewer.innerHTML = `<div class="log-line" style="color:var(--text-tertiary);">${data.note}</div>`;
+          return;
+        }
+        _allLogLines = data.lines.slice().reverse(); // newest first
+        logBuffer    = _allLogLines.slice(0, MAX_LOGS);
+        filterLogs();
+      } catch (e) {
+        logViewer.innerHTML = `<div class="log-line" style="color:var(--color-error);">Fetch failed: ${e}</div>`;
+      }
+    }
+
+    function filterLogs() {
+      const q = (document.getElementById('logSearch').value || '').toLowerCase();
+      const filtered = q ? _allLogLines.filter(l => l.toLowerCase().includes(q)) : _allLogLines;
+      renderLogs(filtered.slice(0, MAX_LOGS));
     }
 
     // TESTS
     function runTest(testType) {
       const resultEl = document.getElementById(`test-${testType}`);
       resultEl.innerHTML = '⏳ Running...';
-
       setTimeout(() => {
         const tests = {
-          'token-audit': '✓ Efficiency: 94%',
-          'dependency-scan': '✓ All OK',
-          'git-validator': '⚠ 2 dirty',
-          'performance-profile': '✓ 45ms avg',
-          'api-validation': '✓ 5/5 valid'
+          'token-audit':        '✓ Efficiency: 94%',
+          'dependency-scan':    '✓ All OK',
+          'git-validator':      '⚠ 2 dirty',
+          'performance-profile':'✓ 45ms avg',
+          'api-validation':     '✓ 5/5 valid'
         };
         resultEl.innerHTML = tests[testType] || 'Complete';
         addLog(`✓ Ran ${testType}`);
       }, 500);
     }
 
-    // SEARCH
-    function searchAssets() {
-      const query = document.getElementById('assetSearch').value;
-      if (!query) {
-        document.getElementById('assetResults').innerHTML = '<p style="color: var(--text-tertiary);">Enter search term...</p>';
+    // ASSETS
+    let _currentAssetSlug = '';
+
+    async function loadProjectAssets(slug) {
+      _currentAssetSlug = slug;
+      const resultsEl = document.getElementById('assetResults');
+      if (!slug) {
+        resultsEl.innerHTML = '<p style="color: var(--text-tertiary);">Select a project to browse its static assets.</p>';
         return;
       }
-      document.getElementById('assetResults').innerHTML = `<p>Found 3 results for "${query}"</p>`;
+      resultsEl.innerHTML = '<p style="color: var(--text-tertiary);">Loading...</p>';
+      try {
+        const res  = await fetch(`/api/project/${slug}/assets`);
+        const data = await res.json();
+        if (data.note && !data.files.length) {
+          resultsEl.innerHTML = `<p style="color:var(--text-tertiary);">${data.note}</p>`;
+          return;
+        }
+        if (!data.files.length) {
+          resultsEl.innerHTML = '<p style="color:var(--text-tertiary);">No image assets found in this project.</p>';
+          return;
+        }
+        resultsEl.innerHTML = `
+          <div style="font-size: 12px; color: var(--text-tertiary); margin-bottom: 10px;">${data.path}</div>
+          <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px;">
+            ${data.files.map(f => `
+              <div style="background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 6px; padding: 10px; text-align: center; cursor: pointer;"
+                   onclick="revealAsset('${slug}', '${f.path.replace(/'/g, "\\'")}')">
+                <img src="/api/project/${slug}/asset-img?path=${encodeURIComponent(f.path)}"
+                     onerror="this.style.display='none'"
+                     style="max-width: 80px; max-height: 60px; object-fit: contain; margin-bottom: 6px; display: block; margin: 0 auto 6px;">
+                <div style="font-size: 11px; font-family: var(--font-mono); word-break: break-all; color: var(--text-secondary);">${f.name}</div>
+              </div>
+            `).join('')}
+          </div>`;
+      } catch (e) {
+        resultsEl.innerHTML = `<p style="color:var(--color-error);">Error: ${e}</p>`;
+      }
     }
 
-    function performAdvancedSearch() {
-      const query = document.getElementById('advancedSearch').value;
+    async function openAssetFolder() {
+      if (!_currentAssetSlug) return;
+      await fetch(`/api/project/${_currentAssetSlug}/assets/open-folder`, {method: 'POST'});
+    }
+
+    async function revealAsset(slug, path) {
+      await fetch(`/api/project/${slug}/assets/reveal`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({path})
+      });
+    }
+
+    // CODE SEARCH
+    async function performAdvancedSearch() {
+      const query   = (document.getElementById('advancedSearch').value || '').trim();
+      const slug    = document.getElementById('searchProject').value;
+      const results = document.getElementById('advancedResults');
       if (!query) return;
-      document.getElementById('advancedResults').innerHTML = `<p>Found 8 matches for "${query}"</p>`;
+      results.innerHTML = '<p style="color:var(--text-tertiary);">Searching...</p>';
+      try {
+        const res  = await fetch('/api/search', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({query, slug})
+        });
+        const data = await res.json();
+        if (data.error) { results.innerHTML = `<p style="color:var(--color-error);">${data.error}</p>`; return; }
+        if (!data.results.length) { results.innerHTML = `<p style="color:var(--text-tertiary);">No matches for "${query}".</p>`; return; }
+        results.innerHTML = `
+          <div style="font-size: 12px; color: var(--text-tertiary); margin-bottom: 10px;">${data.results.length} match(es) for <strong style="color:var(--text-primary);">"${query}"</strong></div>
+          <div style="display: grid; gap: 6px;">
+            ${data.results.map(r => `
+              <div style="background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 6px; padding: 10px;">
+                <div style="display: flex; gap: 8px; align-items: baseline; margin-bottom: 4px;">
+                  <span style="font-size: 11px; color: var(--color-warning); font-weight: 700;">${r.project}</span>
+                  <span style="font-size: 11px; font-family: var(--font-mono); color: var(--text-secondary);">${r.file}:${r.line}</span>
+                </div>
+                <div style="font-family: var(--font-mono); font-size: 12px; color: var(--text-primary); white-space: pre-wrap; overflow-x: auto;">${r.text.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
+              </div>
+            `).join('')}
+          </div>`;
+      } catch (e) {
+        results.innerHTML = `<p style="color:var(--color-error);">Error: ${e}</p>`;
+      }
+    }
+
+    // SETTINGS
+    async function loadSettings() {
+      try {
+        const res  = await fetch('/api/settings');
+        const s    = await res.json();
+        const el   = id => document.getElementById(id);
+        if (el('autoOpenInput'))     el('autoOpenInput').checked     = !!s.auto_open;
+        if (el('alertSoundInput'))   el('alertSoundInput').checked   = s.alert_sound !== false;
+        if (el('dailyBudgetInput'))  el('dailyBudgetInput').value    = s.daily_budget   != null ? s.daily_budget   : '';
+        if (el('monthlyBudgetInput'))el('monthlyBudgetInput').value  = s.monthly_budget != null ? s.monthly_budget : '';
+        if (el('pollIntervalInput')) el('pollIntervalInput').value   = s.poll_interval  || 6;
+        if (el('cocModelInput'))     el('cocModelInput').value       = s.coc_model      || 'sonnet';
+      } catch(e) { console.warn('loadSettings:', e); }
+    }
+
+    async function saveSettings() {
+      const val = id => document.getElementById(id);
+      const payload = {
+        auto_open:      val('autoOpenInput')?.checked ?? true,
+        alert_sound:    val('alertSoundInput')?.checked ?? true,
+        daily_budget:   val('dailyBudgetInput')?.value   ? parseFloat(val('dailyBudgetInput').value)   : null,
+        monthly_budget: val('monthlyBudgetInput')?.value ? parseFloat(val('monthlyBudgetInput').value) : null,
+        poll_interval:  parseInt(val('pollIntervalInput')?.value || '6'),
+        coc_model:      val('cocModelInput')?.value || 'sonnet',
+        theme:          document.documentElement.dataset.theme || 'light',
+      };
+      await fetch('/api/settings', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(payload)
+      });
+      const msg = document.getElementById('saveSettingsMsg');
+      msg.style.opacity = '1';
+      setTimeout(() => msg.style.opacity = '0', 2000);
     }
 
     // DATA FETCHING
@@ -1220,6 +1437,19 @@
           <td>${p.git?.clean ? '✓ Clean' : '⚠ Dirty'}</td>
         </tr>
       `).join('');
+
+      // Populate project dropdowns (logs, assets, search) — only on first load
+      const selectors = ['logProjectSelect', 'assetProjectSelect', 'searchProject'];
+      selectors.forEach(id => {
+        const sel = document.getElementById(id);
+        if (!sel || sel.options.length > 1) return; // already populated
+        projects.forEach(p => {
+          const opt = document.createElement('option');
+          opt.value = p.slug;
+          opt.textContent = p.name;
+          sel.appendChild(opt);
+        });
+      });
     }
   </script>
 
