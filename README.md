@@ -107,3 +107,5 @@ Kode Keeper is built for Claude Code power users running AI at scale.
 Built by [Creative Konsoles](https://creativekonsoles.com) — *tools built using thought.*
 
 **[@papjamzzz](https://github.com/papjamzzz)** &nbsp;·&nbsp; support@creativekonsoles.com
+
+<!-- repo maintenance: 2026-04-04 -->
