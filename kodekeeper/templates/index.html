@@ -1723,24 +1723,30 @@
             if (raw === '[DONE]') continue;
             try {
               const obj = JSON.parse(raw);
-              if (obj.token) {
-                fullText += obj.token;
+              if (obj.text) {
+                fullText += obj.text;
                 responseEl.innerHTML = formatResponse(fullText) + '<span class="coc-cursor"></span>';
               }
-              if (obj.execute && !execBlock) {
-                execBlock = obj.execute;
+              if (obj.error) {
+                responseEl.innerHTML = `<span style="color:var(--color-error)">${obj.error}</span>`;
               }
             } catch {}
           }
         }
       }
 
-      // Final render without cursor
+      // Parse <execute> blocks from full response text
+      const execMatch = fullText.match(/<execute>([\s\S]*?)<\/execute>/);
+      if (execMatch) {
+        try { execBlock = JSON.parse(execMatch[1].trim()); } catch {}
+      }
+
+      // Final render without cursor (strips execute block from display)
       responseEl.innerHTML = formatResponse(fullText);
 
       // Show execute box if a command was embedded
-      if (execBlock) {
-        showExecuteBox(execBlock.command, execBlock.description);
+      if (execBlock && execBlock.command) {
+        showExecuteBox(execBlock.command, execBlock.description || '');
       }
     } catch (err) {
       responseEl.innerHTML = `<span style="color:var(--color-error)">Error: ${err.message}</span>`;
