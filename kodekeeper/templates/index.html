@@ -447,6 +447,120 @@
     .badge.error { background: rgba(255,92,56,0.15); color: var(--color-error); }
     .badge.running { background: rgba(0,166,81,0.15); color: var(--color-success); }
 
+    /* ── PROJECT CARDS ── */
+    .project-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 12px;
+    }
+
+    .project-card {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 16px;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      position: relative;
+    }
+
+    .project-card:hover {
+      border-color: var(--color-warning);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.07);
+    }
+
+    .project-card.online-card {
+      border-left: 3px solid var(--color-success);
+    }
+
+    .project-card.offline-card {
+      border-left: 3px solid var(--border-color);
+    }
+
+    .pc-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .pc-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: -0.1px;
+    }
+
+    .pc-status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--border-color);
+      flex-shrink: 0;
+    }
+
+    .pc-status-dot.live {
+      background: var(--color-success);
+      box-shadow: 0 0 0 3px rgba(0,166,81,0.15);
+    }
+
+    .pc-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .pc-tag {
+      font-size: 11px;
+      font-family: var(--font-mono);
+      font-weight: 600;
+      color: var(--text-tertiary);
+      background: var(--bg-secondary);
+      padding: 2px 7px;
+      border-radius: 3px;
+      border: 1px solid var(--border-color);
+    }
+
+    .pc-tag.port {
+      color: var(--color-info);
+      border-color: rgba(0,102,204,0.2);
+      background: rgba(0,102,204,0.05);
+    }
+
+    .pc-commit {
+      font-size: 11px;
+      color: var(--text-tertiary);
+      font-family: var(--font-mono);
+      margin-bottom: 10px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .pc-actions {
+      display: flex;
+      gap: 6px;
+    }
+
+    .pc-btn {
+      font-size: 11px;
+      font-weight: 600;
+      font-family: var(--font-ui);
+      padding: 4px 10px;
+      border-radius: 4px;
+      border: 1px solid var(--border-color);
+      background: var(--bg-secondary);
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .pc-btn:hover {
+      border-color: var(--color-warning);
+      color: var(--color-warning);
+      background: var(--bg-primary);
+    }
+
     /* ── BUTTONS ── */
     .btn {
       padding: calc(var(--space-1) * 1.25) calc(var(--space-2) * 1.25);
@@ -847,22 +961,13 @@
 
           <!-- All Projects -->
           <div class="panel">
-            <div class="panel-title">🔴 All Projects & Bots</div>
-            <table>
-              <thead>
-                <tr>
-                  <th>Project</th>
-                  <th>Port</th>
-                  <th>Status</th>
-                  <th>Branch</th>
-                  <th>Bot Status</th>
-                  <th>Last Update</th>
-                </tr>
-              </thead>
-              <tbody id="projectsTable">
-                <!-- Populated by JS -->
-              </tbody>
-            </table>
+            <div class="panel-title" style="display:flex;align-items:center;justify-content:space-between;">
+              <span>Projects</span>
+              <span id="projectCount" style="font-size:11px;font-weight:600;color:var(--text-tertiary);font-family:var(--font-mono);"></span>
+            </div>
+            <div class="project-grid" id="projectsTable">
+              <!-- Populated by JS -->
+            </div>
           </div>
         </div>
 
@@ -871,7 +976,10 @@
         <!-- ═══════════════════════════════════════════════════════════ -->
         <div id="projects" class="tab-content">
           <div class="panel">
-            <div class="panel-title">🔌 All Projects</div>
+            <div class="panel-title" style="display:flex;align-items:center;justify-content:space-between;">
+              <span>All Projects</span>
+              <span style="font-size:11px;font-weight:600;color:var(--text-tertiary);font-family:var(--font-mono);">live · every 6s</span>
+            </div>
             <table>
               <thead>
                 <tr>
@@ -880,7 +988,7 @@
                   <th>Status</th>
                   <th>Branch</th>
                   <th>Last Commit</th>
-                  <th>Git Status</th>
+                  <th>Git</th>
                 </tr>
               </thead>
               <tbody id="allProjectsTable">
@@ -1405,38 +1513,64 @@
     }
 
     function updateProjectsTable(projects) {
-      const tbody = document.getElementById('projectsTable');
+      const grid = document.getElementById('projectsTable');
+      const onlineCount = projects.filter(p => p.online).length;
+      document.getElementById('projectCount').textContent =
+        `${onlineCount} online · ${projects.length - onlineCount} offline`;
 
-      tbody.innerHTML = projects.map(p => {
-        const botStatus = p.bot_stats?.status || 'offline';
-        const isTradingBot = p.name.includes('Kalshi') || p.name.includes('trader') || p.name.includes('Konnektor');
-        const heartbeatClass = botStatus === 'running' ? '' : (botStatus === 'paused' ? 'warning' : 'error');
+      grid.innerHTML = projects.map(p => {
+        const isOnline = p.online;
+        const branch = p.git?.branch || '—';
+        const lastCommit = p.git?.last_commit || '—';
+        const isDirty = p.git && !p.git.clean;
+        const port = p.port ? `:${p.port}` : null;
+        const botStatus = p.bot_stats?.status;
 
         return `
-          <tr>
-            <td>${isTradingBot ? `<span class="heartbeat ${heartbeatClass}"></span>` : ''}${p.name}</td>
-            <td>${p.port || '—'}</td>
-            <td><span class="badge ${p.online ? 'online' : 'offline'}">${p.online ? '🟢' : '⚪'}</span></td>
-            <td>${p.git?.branch || '—'}</td>
-            <td><span class="badge ${botStatus === 'running' ? 'running' : 'error'}" style="font-size: 10px;">${botStatus}</span></td>
-            <td>${p.bot_stats?.last_poll ? p.bot_stats.last_poll.split(' ')[1] : p.git?.last_commit || '—'}</td>
-          </tr>
+          <div class="project-card ${isOnline ? 'online-card' : 'offline-card'}">
+            <div class="pc-header">
+              <div class="pc-name">${p.name}</div>
+              <div class="pc-status-dot ${isOnline ? 'live' : ''}"></div>
+            </div>
+            <div class="pc-meta">
+              ${port ? `<span class="pc-tag port">${port}</span>` : ''}
+              <span class="pc-tag">${branch}</span>
+              ${isDirty ? `<span class="pc-tag" style="color:var(--color-warning);border-color:rgba(255,140,58,0.3);">dirty</span>` : ''}
+              ${botStatus && botStatus !== 'offline' ? `<span class="pc-tag" style="color:var(--color-success);border-color:rgba(0,166,81,0.25);">${botStatus}</span>` : ''}
+            </div>
+            <div class="pc-commit">${lastCommit}</div>
+            <div class="pc-actions">
+              <button class="pc-btn" onclick="openFolder('${p.slug}')">Open</button>
+              <button class="pc-btn" onclick="openTerminal('${p.slug}')">Terminal</button>
+            </div>
+          </div>
         `;
       }).join('');
     }
 
+    function openFolder(slug) {
+      fetch(`/api/project/${slug}/open-folder`, {method:'POST'}).catch(()=>{});
+    }
+    function openTerminal(slug) {
+      fetch(`/api/project/${slug}/open-terminal`, {method:'POST'}).catch(()=>{});
+    }
+
     function updateAllProjectsTable(projects) {
       const tbody = document.getElementById('allProjectsTable');
-      tbody.innerHTML = projects.map(p => `
+      tbody.innerHTML = projects.map(p => {
+        const online = p.online;
+        const dirty = p.git && !p.git.clean;
+        return `
         <tr>
-          <td>${p.name}</td>
-          <td>${p.port || '—'}</td>
-          <td><span class="badge ${p.online ? 'online' : 'offline'}">${p.online ? '🟢 Online' : '⚪ Offline'}</span></td>
-          <td>${p.git?.branch || '—'}</td>
-          <td>${p.git?.last_commit || '—'}</td>
-          <td>${p.git?.clean ? '✓ Clean' : '⚠ Dirty'}</td>
+          <td style="font-weight:600">${p.name}</td>
+          <td style="font-family:var(--font-mono);color:var(--text-tertiary)">${p.port ? `:${p.port}` : '—'}</td>
+          <td><span class="badge ${online ? 'online' : 'offline'}">${online ? 'online' : 'offline'}</span></td>
+          <td style="font-family:var(--font-mono);font-size:12px">${p.git?.branch || '—'}</td>
+          <td style="font-family:var(--font-mono);font-size:12px;color:var(--text-tertiary)">${p.git?.last_commit || '—'}</td>
+          <td style="font-size:12px;color:${dirty ? 'var(--color-warning)' : 'var(--color-success)'}">${dirty ? 'dirty' : 'clean'}</td>
         </tr>
-      `).join('');
+        `;
+      }).join('');
 
       // Populate project dropdowns (logs, assets, search) — only on first load
       const selectors = ['logProjectSelect', 'assetProjectSelect', 'searchProject'];

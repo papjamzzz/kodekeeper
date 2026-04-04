@@ -41,6 +41,7 @@ PROJECTS = [
     {"name": "Pipeline",    "slug": "pipeline",    "port": 5561, "path": "~/pipeline",            "repo": None,                       "needs_env": False, "assets": "~/pipeline/static"},
     {"name": "5i",          "slug": "5i",          "port": 5562, "path": "~/5i",                  "repo": "papjamzzz/5i",             "needs_env": True,  "bw_item": "5i — API Keys",          "assets": "~/5i/static"},
     {"name": "KK Konnektor","slug": "kk-konnektor","port": None, "path": "~/Documents/New project/Kalshi-Konnektor2", "repo": None, "needs_env": True, "process": "kalshi_bot.py", "log": "~/Documents/New project/Kalshi-Konnektor2/bot.log"},
+    {"name": "EmpathyBot", "slug": "empathybot",  "port": 5564, "path": "~/empathybot",              "repo": "papjamzzz/empathybot",  "needs_env": True,  "assets": "~/empathybot/static"},
 ]
 
 
