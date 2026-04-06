@@ -1463,36 +1463,39 @@
       }
     }
 
+    // Null-safe text setter — missing non-critical elements must not crash the dashboard
+    function $set(id, val) { const e = document.getElementById(id); if (e) e.textContent = val; }
+
     function updateDashboard(data) {
       // Context Window
       const ctx = data.context || {};
       const ctxPct = Math.round(ctx.pct || 0);
-      document.getElementById('ctxPercent').textContent = ctxPct + '%';
-      document.getElementById('ctxTokens').textContent = ctx.free_k || '-- tokens';
-      document.getElementById('ctxFader').style.width = ctxPct + '%';
-      document.getElementById('ctxFader').textContent = ctxPct + '%';
+      $set('ctxPercent', ctxPct + '%');
+      $set('ctxTokens', ctx.free_k || '-- tokens');
+      const ctxFader = document.getElementById('ctxFader');
+      if (ctxFader) { ctxFader.style.width = ctxPct + '%'; ctxFader.textContent = ctxPct + '%'; }
 
       // CPU/RAM
       const system = data.system || {};
       const cpuPct = Math.round(system.cpu_pct || 0);
       const ramPct = Math.round(system.ram_pct || 0);
-      document.getElementById('cpuFader').style.width = cpuPct + '%';
-      document.getElementById('cpuFader').textContent = cpuPct + '%';
-      document.getElementById('ramFader').style.width = ramPct + '%';
-      document.getElementById('ramFader').textContent = ramPct + '%';
+      const cpuFader = document.getElementById('cpuFader');
+      if (cpuFader) { cpuFader.style.width = cpuPct + '%'; cpuFader.textContent = cpuPct + '%'; }
+      const ramFader = document.getElementById('ramFader');
+      if (ramFader) { ramFader.style.width = ramPct + '%'; ramFader.textContent = ramPct + '%'; }
 
       // Costs
       const usage = data.usage || {};
-      document.getElementById('dayCost').textContent = (usage.day?.cost || 0).toFixed(2);
-      document.getElementById('monthCost').textContent = (usage.month?.cost || 0).toFixed(2);
-      document.getElementById('costToday').textContent = (usage.day?.cost || 0).toFixed(2);
-      document.getElementById('costWeek').textContent = (usage.week?.cost || 0).toFixed(2);
-      document.getElementById('costMonth').textContent = (usage.month?.cost || 0).toFixed(2);
-      document.getElementById('dayTokens').textContent = ((usage.day?.tokens || 0) / 1000).toFixed(1) + 'k tokens';
-      document.getElementById('monthTokens').textContent = ((usage.month?.tokens || 0) / 1000).toFixed(1) + 'k tokens';
+      $set('dayCost',    (usage.day?.cost   || 0).toFixed(2));
+      $set('monthCost',  (usage.month?.cost || 0).toFixed(2));
+      $set('costToday',  (usage.day?.cost   || 0).toFixed(2));
+      $set('costWeek',   (usage.week?.cost  || 0).toFixed(2));
+      $set('costMonth',  (usage.month?.cost || 0).toFixed(2));
+      $set('dayTokens',  ((usage.day?.tokens   || 0) / 1000).toFixed(1) + 'k tokens');
+      $set('monthTokens',((usage.month?.tokens || 0) / 1000).toFixed(1) + 'k tokens');
 
       // Disk
-      document.getElementById('diskFree').textContent = (system.disk_free || 0).toFixed(0);
+      $set('diskFree', (system.disk_free || 0).toFixed(0));
 
       // Projects Table (ALL 10)
       const projects = data.projects || [];
