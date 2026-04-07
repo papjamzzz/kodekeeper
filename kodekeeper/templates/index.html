@@ -501,12 +501,13 @@
     }
 
     .pr-name {
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 700;
       color: var(--text-primary);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      letter-spacing: -0.1px;
     }
 
     .pr-pill {
@@ -523,7 +524,7 @@
     .pr-port   { color: var(--color-info);    border-color: rgba(0,102,204,0.25); background: rgba(0,102,204,0.06); }
     .pr-branch { color: var(--text-tertiary); border-color: var(--border-color);  background: var(--bg-secondary); }
     .pr-clean  { color: var(--color-success); border-color: rgba(0,166,81,0.25);  background: rgba(0,166,81,0.06); }
-    .pr-dirty  { color: var(--color-warning); border-color: rgba(255,140,58,0.3); background: rgba(255,140,58,0.06); }
+    .pr-dirty  { color: var(--color-warning); border-color: rgba(255,140,58,0.55); background: rgba(255,140,58,0.12); font-weight: 700; }
     .pr-nogit  { color: var(--text-tertiary); border-color: var(--border-color);  background: transparent; }
 
     .pr-url {
@@ -742,17 +743,26 @@
     }
 
     /* ── ROW STATE VARIANTS ── */
+    .project-row.pr-online-row {
+      border-color: rgba(0,166,81,0.18);
+    }
+    [data-theme="dark"] .project-row.pr-online-row {
+      background: rgba(46,204,138,0.03);
+      border-color: rgba(46,204,138,0.18);
+    }
     .project-row.pr-dirty-row {
       background: rgba(255,140,58,0.05);
+      border-color: rgba(255,140,58,0.22);
     }
     .project-row.pr-dirty-row::before {
       background: var(--color-warning) !important;
     }
     [data-theme="dark"] .project-row.pr-dirty-row {
       background: rgba(255,159,67,0.07);
+      border-color: rgba(255,159,67,0.28);
     }
     .project-row.pr-offline-row {
-      opacity: 0.72;
+      opacity: 0.58;
     }
     .project-row.pr-offline-row .pr-name {
       color: var(--text-secondary);
@@ -1037,7 +1047,7 @@
           </a>
           <div class="status-item">
             <span class="status-dot" id="globalStatus"></span>
-            <span id="globalStatusText">Healthy</span>
+            <span id="globalStatusText">Connecting…</span>
           </div>
         </div>
         <div class="status-item">
@@ -1073,12 +1083,12 @@
             <div class="ss-divider"></div>
             <div class="ss-stat">
               <span class="ss-val ss-green" id="ssOnline">—</span>
-              <span class="ss-label">Online</span>
+              <span class="ss-label">Live</span>
             </div>
             <div class="ss-divider"></div>
             <div class="ss-stat">
               <span class="ss-val ss-warn" id="ssDirty">—</span>
-              <span class="ss-label">Dirty repos</span>
+              <span class="ss-label">Needs cleanup</span>
             </div>
             <div class="ss-divider"></div>
             <div class="ss-stat">
@@ -1155,7 +1165,10 @@
 
           <!-- Usage & Cost -->
           <div class="panel">
-            <div class="panel-title">Usage & Cost</div>
+            <div class="panel-title" style="display:flex;align-items:center;justify-content:space-between;">
+              <span>Usage &amp; Cost</span>
+              <span id="usageInterp" class="sys-status muted" style="margin-top:0;font-size:11px;">—</span>
+            </div>
             <div class="metric-grid">
               <div class="metric">
                 <div class="metric-label">Today</div>
@@ -1189,7 +1202,7 @@
           <div class="panel">
             <div class="panel-title" style="display:flex;align-items:center;justify-content:space-between;">
               <span>All Projects</span>
-              <span style="font-size:11px;font-weight:600;color:var(--text-tertiary);font-family:var(--font-mono);">live · every 6s</span>
+              <span style="font-size:11px;font-weight:600;color:var(--text-tertiary);font-family:var(--font-mono);">live · polls every 6s</span>
             </div>
             <table>
               <thead>
@@ -1216,42 +1229,42 @@
         <div id="tests" class="tab-content">
           <div class="panel">
             <div class="panel-title">Diagnostics</div>
-            <p style="color: var(--text-secondary); margin-bottom: var(--space-2); font-size: 14px; font-weight: 500;">Spot-check your environment — tokens, dependencies, git, and API keys.</p>
+            <p style="color: var(--text-secondary); margin-bottom: var(--space-2); font-size: 14px; font-weight: 500;">Run spot-checks across your environment. No results until you run a check.</p>
 
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-2);">
               <div style="background: var(--bg-primary); padding: var(--space-2); border-radius: 6px; border: 1px solid var(--border-color);">
-                <div style="font-weight: 700; margin-bottom: 8px; font-size: 14px;">1. Token Efficiency</div>
-                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 12px;">Analyze usage patterns.</div>
-                <button class="btn" onclick="runTest('token-audit')">Run Test</button>
-                <div id="test-token-audit" style="font-size: 11px; margin-top: 8px; color: var(--text-tertiary);"></div>
+                <div style="font-weight: 700; margin-bottom: 8px; font-size: 14px;">Token Efficiency</div>
+                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 12px;">Analyze today's token usage patterns and suggest improvements.</div>
+                <button class="btn" onclick="runTest('token-audit')">Run Check</button>
+                <div id="test-token-audit" style="font-size: 11px; margin-top: 8px; color: var(--text-tertiary);">Not run yet</div>
               </div>
 
               <div style="background: var(--bg-primary); padding: var(--space-2); border-radius: 6px; border: 1px solid var(--border-color);">
-                <div style="font-weight: 700; margin-bottom: 8px; font-size: 14px;">2. Dependencies</div>
-                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 12px;">Check all projects.</div>
-                <button class="btn" onclick="runTest('dependency-scan')">Run Test</button>
-                <div id="test-dependency-scan" style="font-size: 11px; margin-top: 8px; color: var(--text-tertiary);"></div>
+                <div style="font-weight: 700; margin-bottom: 8px; font-size: 14px;">Dependencies</div>
+                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 12px;">Verify requirements.txt and package installs across all projects.</div>
+                <button class="btn" onclick="runTest('dependency-scan')">Run Check</button>
+                <div id="test-dependency-scan" style="font-size: 11px; margin-top: 8px; color: var(--text-tertiary);">Not run yet</div>
               </div>
 
               <div style="background: var(--bg-primary); padding: var(--space-2); border-radius: 6px; border: 1px solid var(--border-color);">
-                <div style="font-weight: 700; margin-bottom: 8px; font-size: 14px;">3. Git Status</div>
-                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 12px;">Verify repos are synced.</div>
-                <button class="btn" onclick="runTest('git-validator')">Run Test</button>
-                <div id="test-git-validator" style="font-size: 11px; margin-top: 8px; color: var(--text-tertiary);"></div>
+                <div style="font-weight: 700; margin-bottom: 8px; font-size: 14px;">Git Status</div>
+                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 12px;">Check every repo for uncommitted changes or unpushed commits.</div>
+                <button class="btn" onclick="runTest('git-validator')">Run Check</button>
+                <div id="test-git-validator" style="font-size: 11px; margin-top: 8px; color: var(--text-tertiary);">Not run yet</div>
               </div>
 
               <div style="background: var(--bg-primary); padding: var(--space-2); border-radius: 6px; border: 1px solid var(--border-color);">
-                <div style="font-weight: 700; margin-bottom: 8px; font-size: 14px;">4. Performance</div>
-                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 12px;">Find bottlenecks.</div>
-                <button class="btn" onclick="runTest('performance-profile')">Run Test</button>
-                <div id="test-performance-profile" style="font-size: 11px; margin-top: 8px; color: var(--text-tertiary);"></div>
+                <div style="font-weight: 700; margin-bottom: 8px; font-size: 14px;">Performance</div>
+                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 12px;">Check response latency and flag any slow endpoints.</div>
+                <button class="btn" onclick="runTest('performance-profile')">Run Check</button>
+                <div id="test-performance-profile" style="font-size: 11px; margin-top: 8px; color: var(--text-tertiary);">Not run yet</div>
               </div>
 
               <div style="background: var(--bg-primary); padding: var(--space-2); border-radius: 6px; border: 1px solid var(--border-color);">
-                <div style="font-weight: 700; margin-bottom: 8px; font-size: 14px;">5. API Keys</div>
-                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 12px;">Validate all keys.</div>
-                <button class="btn" onclick="runTest('api-validation')">Run Test</button>
-                <div id="test-api-validation" style="font-size: 11px; margin-top: 8px; color: var(--text-tertiary);"></div>
+                <div style="font-weight: 700; margin-bottom: 8px; font-size: 14px;">API Keys</div>
+                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 12px;">Validate .env files and confirm all required keys are present.</div>
+                <button class="btn" onclick="runTest('api-validation')">Run Check</button>
+                <div id="test-api-validation" style="font-size: 11px; margin-top: 8px; color: var(--text-tertiary);">Not run yet</div>
               </div>
             </div>
           </div>
@@ -1273,7 +1286,7 @@
               <button class="btn secondary" onclick="clearLogs()">Clear</button>
             </div>
             <div class="log-viewer" id="logViewer">
-              <div class="log-line" style="color: var(--text-tertiary);">Select a project to tail its output — server logs, errors, and request traces.</div>
+              <div class="log-line" style="color: var(--text-tertiary);">No logs captured yet — select a project above to tail its output.</div>
             </div>
           </div>
         </div>
@@ -1292,7 +1305,7 @@
               <button class="btn secondary" onclick="openAssetFolder()">Open in Finder</button>
             </div>
             <div id="assetResults" style="font-size: 13px; color: var(--text-secondary); font-weight: 500;">
-              <p style="color: var(--text-tertiary);">Logos, icons, and images for each project. Or use the Assets button on any project row.</p>
+              <p style="color: var(--text-tertiary);">No assets loaded — select a project to browse its static files, or use the Assets button on any project row.</p>
             </div>
           </div>
         </div>
@@ -1323,7 +1336,7 @@
               <button class="quick-chip" onclick="quickSearch('API_KEY')">API_KEY</button>
             </div>
             <div id="advancedResults" style="color: var(--text-secondary); font-size: 13px; margin-top: var(--space-2); font-weight: 500;">
-              Searches Python, HTML, JS, CSS, and Markdown across every project.
+              <span style="color:var(--text-tertiary);">No search run yet — searches Python, HTML, JS, CSS, and Markdown across every project.</span>
             </div>
           </div>
         </div>
@@ -1497,7 +1510,7 @@
       const logViewer = document.getElementById('logViewer');
       const src = lines || logBuffer;
       if (!src.length) {
-        logViewer.innerHTML = '<div class="log-line" style="color: var(--text-tertiary);">No log lines found.</div>';
+        logViewer.innerHTML = '<div class="log-line" style="color: var(--text-tertiary);">No log lines captured for this project yet.</div>';
         return;
       }
       logViewer.innerHTML = src.map(log => `<div class="log-line">${log}</div>`).join('');
@@ -1563,7 +1576,7 @@
       _currentAssetSlug = slug;
       const resultsEl = document.getElementById('assetResults');
       if (!slug) {
-        resultsEl.innerHTML = '<p style="color: var(--text-tertiary);">Select a project to browse its static assets.</p>';
+        resultsEl.innerHTML = '<p style="color: var(--text-tertiary);">No assets loaded — select a project above.</p>';
         return;
       }
       resultsEl.innerHTML = '<p style="color: var(--text-tertiary);">Loading...</p>';
@@ -1575,7 +1588,7 @@
           return;
         }
         if (!data.files.length) {
-          resultsEl.innerHTML = '<p style="color:var(--text-tertiary);">No image assets found in this project.</p>';
+          resultsEl.innerHTML = '<p style="color:var(--text-tertiary);">No image assets found in this project — add files to its static/ folder.</p>';
           return;
         }
         resultsEl.innerHTML = `
@@ -1739,7 +1752,23 @@
       }
 
       // Disk
-      $set('diskFree', (system.disk_free || 0).toFixed(0));
+      const diskFreeVal = system.disk_free;
+      $set('diskFree', diskFreeVal != null ? diskFreeVal.toFixed(0) : '—');
+      const diskStatusEl = document.getElementById('diskStatus');
+      if (diskStatusEl) {
+        if (diskFreeVal == null) {
+          diskStatusEl.textContent = 'Unavailable';
+        } else if (diskFreeVal < 10) {
+          diskStatusEl.textContent = 'Low — clean up soon';
+          diskStatusEl.style.color = 'var(--color-error)';
+        } else if (diskFreeVal < 25) {
+          diskStatusEl.textContent = 'Getting full';
+          diskStatusEl.style.color = 'var(--color-warning)';
+        } else {
+          diskStatusEl.textContent = 'Plenty of space';
+          diskStatusEl.style.color = 'var(--color-success)';
+        }
+      }
 
       // Context microcopy
       const ctxStatusEl = document.getElementById('ctxStatus');
@@ -1796,11 +1825,11 @@
       const ssAlertBtn = document.getElementById('ssAlertBtn');
       if (offlineCount > 0 || dirtyCount > 0) {
         const parts = [];
-        if (offlineCount > 0) parts.push(`${offlineCount} idle`);
-        if (dirtyCount   > 0) parts.push(`${dirtyCount} dirty`);
-        document.getElementById('ssAlertText').textContent = '⚠ ' + parts.join(' · ');
+        if (offlineCount > 0) parts.push(`${offlineCount} project${offlineCount > 1 ? 's' : ''} idle`);
+        if (dirtyCount   > 0) parts.push(`${dirtyCount} dirty repo${dirtyCount > 1 ? 's' : ''}`);
+        document.getElementById('ssAlertText').textContent = parts.join(' · ');
         if (ssAlertBtn) {
-          if (offlineCount > 0 && dirtyCount > 0) ssAlertBtn.textContent = 'Review issues';
+          if (offlineCount > 0 && dirtyCount > 0) ssAlertBtn.textContent = 'Triage repos';
           else if (offlineCount > 0) ssAlertBtn.textContent = 'Why idle?';
           else ssAlertBtn.textContent = 'Summarize health';
         }
@@ -1812,12 +1841,25 @@
       // Global status bar
       const statusDot  = document.getElementById('globalStatus');
       const statusText = document.getElementById('globalStatusText');
-      if (offlineCount > 0) {
+      if (offlineCount === projects.length) {
         statusDot.className = 'status-dot error';
-        statusText.textContent = `${offlineCount} of ${projects.length} projects idle`;
+        statusText.textContent = `All ${projects.length} projects idle`;
+      } else if (offlineCount > 0) {
+        statusDot.className = 'status-dot warning';
+        statusText.textContent = `${onlineCount} live · ${offlineCount} idle`;
       } else {
         statusDot.className = 'status-dot';
-        statusText.textContent = 'All systems live';
+        statusText.textContent = `All ${projects.length} projects live`;
+      }
+
+      // Usage interpretation
+      const dayCostVal = usage.day?.cost || 0;
+      const usageInterpEl = document.getElementById('usageInterp');
+      if (usageInterpEl) {
+        if (dayCostVal === 0) usageInterpEl.textContent = 'No Claude spend today';
+        else if (dayCostVal < 0.50) usageInterpEl.textContent = 'Spend is low today';
+        else if (dayCostVal < 2.00) usageInterpEl.textContent = 'Usage within normal range';
+        else usageInterpEl.textContent = 'Heavy session today';
       }
     }
 
@@ -1840,7 +1882,7 @@
         const url       = port ? `http://127.0.0.1:${port}` : null;
         const gitClass  = !p.git ? 'pr-nogit' : isDirty ? 'pr-dirty' : 'pr-clean';
         const gitLabel  = !p.git ? '—'        : isDirty ? '↑ dirty'  : '✓ clean';
-        const rowExtra  = isDirty ? ' pr-dirty-row' : (!isOnline ? ' pr-offline-row' : '');
+        const rowExtra  = isDirty ? ' pr-dirty-row' : (isOnline ? ' pr-online-row' : ' pr-offline-row');
 
         return `
           <div class="project-row ${isOnline ? 'pr-online' : ''}${rowExtra}">
@@ -1918,7 +1960,7 @@
         <span>
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:6px;"><path d="M9 2L5 9h4l-2 5 6-7H9l1-5z"/></svg>
           Call on Claude
-          <span style="font-size:11px;font-weight:400;color:var(--text-tertiary);margin-left:8px;">Ask about your stack, git, usage, or what to do next</span>
+          <span style="font-size:11px;font-weight:400;color:rgba(255,255,255,0.65);margin-left:8px;">Runs against live repo state and system telemetry</span>
         </span>
         <button class="coc-close" onclick="closeClaude()" title="Close">
           <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="2" y1="2" x2="14" y2="14"/><line x1="14" y1="2" x2="2" y2="14"/></svg>
@@ -1947,7 +1989,7 @@
         </div>
         <!-- Input row -->
         <div class="coc-input-row">
-          <input class="coc-input" id="cocInput" type="text" placeholder="Ask about your stack, git health, usage, or anything…" onkeydown="if(event.key==='Enter')sendToClaude()">
+          <input class="coc-input" id="cocInput" type="text" placeholder="Ask about repo health, git state, usage, or what to do next…" onkeydown="if(event.key==='Enter')sendToClaude()">
           <button class="coc-send" onclick="sendToClaude()">
             <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="14" y1="2" x2="2" y2="8"/><line x1="14" y1="2" x2="8" y2="14"/><line x1="2" y1="8" x2="8" y2="14"/></svg>
           </button>
@@ -2029,23 +2071,23 @@
   function loadSuggestions() {
     const el = document.getElementById('cocSuggestions');
     const actions = [
-      { type: 'ask',     label: 'Why are projects offline? What should I check?',
-        prompt: 'Some of my local dev projects are showing offline in Kode Keeper. Walk me through the most likely causes and give me a quick action checklist to bring them back up.' },
-      { type: 'ask',     label: 'Summarize repo health across all my projects',
+      { type: 'ask',     label: 'Why are projects idle?',
+        prompt: 'Some of my local dev projects are showing idle in Kode Keeper. Walk me through the most likely causes and give me a quick action checklist to bring them back up.' },
+      { type: 'ask',     label: 'Summarize repo health',
         prompt: 'Give me a concise repo health summary. Flag dirty repos, unsynced branches, or anything that needs a commit or push before I can call this stack clean.' },
       { type: 'ask',     label: 'Which repos need attention first?',
-        prompt: 'Based on the current project and git state visible in Kode Keeper, prioritize which repos I should tackle first. Be direct — ranked list, one-line reason each.' },
+        prompt: 'Based on the current project and git state, prioritize which repos I should tackle first. Be direct — ranked list, one-line reason each.' },
       { type: 'ask',     label: 'What should I work on next?',
-        prompt: "Looking at my project states and git status, what would you recommend I tackle next as a developer? Consider what's offline, what's dirty, and any obvious loose ends." },
+        prompt: "Looking at my project states and git status, what would you recommend I tackle next? Consider what's idle, what's dirty, and any obvious loose ends." },
       { type: 'ask',     label: 'Check context window and token usage',
         prompt: "What's the current state of my Claude Code context window? Any efficiency tips based on my usage patterns today?" },
       { type: 'execute', label: 'Commit all dirty repos',
         prompt: 'List every dirty git repo across my projects and give me the exact git commands to commit and push each one. One command block per repo, ready to copy-paste.' },
-      { type: 'ask',     label: 'What should I clean up before launch?',
-        prompt: 'Before I put any of my projects on Hacker News, what should I clean up? Check for dirty repos, offline services, missing docs, and anything that would look unprofessional. Be specific.' },
+      { type: 'ask',     label: 'What to clean up before launch?',
+        prompt: 'Before I put any of my projects on Hacker News, what should I clean up? Check for dirty repos, idle services, missing docs, and anything that would look unprofessional. Be specific and direct.' },
     ];
     el.innerHTML =
-      '<div class="coc-suggestions-label">Quick actions</div>' +
+      '<div class="coc-suggestions-label">Live repo actions</div>' +
       actions.map(s => `
         <div class="coc-suggestion" onclick="useSuggestion(this)" data-type="${s.type}" data-prompt="${encodeURIComponent(s.prompt)}">
           <span class="sug-type ${s.type}">${s.type === 'execute' ? '⚡ Run' : '💬 Ask'}</span>
