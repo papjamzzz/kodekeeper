@@ -741,13 +741,37 @@
       margin-bottom: 6px;
     }
 
-    /* ── DIRTY ROW ACCENT ── */
+    /* ── ROW STATE VARIANTS ── */
     .project-row.pr-dirty-row {
-      background: rgba(255,140,58,0.03);
+      background: rgba(255,140,58,0.05);
+    }
+    .project-row.pr-dirty-row::before {
+      background: var(--color-warning) !important;
     }
     [data-theme="dark"] .project-row.pr-dirty-row {
-      background: rgba(255,159,67,0.05);
+      background: rgba(255,159,67,0.07);
     }
+    .project-row.pr-offline-row {
+      opacity: 0.72;
+    }
+    .project-row.pr-offline-row .pr-name {
+      color: var(--text-secondary);
+      font-weight: 600;
+    }
+    .project-row.pr-offline-row .pr-url a {
+      pointer-events: none;
+    }
+
+    /* ── TELEMETRY MICROCOPY ── */
+    .sys-status {
+      font-size: 11px;
+      font-weight: 600;
+      margin-top: 6px;
+      font-family: var(--font-ui);
+    }
+    .sys-status.ok     { color: var(--color-success); }
+    .sys-status.warn   { color: var(--color-warning); }
+    .sys-status.muted  { color: var(--text-tertiary); }
 
     /* ── QUICK CHIP BUTTONS ── */
     .quick-chips {
@@ -1000,7 +1024,7 @@
 
       <div style="flex: 1;"></div>
       <div style="font-size: 12px; color: var(--text-tertiary); padding: calc(var(--space-2) * 1.2); border-top: 1px solid var(--border-color); text-align: center;">
-        v2.0 | <span id="sidebarTime">--:--</span>
+        <span id="sidebarTime">--:--</span>
       </div>
     </aside>
 
@@ -1069,7 +1093,7 @@
             <div class="ss-fill"></div>
             <div class="ss-alert" id="ssAlert" style="display:none;">
               <span id="ssAlertText"></span>
-              <button class="ss-alert-btn" onclick="openClaude()">Ask Claude →</button>
+              <button class="ss-alert-btn" id="ssAlertBtn" onclick="openClaudeWithPrompt()">Review issues</button>
             </div>
           </div>
 
@@ -1100,12 +1124,15 @@
             <div class="fader-container">
               <div class="fader-label">
                 <span>Context window</span>
-                <span id="ctxPercent">—%</span>
+                <span id="ctxPercent">—</span>
               </div>
               <div class="fader-bar">
-                <div class="fader-fill" id="ctxFader" style="width:0%;">—%</div>
+                <div class="fader-fill" id="ctxFader" style="width:0%;">—</div>
               </div>
-              <div class="metric-subtitle" id="ctxTokens">No active session</div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;">
+                <div class="metric-subtitle" id="ctxTokens">No active session</div>
+                <div class="sys-status muted" id="ctxStatus">—</div>
+              </div>
             </div>
             <div class="fader-container">
               <div class="fader-label">
@@ -1122,6 +1149,7 @@
                   <div class="fader-dual-bar"><div class="fader-dual-fill ram" id="ramFader">—%</div></div>
                 </div>
               </div>
+              <div class="sys-status muted" id="loadStatus" style="margin-top:8px;">—</div>
             </div>
           </div>
 
@@ -1132,22 +1160,22 @@
               <div class="metric">
                 <div class="metric-label">Today</div>
                 <div class="metric-value">$<span id="dayCost">0.00</span></div>
-                <div class="metric-subtitle" id="dayTokens">— tokens</div>
+                <div class="metric-subtitle" id="dayTokens">No tokens logged yet</div>
               </div>
               <div class="metric">
                 <div class="metric-label">This month</div>
                 <div class="metric-value">$<span id="monthCost">0.00</span></div>
-                <div class="metric-subtitle" id="monthTokens">— tokens</div>
+                <div class="metric-subtitle" id="monthTokens">No tokens logged yet</div>
               </div>
               <div class="metric">
                 <div class="metric-label">Disk free</div>
-                <div class="metric-value"><span id="diskFree">—</span> GB</div>
-                <div class="metric-subtitle">Available storage</div>
+                <div class="metric-value"><span id="diskFree">—</span> <span style="font-size:14px;font-weight:500;">GB</span></div>
+                <div class="metric-subtitle" id="diskStatus">Checking…</div>
               </div>
               <div class="metric">
                 <div class="metric-label">Daily budget</div>
-                <div class="metric-value">$<span id="dailyBudget">—</span></div>
-                <div class="metric-subtitle">Alert threshold</div>
+                <div class="metric-value" id="dailyBudgetDisplay" style="font-size:16px;color:var(--text-tertiary);font-weight:600;">Not set</div>
+                <div class="metric-subtitle"><a href="#" onclick="showTab('settings');return false;" style="color:var(--color-info);text-decoration:none;font-size:11px;">Configure in Settings →</a></div>
               </div>
             </div>
           </div>
@@ -1306,7 +1334,7 @@
         <div id="settings" class="tab-content">
 
           <div class="panel">
-            <div class="panel-title">⚙️ Appearance</div>
+            <div class="panel-title">Appearance</div>
             <div style="background: var(--bg-primary); padding: var(--space-2); border-radius: 6px; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between;">
               <div>
                 <div style="font-weight: 700; font-size: 14px;">🌙 Dark Mode</div>
@@ -1317,7 +1345,7 @@
           </div>
 
           <div class="panel">
-            <div class="panel-title">💰 Budget Alerts</div>
+            <div class="panel-title">Budget Alerts</div>
             <div style="display: grid; gap: var(--space-2);">
               <div style="background: var(--bg-primary); padding: var(--space-2); border-radius: 6px; border: 1px solid var(--border-color);">
                 <div style="font-weight: 700; margin-bottom: 4px; font-size: 14px;">💵 Daily Budget (USD)</div>
@@ -1341,7 +1369,7 @@
           </div>
 
           <div class="panel">
-            <div class="panel-title">🔄 Behavior</div>
+            <div class="panel-title">Behavior</div>
             <div style="display: grid; gap: var(--space-2);">
               <div style="background: var(--bg-primary); padding: var(--space-2); border-radius: 6px; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between;">
                 <div>
@@ -1371,7 +1399,7 @@
           </div>
 
           <div class="panel">
-            <div class="panel-title">🤖 Call on Claude</div>
+            <div class="panel-title">Call on Claude</div>
             <div style="background: var(--bg-primary); padding: var(--space-2); border-radius: 6px; border: 1px solid var(--border-color);">
               <div style="font-weight: 700; margin-bottom: 4px; font-size: 14px;">Response Model</div>
               <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 10px;">Model used for AI responses in the dashboard</div>
@@ -1656,6 +1684,7 @@
       try {
         const res = await fetch(API_URL);
         const data = await res.json();
+        _lastDashboardData = data;
         updateDashboard(data);
       } catch (err) {
         console.error('Fetch error:', err);
@@ -1690,11 +1719,64 @@
       $set('costToday',  (usage.day?.cost   || 0).toFixed(2));
       $set('costWeek',   (usage.week?.cost  || 0).toFixed(2));
       $set('costMonth',  (usage.month?.cost || 0).toFixed(2));
-      $set('dayTokens',  ((usage.day?.tokens   || 0) / 1000).toFixed(1) + 'k tokens');
-      $set('monthTokens',((usage.month?.tokens || 0) / 1000).toFixed(1) + 'k tokens');
+      const dayTok = usage.day?.tokens || 0;
+      const moTok  = usage.month?.tokens || 0;
+      $set('dayTokens',   dayTok > 0 ? (dayTok   / 1000).toFixed(1) + 'k tokens' : 'No tokens logged yet');
+      $set('monthTokens', moTok  > 0 ? (moTok    / 1000).toFixed(1) + 'k tokens' : 'No tokens logged yet');
+
+      // Daily budget display
+      const settings = data.settings || {};
+      const budgetEl = document.getElementById('dailyBudgetDisplay');
+      if (budgetEl) {
+        const budget = settings.daily_budget;
+        if (budget && parseFloat(budget) > 0) {
+          budgetEl.textContent = '$' + parseFloat(budget).toFixed(2);
+          budgetEl.style.color = 'var(--text-primary)';
+        } else {
+          budgetEl.textContent = 'Not set';
+          budgetEl.style.color = 'var(--text-tertiary)';
+        }
+      }
 
       // Disk
       $set('diskFree', (system.disk_free || 0).toFixed(0));
+
+      // Context microcopy
+      const ctxStatusEl = document.getElementById('ctxStatus');
+      if (ctxStatusEl) {
+        if (ctxPct === 0) {
+          ctxStatusEl.textContent = 'No active session';
+          ctxStatusEl.className = 'sys-status muted';
+        } else if (ctxPct < 50) {
+          ctxStatusEl.textContent = 'Context is healthy';
+          ctxStatusEl.className = 'sys-status ok';
+        } else if (ctxPct < 80) {
+          ctxStatusEl.textContent = 'Context filling up';
+          ctxStatusEl.className = 'sys-status warn';
+        } else {
+          ctxStatusEl.textContent = 'Context nearly full';
+          ctxStatusEl.className = 'sys-status warn';
+        }
+      }
+
+      // System load microcopy
+      const loadStatusEl = document.getElementById('loadStatus');
+      if (loadStatusEl) {
+        const ramPctVal = system.ram_pct || 0;
+        if (ramPctVal === 0) {
+          loadStatusEl.textContent = '—';
+          loadStatusEl.className = 'sys-status muted';
+        } else if (ramPctVal < 70) {
+          loadStatusEl.textContent = 'System stable';
+          loadStatusEl.className = 'sys-status ok';
+        } else if (ramPctVal < 85) {
+          loadStatusEl.textContent = 'RAM elevated';
+          loadStatusEl.className = 'sys-status warn';
+        } else {
+          loadStatusEl.textContent = 'Memory is the main constraint';
+          loadStatusEl.className = 'sys-status warn';
+        }
+      }
 
       // Projects Table (ALL 10)
       const projects = data.projects || [];
@@ -1711,11 +1793,17 @@
       $set('ssCostToday', '$' + (usage.day?.cost || 0).toFixed(2));
       $set('ssCtx',       ctxPct + '%');
       const ssAlert = document.getElementById('ssAlert');
+      const ssAlertBtn = document.getElementById('ssAlertBtn');
       if (offlineCount > 0 || dirtyCount > 0) {
         const parts = [];
-        if (offlineCount > 0) parts.push(`${offlineCount} offline`);
+        if (offlineCount > 0) parts.push(`${offlineCount} idle`);
         if (dirtyCount   > 0) parts.push(`${dirtyCount} dirty`);
         document.getElementById('ssAlertText').textContent = '⚠ ' + parts.join(' · ');
+        if (ssAlertBtn) {
+          if (offlineCount > 0 && dirtyCount > 0) ssAlertBtn.textContent = 'Review issues';
+          else if (offlineCount > 0) ssAlertBtn.textContent = 'Why idle?';
+          else ssAlertBtn.textContent = 'Summarize health';
+        }
         ssAlert.style.display = 'flex';
       } else {
         ssAlert.style.display = 'none';
@@ -1726,7 +1814,7 @@
       const statusText = document.getElementById('globalStatusText');
       if (offlineCount > 0) {
         statusDot.className = 'status-dot error';
-        statusText.textContent = `${offlineCount} of ${projects.length} projects offline`;
+        statusText.textContent = `${offlineCount} of ${projects.length} projects idle`;
       } else {
         statusDot.className = 'status-dot';
         statusText.textContent = 'All systems live';
@@ -1736,8 +1824,9 @@
     function updateProjectsTable(projects) {
       const list = document.getElementById('projectsTable');
       const onlineCount = projects.filter(p => p.online).length;
+      const idleCount = projects.length - onlineCount;
       document.getElementById('projectCount').textContent =
-        `${onlineCount} online · ${projects.length - onlineCount} offline`;
+        `${onlineCount} online · ${idleCount > 0 ? idleCount + ' idle' : 'all active'}`;
 
       // Sort: online first
       const sorted = [...projects].sort((a, b) => (b.online ? 1 : 0) - (a.online ? 1 : 0));
@@ -1751,7 +1840,7 @@
         const url       = port ? `http://127.0.0.1:${port}` : null;
         const gitClass  = !p.git ? 'pr-nogit' : isDirty ? 'pr-dirty' : 'pr-clean';
         const gitLabel  = !p.git ? '—'        : isDirty ? '↑ dirty'  : '✓ clean';
-        const rowExtra  = isDirty ? ' pr-dirty-row' : '';
+        const rowExtra  = isDirty ? ' pr-dirty-row' : (!isOnline ? ' pr-offline-row' : '');
 
         return `
           <div class="project-row ${isOnline ? 'pr-online' : ''}${rowExtra}">
@@ -1829,6 +1918,7 @@
         <span>
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:6px;"><path d="M9 2L5 9h4l-2 5 6-7H9l1-5z"/></svg>
           Call on Claude
+          <span style="font-size:11px;font-weight:400;color:var(--text-tertiary);margin-left:8px;">Ask about your stack, git, usage, or what to do next</span>
         </span>
         <button class="coc-close" onclick="closeClaude()" title="Close">
           <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="2" y1="2" x2="14" y2="14"/><line x1="14" y1="2" x2="2" y2="14"/></svg>
@@ -1871,10 +1961,50 @@
 
   let _pendingCommand = null;
 
+  // State snapshot for context-aware prompts
+  let _lastDashboardData = null;
+
   function openClaude() {
     document.getElementById('cocOverlay').classList.add('open');
     loadSuggestions();
     setTimeout(() => document.getElementById('cocInput').focus(), 300);
+  }
+
+  function openClaudeWithPrompt() {
+    const data = _lastDashboardData;
+    let prompt = '';
+    if (data) {
+      const projects = data.projects || [];
+      const offlineCount = projects.filter(p => !p.online).length;
+      const dirtyCount   = projects.filter(p => p.git && !p.git.clean).length;
+      if (offlineCount > 0 && dirtyCount > 0) {
+        prompt = `I have ${offlineCount} projects idle and ${dirtyCount} repos with uncommitted changes. Walk me through what to check first — likely causes for the idle projects and which dirty repos need commits.`;
+      } else if (offlineCount > 0) {
+        const names = projects.filter(p => !p.online).map(p => p.name).join(', ');
+        prompt = `These projects are showing idle: ${names}. Walk me through the most likely causes and a quick checklist to bring them back up.`;
+      } else if (dirtyCount > 0) {
+        const names = projects.filter(p => p.git && !p.git.clean).map(p => p.name).join(', ');
+        prompt = `These repos have uncommitted changes: ${names}. What's the fastest way to clean them up? Give me the git commands.`;
+      } else {
+        prompt = 'Everything looks clean. Give me a quick health summary and suggest what I should work on next.';
+      }
+    }
+    document.getElementById('cocOverlay').classList.add('open');
+    loadSuggestions();
+    setTimeout(() => {
+      const input = document.getElementById('cocInput');
+      input.value = prompt;
+      input.focus();
+    }, 300);
+  }
+
+  function showTab(tabName) {
+    document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    const btn = document.querySelector(`[data-tab="${tabName}"]`);
+    const tab = document.getElementById(tabName);
+    if (btn) btn.classList.add('active');
+    if (tab) tab.classList.add('active');
   }
 
   function closeClaude() {
@@ -1909,6 +2039,10 @@
         prompt: "Looking at my project states and git status, what would you recommend I tackle next as a developer? Consider what's offline, what's dirty, and any obvious loose ends." },
       { type: 'ask',     label: 'Check context window and token usage',
         prompt: "What's the current state of my Claude Code context window? Any efficiency tips based on my usage patterns today?" },
+      { type: 'execute', label: 'Commit all dirty repos',
+        prompt: 'List every dirty git repo across my projects and give me the exact git commands to commit and push each one. One command block per repo, ready to copy-paste.' },
+      { type: 'ask',     label: 'What should I clean up before launch?',
+        prompt: 'Before I put any of my projects on Hacker News, what should I clean up? Check for dirty repos, offline services, missing docs, and anything that would look unprofessional. Be specific.' },
     ];
     el.innerHTML =
       '<div class="coc-suggestions-label">Quick actions</div>' +
