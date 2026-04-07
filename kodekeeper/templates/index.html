@@ -32,17 +32,18 @@
     }
 
     [data-theme="dark"] {
-      --bg-primary: #14162a;
-      --bg-secondary: #1c1f3a;
-      --bg-tertiary: #222545;
-      --text-primary: #f0f4ff;
-      --text-secondary: #b0bcda;
-      --text-tertiary: #6878a0;
-      --border-color: #3a3f68;
-      --color-success: #00e8ff;
-      --color-warning: #dd55ff;
+      --bg-primary: #0f1120;
+      --bg-secondary: #171a2e;
+      --bg-tertiary: #1e2240;
+      --text-primary: #eef2ff;
+      --text-secondary: #9aa5cc;
+      --text-tertiary: #5a6890;
+      --border-color: #2e3458;
+      --color-success: #2ecc8a;
+      --color-warning: #ff9f43;
       --color-error: #ff6040;
-      --color-info: #00e8ff;
+      --color-info: #5b9dff;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
     }
 
     html, body {
@@ -657,6 +658,118 @@
       box-shadow: 0 0 0 2px rgba(0,102,204,0.1);
     }
 
+    /* ── SUMMARY STRIP ── */
+    .summary-strip {
+      display: flex;
+      align-items: center;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 0 24px;
+      height: 56px;
+      margin-bottom: 20px;
+      flex-shrink: 0;
+      gap: 0;
+    }
+    .ss-stat {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      padding-right: 24px;
+    }
+    .ss-val {
+      font-size: 22px;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      color: var(--text-primary);
+      line-height: 1.1;
+    }
+    .ss-val.ss-green  { color: var(--color-success); }
+    .ss-val.ss-warn   { color: var(--color-warning); }
+    .ss-label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.9px;
+      color: var(--text-tertiary);
+      margin-top: 1px;
+    }
+    .ss-divider {
+      width: 1px;
+      height: 28px;
+      background: var(--border-color);
+      margin-right: 24px;
+      flex-shrink: 0;
+    }
+    .ss-fill { flex: 1; }
+    .ss-alert {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--color-warning);
+      white-space: nowrap;
+    }
+    .ss-alert-btn {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 5px 11px;
+      border-radius: 4px;
+      border: 1px solid currentColor;
+      background: rgba(255,140,58,0.08);
+      color: var(--color-warning);
+      cursor: pointer;
+      font-family: var(--font-ui);
+      transition: background 0.12s;
+    }
+    .ss-alert-btn:hover { background: rgba(255,140,58,0.18); }
+
+    /* ── PROJECT COLUMN HEADERS ── */
+    .pr-col-headers {
+      display: grid;
+      grid-template-columns: 8px 148px 54px 170px 58px 72px 90px auto;
+      gap: 10px;
+      padding: 0 14px 8px 18px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.9px;
+      color: var(--text-tertiary);
+      font-family: var(--font-mono);
+      border-bottom: 1px solid var(--border-color);
+      margin-bottom: 6px;
+    }
+
+    /* ── DIRTY ROW ACCENT ── */
+    .project-row.pr-dirty-row {
+      background: rgba(255,140,58,0.03);
+    }
+    [data-theme="dark"] .project-row.pr-dirty-row {
+      background: rgba(255,159,67,0.05);
+    }
+
+    /* ── QUICK CHIP BUTTONS ── */
+    .quick-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 10px;
+    }
+    .quick-chip {
+      font-size: 11px;
+      font-weight: 600;
+      font-family: var(--font-mono);
+      padding: 4px 10px;
+      border-radius: 4px;
+      border: 1px solid var(--border-color);
+      background: var(--bg-secondary);
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.12s;
+    }
+    .quick-chip:hover { border-color: var(--color-info); color: var(--color-info); }
+
     /* ── SCROLLBAR ── */
     ::-webkit-scrollbar { width: 8px; }
     ::-webkit-scrollbar-track { background: var(--bg-primary); }
@@ -829,7 +942,7 @@
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="8" height="8" rx="1"/><path d="M6 2v2M10 2v2M6 12v2M10 12v2M2 6h2M12 6h2M2 10h2M12 10h2"/></svg>
             Kode Keeper
           </div>
-          <div class="sidebar-subtitle">Mission Control v2.0</div>
+          <div class="sidebar-subtitle">Local dev mission control</div>
         </div>
       </div>
 
@@ -857,7 +970,7 @@
         </div>
         <button class="nav-item" data-tab="tests">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="6.5"/><path d="M5.5 8l2 2 3-3"/></svg>
-          Tests
+          Diagnostics
         </button>
         <button class="nav-item" data-tab="logs">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="2" width="14" height="12" rx="2"/><path d="M4 6.5l2.5 1.5L4 9.5M9 9.5h3"/></svg>
@@ -926,82 +1039,119 @@
         <!-- DASHBOARD TAB -->
         <!-- ═══════════════════════════════════════════════════════════ -->
         <div id="dashboard" class="tab-content active">
-          <!-- Fader Visualizations -->
-          <div class="panel">
-            <div class="panel-title">⚡ System Vitals</div>
 
-            <!-- Context Window Fader -->
-            <div class="fader-container">
-              <div class="fader-label">
-                <span>📊 Context Window</span>
-                <span id="ctxPercent">63%</span>
-              </div>
-              <div class="fader-bar">
-                <div class="fader-fill" id="ctxFader" style="width: 63%;">63%</div>
-              </div>
-              <div class="metric-subtitle" id="ctxTokens">~74k tokens remaining</div>
+          <!-- Summary strip — one-glance status -->
+          <div class="summary-strip">
+            <div class="ss-stat">
+              <span class="ss-val" id="ssTotal">—</span>
+              <span class="ss-label">Projects</span>
             </div>
-
-            <!-- CPU/RAM Dual Fader -->
-            <div class="fader-container">
-              <div class="fader-label">
-                <span>🖥️ System Load</span>
-                <span id="systemLabel">CPU/RAM</span>
-              </div>
-              <div class="fader-dual">
-                <div>
-                  <div style="font-size: 11px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px;">CPU</div>
-                  <div class="fader-dual-bar">
-                    <div class="fader-dual-fill cpu" id="cpuFader">44%</div>
-                  </div>
-                </div>
-                <div>
-                  <div style="font-size: 11px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px;">RAM</div>
-                  <div class="fader-dual-bar">
-                    <div class="fader-dual-fill ram" id="ramFader">73%</div>
-                  </div>
-                </div>
-              </div>
+            <div class="ss-divider"></div>
+            <div class="ss-stat">
+              <span class="ss-val ss-green" id="ssOnline">—</span>
+              <span class="ss-label">Online</span>
+            </div>
+            <div class="ss-divider"></div>
+            <div class="ss-stat">
+              <span class="ss-val ss-warn" id="ssDirty">—</span>
+              <span class="ss-label">Dirty repos</span>
+            </div>
+            <div class="ss-divider"></div>
+            <div class="ss-stat">
+              <span class="ss-val" id="ssCostToday">$—</span>
+              <span class="ss-label">Today's cost</span>
+            </div>
+            <div class="ss-divider"></div>
+            <div class="ss-stat">
+              <span class="ss-val" id="ssCtx">—%</span>
+              <span class="ss-label">Context</span>
+            </div>
+            <div class="ss-fill"></div>
+            <div class="ss-alert" id="ssAlert" style="display:none;">
+              <span id="ssAlertText"></span>
+              <button class="ss-alert-btn" onclick="openClaude()">Ask Claude →</button>
             </div>
           </div>
 
-          <!-- Metric Boxes (4) -->
+          <!-- Projects — the main surface -->
           <div class="panel">
-            <div class="panel-title">💵 Costs & Resources</div>
-            <div class="metric-grid">
-              <div class="metric">
-                <div class="metric-label">Today's Cost</div>
-                <div class="metric-value">$<span id="dayCost">0.48</span></div>
-                <div class="metric-subtitle" id="dayTokens">88.9k tokens</div>
-              </div>
-              <div class="metric">
-                <div class="metric-label">Month's Cost</div>
-                <div class="metric-value">$<span id="monthCost">0.48</span></div>
-                <div class="metric-subtitle" id="monthTokens">88.9k tokens</div>
-              </div>
-              <div class="metric">
-                <div class="metric-label">Disk Free</div>
-                <div class="metric-value"><span id="diskFree">136</span>GB</div>
-                <div class="metric-subtitle">Storage available</div>
-              </div>
-              <div class="metric">
-                <div class="metric-label">Daily Budget</div>
-                <div class="metric-value">$<span id="dailyBudget">1.00</span></div>
-                <div class="metric-subtitle">Configured limit</div>
-              </div>
-            </div>
-          </div>
-
-          <!-- All Projects -->
-          <div class="panel">
-            <div class="panel-title" style="display:flex;align-items:center;justify-content:space-between;">
+            <div class="panel-title" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
               <span>Projects</span>
               <span id="projectCount" style="font-size:11px;font-weight:600;color:var(--text-tertiary);font-family:var(--font-mono);"></span>
+            </div>
+            <div class="pr-col-headers">
+              <div></div>
+              <div>Project</div>
+              <div>Port</div>
+              <div>Address</div>
+              <div>Branch</div>
+              <div>Git</div>
+              <div>Last commit</div>
+              <div style="text-align:right;">Actions</div>
             </div>
             <div class="project-list" id="projectsTable">
               <!-- Populated by JS -->
             </div>
           </div>
+
+          <!-- System — context + load -->
+          <div class="panel">
+            <div class="panel-title">System</div>
+            <div class="fader-container">
+              <div class="fader-label">
+                <span>Context window</span>
+                <span id="ctxPercent">—%</span>
+              </div>
+              <div class="fader-bar">
+                <div class="fader-fill" id="ctxFader" style="width:0%;">—%</div>
+              </div>
+              <div class="metric-subtitle" id="ctxTokens">No active session</div>
+            </div>
+            <div class="fader-container">
+              <div class="fader-label">
+                <span>System load</span>
+                <span id="systemLabel">CPU / RAM</span>
+              </div>
+              <div class="fader-dual">
+                <div>
+                  <div style="font-size:11px;font-weight:600;color:var(--text-secondary);margin-bottom:6px;">CPU</div>
+                  <div class="fader-dual-bar"><div class="fader-dual-fill cpu" id="cpuFader">—%</div></div>
+                </div>
+                <div>
+                  <div style="font-size:11px;font-weight:600;color:var(--text-secondary);margin-bottom:6px;">RAM</div>
+                  <div class="fader-dual-bar"><div class="fader-dual-fill ram" id="ramFader">—%</div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Usage & Cost -->
+          <div class="panel">
+            <div class="panel-title">Usage & Cost</div>
+            <div class="metric-grid">
+              <div class="metric">
+                <div class="metric-label">Today</div>
+                <div class="metric-value">$<span id="dayCost">0.00</span></div>
+                <div class="metric-subtitle" id="dayTokens">— tokens</div>
+              </div>
+              <div class="metric">
+                <div class="metric-label">This month</div>
+                <div class="metric-value">$<span id="monthCost">0.00</span></div>
+                <div class="metric-subtitle" id="monthTokens">— tokens</div>
+              </div>
+              <div class="metric">
+                <div class="metric-label">Disk free</div>
+                <div class="metric-value"><span id="diskFree">—</span> GB</div>
+                <div class="metric-subtitle">Available storage</div>
+              </div>
+              <div class="metric">
+                <div class="metric-label">Daily budget</div>
+                <div class="metric-value">$<span id="dailyBudget">—</span></div>
+                <div class="metric-subtitle">Alert threshold</div>
+              </div>
+            </div>
+          </div>
+
         </div>
 
         <!-- ═══════════════════════════════════════════════════════════ -->
@@ -1037,8 +1187,8 @@
         <!-- ═══════════════════════════════════════════════════════════ -->
         <div id="tests" class="tab-content">
           <div class="panel">
-            <div class="panel-title">✓ Diagnostic Suite</div>
-            <p style="color: var(--text-secondary); margin-bottom: var(--space-2); font-size: 14px; font-weight: 500;">Run essential tests on your development environment.</p>
+            <div class="panel-title">Diagnostics</div>
+            <p style="color: var(--text-secondary); margin-bottom: var(--space-2); font-size: 14px; font-weight: 500;">Spot-check your environment — tokens, dependencies, git, and API keys.</p>
 
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-2);">
               <div style="background: var(--bg-primary); padding: var(--space-2); border-radius: 6px; border: 1px solid var(--border-color);">
@@ -1084,18 +1234,18 @@
         <!-- ═══════════════════════════════════════════════════════════ -->
         <div id="logs" class="tab-content">
           <div class="panel">
-            <div class="panel-title">📝 Project Logs</div>
+            <div class="panel-title">Project Logs</div>
             <div style="display: flex; gap: var(--space-2); margin-bottom: var(--space-2); align-items: center; flex-wrap: wrap;">
               <select id="logProjectSelect" onchange="loadProjectLogs(this.value)"
                 style="flex: 1; min-width: 160px; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 4px; font-family: var(--font-ui); font-size: 14px; background: var(--bg-secondary); color: var(--text-primary);">
-                <option value="">— select a project —</option>
+                <option value="">Choose a project…</option>
               </select>
-              <input type="search" id="logSearch" placeholder="Filter lines..." oninput="filterLogs()"
+              <input type="search" id="logSearch" placeholder="Filter lines…" oninput="filterLogs()"
                 style="flex: 1; min-width: 120px; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 14px; background: var(--bg-secondary); color: var(--text-primary);">
               <button class="btn secondary" onclick="clearLogs()">Clear</button>
             </div>
             <div class="log-viewer" id="logViewer">
-              <div class="log-line" style="color: var(--text-tertiary);">Select a project above to load its logs.</div>
+              <div class="log-line" style="color: var(--text-tertiary);">Select a project to tail its output — server logs, errors, and request traces.</div>
             </div>
           </div>
         </div>
@@ -1105,16 +1255,16 @@
         <!-- ═══════════════════════════════════════════════════════════ -->
         <div id="assets" class="tab-content">
           <div class="panel">
-            <div class="panel-title">🗂️ Project Assets</div>
+            <div class="panel-title">Project Assets</div>
             <div style="display: flex; gap: var(--space-2); margin-bottom: var(--space-2); align-items: center;">
               <select id="assetProjectSelect" onchange="loadProjectAssets(this.value)"
                 style="flex: 1; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 4px; font-family: var(--font-ui); font-size: 14px; background: var(--bg-secondary); color: var(--text-primary);">
-                <option value="">— select a project —</option>
+                <option value="">Choose a project…</option>
               </select>
               <button class="btn secondary" onclick="openAssetFolder()">Open in Finder</button>
             </div>
             <div id="assetResults" style="font-size: 13px; color: var(--text-secondary); font-weight: 500;">
-              <p style="color: var(--text-tertiary);">Select a project to browse its static assets (logos, icons, images).</p>
+              <p style="color: var(--text-tertiary);">Logos, icons, and images for each project. Or use the Assets button on any project row.</p>
             </div>
           </div>
         </div>
@@ -1124,9 +1274,9 @@
         <!-- ═══════════════════════════════════════════════════════════ -->
         <div id="search" class="tab-content">
           <div class="panel">
-            <div class="panel-title">🔍 Code Search</div>
-            <div style="display: flex; gap: var(--space-2); margin-bottom: var(--space-2); flex-wrap: wrap;">
-              <input type="search" id="advancedSearch" placeholder="Search across project files..."
+            <div class="panel-title">Code Search</div>
+            <div style="display: flex; gap: var(--space-2); margin-bottom: 10px; flex-wrap: wrap;">
+              <input type="search" id="advancedSearch" placeholder="Search across all projects…"
                 onkeydown="if(event.key==='Enter') performAdvancedSearch()"
                 style="flex: 2; min-width: 200px; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 14px; background: var(--bg-secondary); color: var(--text-primary);">
               <select id="searchProject"
@@ -1135,8 +1285,17 @@
               </select>
               <button class="btn" onclick="performAdvancedSearch()">Search</button>
             </div>
+            <div class="quick-chips">
+              <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-tertiary);line-height:26px;padding-right:4px;">Try:</span>
+              <button class="quick-chip" onclick="quickSearch('TODO')">TODO</button>
+              <button class="quick-chip" onclick="quickSearch('FIXME')">FIXME</button>
+              <button class="quick-chip" onclick="quickSearch('import flask')">import flask</button>
+              <button class="quick-chip" onclick="quickSearch('@app.route')">@app.route</button>
+              <button class="quick-chip" onclick="quickSearch('console.log')">console.log</button>
+              <button class="quick-chip" onclick="quickSearch('API_KEY')">API_KEY</button>
+            </div>
             <div id="advancedResults" style="color: var(--text-secondary); font-size: 13px; margin-top: var(--space-2); font-weight: 500;">
-              Search Python, HTML, JS, CSS, and Markdown across your projects.
+              Searches Python, HTML, JS, CSS, and Markdown across every project.
             </div>
           </div>
         </div>
@@ -1542,16 +1701,35 @@
       updateProjectsTable(projects);
       updateAllProjectsTable(projects);
 
-      // Global Status
-      const hasErrors = projects.some(p => !p.online);
-      const statusDot = document.getElementById('globalStatus');
+      // Summary strip
+      const onlineCount = projects.filter(p => p.online).length;
+      const offlineCount = projects.length - onlineCount;
+      const dirtyCount  = projects.filter(p => p.git && !p.git.clean).length;
+      $set('ssTotal',     projects.length);
+      $set('ssOnline',    onlineCount);
+      $set('ssDirty',     dirtyCount);
+      $set('ssCostToday', '$' + (usage.day?.cost || 0).toFixed(2));
+      $set('ssCtx',       ctxPct + '%');
+      const ssAlert = document.getElementById('ssAlert');
+      if (offlineCount > 0 || dirtyCount > 0) {
+        const parts = [];
+        if (offlineCount > 0) parts.push(`${offlineCount} offline`);
+        if (dirtyCount   > 0) parts.push(`${dirtyCount} dirty`);
+        document.getElementById('ssAlertText').textContent = '⚠ ' + parts.join(' · ');
+        ssAlert.style.display = 'flex';
+      } else {
+        ssAlert.style.display = 'none';
+      }
+
+      // Global status bar
+      const statusDot  = document.getElementById('globalStatus');
       const statusText = document.getElementById('globalStatusText');
-      if (hasErrors) {
+      if (offlineCount > 0) {
         statusDot.className = 'status-dot error';
-        statusText.textContent = 'Warning: Projects offline';
+        statusText.textContent = `${offlineCount} of ${projects.length} projects offline`;
       } else {
         statusDot.className = 'status-dot';
-        statusText.textContent = 'All systems nominal';
+        statusText.textContent = 'All systems live';
       }
     }
 
@@ -1561,28 +1739,32 @@
       document.getElementById('projectCount').textContent =
         `${onlineCount} online · ${projects.length - onlineCount} offline`;
 
-      list.innerHTML = projects.map(p => {
+      // Sort: online first
+      const sorted = [...projects].sort((a, b) => (b.online ? 1 : 0) - (a.online ? 1 : 0));
+
+      list.innerHTML = sorted.map(p => {
         const isOnline  = p.online;
-        const branch    = p.git?.branch     || '—';
-        const lastCommit= p.git?.last_commit|| '—';
+        const branch    = p.git?.branch      || '—';
+        const lastCommit= p.git?.last_commit || '—';
         const isDirty   = p.git && !p.git.clean;
         const port      = p.port;
         const url       = port ? `http://127.0.0.1:${port}` : null;
         const gitClass  = !p.git ? 'pr-nogit' : isDirty ? 'pr-dirty' : 'pr-clean';
-        const gitLabel  = !p.git ? '—'        : isDirty ? 'dirty'    : 'clean';
+        const gitLabel  = !p.git ? '—'        : isDirty ? '↑ dirty'  : '✓ clean';
+        const rowExtra  = isDirty ? ' pr-dirty-row' : '';
 
         return `
-          <div class="project-row ${isOnline ? 'pr-online' : ''}">
+          <div class="project-row ${isOnline ? 'pr-online' : ''}${rowExtra}">
             <div class="pr-dot ${isOnline ? 'live' : ''}"></div>
             <div class="pr-name">${p.name}</div>
             ${port ? `<div class="pr-pill pr-port">:${port}</div>` : '<div></div>'}
-            <div class="pr-url">${url ? `<a href="${url}" target="_blank">${url}</a>` : '—'}</div>
+            <div class="pr-url">${url ? `<a href="${url}" target="_blank">${url}</a>` : '<span style="color:var(--text-tertiary)">—</span>'}</div>
             <div class="pr-pill pr-branch">${branch}</div>
             <div class="pr-pill ${gitClass}">${gitLabel}</div>
             <div class="pr-commit">${lastCommit}</div>
             <div class="pr-actions">
-              <button class="pr-btn" onclick="openFolder('${p.slug}')">📁 Folder</button>
-              <button class="pr-btn pr-btn-assets" onclick="openAssets('${p.slug}')">🗂 Assets</button>
+              <button class="pr-btn" onclick="openFolder('${p.slug}')">Folder</button>
+              <button class="pr-btn pr-btn-assets" onclick="openAssets('${p.slug}')">Assets</button>
             </div>
           </div>
         `;
@@ -1594,6 +1776,15 @@
     }
     function openAssets(slug) {
       fetch(`/api/project/${slug}/assets/open-folder`, {method:'POST'}).catch(()=>{});
+    }
+    function quickSearch(term) {
+      document.getElementById('advancedSearch').value = term;
+      // Switch to search tab
+      document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+      document.querySelector('[data-tab="search"]').classList.add('active');
+      document.getElementById('search').classList.add('active');
+      performAdvancedSearch();
     }
     function openTerminal(slug) {
       fetch(`/api/project/${slug}/open-terminal`, {method:'POST'}).catch(()=>{});
@@ -1666,7 +1857,7 @@
         </div>
         <!-- Input row -->
         <div class="coc-input-row">
-          <input class="coc-input" id="cocInput" type="text" placeholder="Ask Claude anything about this project…" onkeydown="if(event.key==='Enter')sendToClaude()">
+          <input class="coc-input" id="cocInput" type="text" placeholder="Ask about your stack, git health, usage, or anything…" onkeydown="if(event.key==='Enter')sendToClaude()">
           <button class="coc-send" onclick="sendToClaude()">
             <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="14" y1="2" x2="2" y2="8"/><line x1="14" y1="2" x2="8" y2="14"/><line x1="2" y1="8" x2="8" y2="14"/></svg>
           </button>
@@ -1705,24 +1896,27 @@
     _pendingCommand = null;
   }
 
-  async function loadSuggestions() {
+  function loadSuggestions() {
     const el = document.getElementById('cocSuggestions');
-    el.innerHTML = '<div class="coc-loading-dots"><span></span><span></span><span></span></div>';
-    try {
-      const res = await fetch('/api/claude/suggestions', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({}) });
-      const data = await res.json();
-      if (data.suggestions && data.suggestions.length) {
-        el.innerHTML = data.suggestions.map(s => `
-          <div class="coc-suggestion" onclick="useSuggestion(this)" data-type="${s.type}" data-prompt="${encodeURIComponent(s.prompt)}">
-            <span class="sug-type ${s.type}">${s.type === 'execute' ? '⚡ Run' : '💬 Ask'}</span>
-            ${s.label}
-          </div>`).join('');
-      } else {
-        el.innerHTML = '<div style="color:var(--text-tertiary);font-size:12px;padding:8px;">No suggestions available right now.</div>';
-      }
-    } catch {
-      el.innerHTML = '<div style="color:var(--text-tertiary);font-size:12px;padding:8px;">Could not load suggestions.</div>';
-    }
+    const actions = [
+      { type: 'ask',     label: 'Why are projects offline? What should I check?',
+        prompt: 'Some of my local dev projects are showing offline in Kode Keeper. Walk me through the most likely causes and give me a quick action checklist to bring them back up.' },
+      { type: 'ask',     label: 'Summarize repo health across all my projects',
+        prompt: 'Give me a concise repo health summary. Flag dirty repos, unsynced branches, or anything that needs a commit or push before I can call this stack clean.' },
+      { type: 'ask',     label: 'Which repos need attention first?',
+        prompt: 'Based on the current project and git state visible in Kode Keeper, prioritize which repos I should tackle first. Be direct — ranked list, one-line reason each.' },
+      { type: 'ask',     label: 'What should I work on next?',
+        prompt: "Looking at my project states and git status, what would you recommend I tackle next as a developer? Consider what's offline, what's dirty, and any obvious loose ends." },
+      { type: 'ask',     label: 'Check context window and token usage',
+        prompt: "What's the current state of my Claude Code context window? Any efficiency tips based on my usage patterns today?" },
+    ];
+    el.innerHTML =
+      '<div class="coc-suggestions-label">Quick actions</div>' +
+      actions.map(s => `
+        <div class="coc-suggestion" onclick="useSuggestion(this)" data-type="${s.type}" data-prompt="${encodeURIComponent(s.prompt)}">
+          <span class="sug-type ${s.type}">${s.type === 'execute' ? '⚡ Run' : '💬 Ask'}</span>
+          ${s.label}
+        </div>`).join('');
   }
 
   function useSuggestion(el) {
