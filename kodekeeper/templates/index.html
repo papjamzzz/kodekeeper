@@ -447,119 +447,127 @@
     .badge.error { background: rgba(255,92,56,0.15); color: var(--color-error); }
     .badge.running { background: rgba(0,166,81,0.15); color: var(--color-success); }
 
-    /* ── PROJECT CARDS ── */
-    .project-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 12px;
+    /* ── PROJECT ROWS ── */
+    .project-list {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
     }
 
-    .project-card {
+    .project-row {
+      display: grid;
+      grid-template-columns: 8px 148px 54px 170px 58px 72px 90px auto;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 14px 9px 18px;
       background: var(--bg-primary);
       border: 1px solid var(--border-color);
-      border-radius: 8px;
-      padding: 16px;
-      transition: border-color 0.15s, box-shadow 0.15s;
+      border-radius: 6px;
       position: relative;
+      overflow: hidden;
+      transition: background 0.12s, border-color 0.12s;
     }
 
-    .project-card:hover {
-      border-color: var(--color-warning);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.07);
+    .project-row::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 3px;
+      background: var(--border-color);
+      border-radius: 6px 0 0 6px;
     }
 
-    .project-card.online-card {
-      border-left: 3px solid var(--color-success);
-    }
+    .project-row.pr-online::before { background: var(--color-success); }
+    .project-row:hover { background: var(--bg-secondary); border-color: var(--color-warning); }
 
-    .project-card.offline-card {
-      border-left: 3px solid var(--border-color);
-    }
-
-    .pc-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 10px;
-    }
-
-    .pc-name {
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--text-primary);
-      letter-spacing: -0.1px;
-    }
-
-    .pc-status-dot {
-      width: 8px;
-      height: 8px;
+    .pr-dot {
+      width: 7px; height: 7px;
       border-radius: 50%;
       background: var(--border-color);
       flex-shrink: 0;
+      justify-self: center;
     }
 
-    .pc-status-dot.live {
+    .pr-dot.live {
       background: var(--color-success);
-      box-shadow: 0 0 0 3px rgba(0,166,81,0.15);
+      box-shadow: 0 0 0 2px rgba(0,166,81,0.2);
+      animation: pr-pulse 2.4s ease-in-out infinite;
     }
 
-    .pc-meta {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-bottom: 12px;
+    @keyframes pr-pulse {
+      0%,100% { box-shadow: 0 0 0 2px rgba(0,166,81,0.2); }
+      50%      { box-shadow: 0 0 0 4px rgba(0,166,81,0.08); }
     }
 
-    .pc-tag {
-      font-size: 11px;
-      font-family: var(--font-mono);
-      font-weight: 600;
-      color: var(--text-tertiary);
-      background: var(--bg-secondary);
-      padding: 2px 7px;
-      border-radius: 3px;
-      border: 1px solid var(--border-color);
-    }
-
-    .pc-tag.port {
-      color: var(--color-info);
-      border-color: rgba(0,102,204,0.2);
-      background: rgba(0,102,204,0.05);
-    }
-
-    .pc-commit {
-      font-size: 11px;
-      color: var(--text-tertiary);
-      font-family: var(--font-mono);
-      margin-bottom: 10px;
+    .pr-name {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-primary);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
 
-    .pc-actions {
-      display: flex;
-      gap: 6px;
+    .pr-pill {
+      font-size: 10.5px;
+      font-family: var(--font-mono);
+      font-weight: 600;
+      padding: 2px 7px;
+      border-radius: 4px;
+      border: 1px solid;
+      text-align: center;
+      white-space: nowrap;
     }
 
-    .pc-btn {
+    .pr-port   { color: var(--color-info);    border-color: rgba(0,102,204,0.25); background: rgba(0,102,204,0.06); }
+    .pr-branch { color: var(--text-tertiary); border-color: var(--border-color);  background: var(--bg-secondary); }
+    .pr-clean  { color: var(--color-success); border-color: rgba(0,166,81,0.25);  background: rgba(0,166,81,0.06); }
+    .pr-dirty  { color: var(--color-warning); border-color: rgba(255,140,58,0.3); background: rgba(255,140,58,0.06); }
+    .pr-nogit  { color: var(--text-tertiary); border-color: var(--border-color);  background: transparent; }
+
+    .pr-url {
+      font-size: 11px;
+      font-family: var(--font-mono);
+      color: var(--text-tertiary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .pr-url a { color: inherit; text-decoration: none; }
+    .pr-url a:hover { color: var(--color-info); }
+
+    .pr-commit {
+      font-size: 10.5px;
+      font-family: var(--font-mono);
+      color: var(--text-tertiary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .pr-actions {
+      display: flex;
+      gap: 5px;
+      justify-content: flex-end;
+    }
+
+    .pr-btn {
       font-size: 11px;
       font-weight: 600;
-      font-family: var(--font-ui);
-      padding: 4px 10px;
+      font-family: var(--font-mono);
+      padding: 3px 9px;
       border-radius: 4px;
       border: 1px solid var(--border-color);
       background: var(--bg-secondary);
       color: var(--text-secondary);
       cursor: pointer;
-      transition: all 0.15s;
+      transition: all 0.12s;
+      white-space: nowrap;
     }
 
-    .pc-btn:hover {
-      border-color: var(--color-warning);
-      color: var(--color-warning);
-      background: var(--bg-primary);
-    }
+    .pr-btn:hover            { border-color: var(--color-warning); color: var(--color-warning); }
+    .pr-btn.pr-btn-assets:hover { border-color: var(--color-info);    color: var(--color-info); }
 
     /* ── BUTTONS ── */
     .btn {
@@ -965,7 +973,7 @@
               <span>Projects</span>
               <span id="projectCount" style="font-size:11px;font-weight:600;color:var(--text-tertiary);font-family:var(--font-mono);"></span>
             </div>
-            <div class="project-grid" id="projectsTable">
+            <div class="project-list" id="projectsTable">
               <!-- Populated by JS -->
             </div>
           </div>
@@ -1516,35 +1524,33 @@
     }
 
     function updateProjectsTable(projects) {
-      const grid = document.getElementById('projectsTable');
+      const list = document.getElementById('projectsTable');
       const onlineCount = projects.filter(p => p.online).length;
       document.getElementById('projectCount').textContent =
         `${onlineCount} online · ${projects.length - onlineCount} offline`;
 
-      grid.innerHTML = projects.map(p => {
-        const isOnline = p.online;
-        const branch = p.git?.branch || '—';
-        const lastCommit = p.git?.last_commit || '—';
-        const isDirty = p.git && !p.git.clean;
-        const port = p.port ? `:${p.port}` : null;
-        const botStatus = p.bot_stats?.status;
+      list.innerHTML = projects.map(p => {
+        const isOnline  = p.online;
+        const branch    = p.git?.branch     || '—';
+        const lastCommit= p.git?.last_commit|| '—';
+        const isDirty   = p.git && !p.git.clean;
+        const port      = p.port;
+        const url       = port ? `http://127.0.0.1:${port}` : null;
+        const gitClass  = !p.git ? 'pr-nogit' : isDirty ? 'pr-dirty' : 'pr-clean';
+        const gitLabel  = !p.git ? '—'        : isDirty ? 'dirty'    : 'clean';
 
         return `
-          <div class="project-card ${isOnline ? 'online-card' : 'offline-card'}">
-            <div class="pc-header">
-              <div class="pc-name">${p.name}</div>
-              <div class="pc-status-dot ${isOnline ? 'live' : ''}"></div>
-            </div>
-            <div class="pc-meta">
-              ${port ? `<span class="pc-tag port">${port}</span>` : ''}
-              <span class="pc-tag">${branch}</span>
-              ${isDirty ? `<span class="pc-tag" style="color:var(--color-warning);border-color:rgba(255,140,58,0.3);">dirty</span>` : ''}
-              ${botStatus && botStatus !== 'offline' ? `<span class="pc-tag" style="color:var(--color-success);border-color:rgba(0,166,81,0.25);">${botStatus}</span>` : ''}
-            </div>
-            <div class="pc-commit">${lastCommit}</div>
-            <div class="pc-actions">
-              <button class="pc-btn" onclick="openFolder('${p.slug}')">Open</button>
-              <button class="pc-btn" onclick="openTerminal('${p.slug}')">Terminal</button>
+          <div class="project-row ${isOnline ? 'pr-online' : ''}">
+            <div class="pr-dot ${isOnline ? 'live' : ''}"></div>
+            <div class="pr-name">${p.name}</div>
+            ${port ? `<div class="pr-pill pr-port">:${port}</div>` : '<div></div>'}
+            <div class="pr-url">${url ? `<a href="${url}" target="_blank">${url}</a>` : '—'}</div>
+            <div class="pr-pill pr-branch">${branch}</div>
+            <div class="pr-pill ${gitClass}">${gitLabel}</div>
+            <div class="pr-commit">${lastCommit}</div>
+            <div class="pr-actions">
+              <button class="pr-btn" onclick="openFolder('${p.slug}')">📁 Folder</button>
+              <button class="pr-btn pr-btn-assets" onclick="openAssets('${p.slug}')">🗂 Assets</button>
             </div>
           </div>
         `;
@@ -1553,6 +1559,9 @@
 
     function openFolder(slug) {
       fetch(`/api/project/${slug}/open-folder`, {method:'POST'}).catch(()=>{});
+    }
+    function openAssets(slug) {
+      fetch(`/api/project/${slug}/assets/open-folder`, {method:'POST'}).catch(()=>{});
     }
     function openTerminal(slug) {
       fetch(`/api/project/${slug}/open-terminal`, {method:'POST'}).catch(()=>{});
