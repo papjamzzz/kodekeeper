@@ -12,6 +12,7 @@ import subprocess
 import threading
 import urllib.request
 import webbrowser
+from datetime import datetime, date
 from flask import Flask, Response, jsonify, render_template, request, stream_with_context
 from dotenv import load_dotenv
 
@@ -28,16 +29,52 @@ app = Flask(
     static_folder=os.path.join(_PKG, "static"),
 )
 
+# ── Visit counter ─────────────────────────────────────────────────────────────
+_VISITS_FILE = os.path.expanduser("~/.claude/usage/kk_visits.json")
+_visits_lock = threading.Lock()
+
+def _load_visits():
+    if os.path.exists(_VISITS_FILE):
+        try:
+            with open(_VISITS_FILE) as f:
+                return _json.load(f)
+        except Exception:
+            pass
+    return {"total": 0, "today": 0, "today_date": "", "by_day": {}}
+
+def _record_visit():
+    with _visits_lock:
+        v = _load_visits()
+        today = str(date.today())
+        if v.get("today_date") != today:
+            v["today"] = 0
+            v["today_date"] = today
+        v["total"] = v.get("total", 0) + 1
+        v["today"] = v.get("today", 0) + 1
+        v["by_day"][today] = v["by_day"].get(today, 0) + 1
+        os.makedirs(os.path.dirname(_VISITS_FILE), exist_ok=True)
+        with open(_VISITS_FILE, "w") as f:
+            _json.dump(v, f)
+    return v
+
 
 @app.route("/")
 def index():
+    _record_visit()
     return render_template("index.html")
+
+
+@app.route("/api/visits")
+def api_visits():
+    return jsonify(_load_visits())
 
 
 @app.route("/api/status")
 def api_status():
     from kodekeeper.tracker import get_status
-    return jsonify(get_status())
+    data = get_status()
+    data["visits"] = _load_visits()
+    return jsonify(data)
 
 
 @app.route("/api/settings", methods=["GET"])

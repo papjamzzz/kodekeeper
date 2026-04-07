@@ -6,6 +6,14 @@
   <title>Kode Keeper — Mission Control</title>
   <link rel="icon" href="/static/favicon.png" type="image/png">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-TZ1J70DHJK"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-TZ1J70DHJK');
+  </script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -1100,6 +1108,16 @@
               <span class="ss-val" id="ssCtx">—%</span>
               <span class="ss-label">Context</span>
             </div>
+            <div class="ss-divider"></div>
+            <div class="ss-stat">
+              <span class="ss-val" id="ssVisitsToday" style="color:var(--color-info);">—</span>
+              <span class="ss-label">Visitors today</span>
+            </div>
+            <div class="ss-divider"></div>
+            <div class="ss-stat">
+              <span class="ss-val" id="ssVisitsTotal" style="color:var(--text-secondary);">—</span>
+              <span class="ss-label">Total visits</span>
+            </div>
             <div class="ss-fill"></div>
             <div class="ss-alert" id="ssAlert" style="display:none;">
               <span id="ssAlertText"></span>
@@ -1811,6 +1829,11 @@
       const projects = data.projects || [];
       updateProjectsTable(projects);
       updateAllProjectsTable(projects);
+
+      // Visits
+      const visits = data.visits || {};
+      $set('ssVisitsToday', visits.today ?? '0');
+      $set('ssVisitsTotal', visits.total ?? '0');
 
       // Summary strip
       const onlineCount = projects.filter(p => p.online).length;
