@@ -578,6 +578,8 @@
 
     .pr-btn:hover            { border-color: var(--color-warning); color: var(--color-warning); }
     .pr-btn.pr-btn-assets:hover { border-color: var(--color-info);    color: var(--color-info); }
+    .pr-btn.pr-btn-launch:hover { border-color: var(--color-success);  color: var(--color-success); }
+    .pr-btn.pr-btn-launch:disabled { opacity: 0.3; cursor: not-allowed; }
 
     /* ── THEME TOGGLE ── */
     .theme-toggle {
@@ -1919,12 +1921,16 @@
             <div class="pr-actions">
               <button class="pr-btn" onclick="openFolder('${p.slug}')">Folder</button>
               <button class="pr-btn pr-btn-assets" onclick="openAssets('${p.slug}')">Assets</button>
+              ${(isOnline || p.public_url) ? `<button class="pr-btn pr-btn-launch" onclick="launchProject('${isOnline ? `http://127.0.0.1:${port}` : p.public_url}')">Launch</button>` : `<button class="pr-btn pr-btn-launch" disabled>Launch</button>`}
             </div>
           </div>
         `;
       }).join('');
     }
 
+    function launchProject(url) {
+      window.open(url, '_blank');
+    }
     function openFolder(slug) {
       fetch(`/api/project/${slug}/open-folder`, {method:'POST'}).catch(()=>{});
     }

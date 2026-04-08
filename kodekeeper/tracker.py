@@ -33,11 +33,11 @@ MODEL_COSTS = {
 PROJECTS = [
     {"name": "Launcher",    "slug": "launcher",    "port": 5554, "path": "~/launcher",           "repo": None,                       "needs_env": False, "assets": "~/launcher/static"},
     {"name": "Kalshi Edge", "slug": "kalshi-edge", "port": 5555, "path": "~/kalshi-edge",         "repo": "papjamzzz/kalshi-konnektor","needs_env": True,  "bw_item": "Kalshi Edge — API Keys", "assets": "~/kalshi-edge/static"},
-    {"name": "StreamFader", "slug": "streamfader", "port": 5556, "path": "~/streamfader",         "repo": "papjamzzz/Stream-Fader",   "needs_env": False, "assets": "~/streamfader/static"},
+    {"name": "StreamFader", "slug": "streamfader", "port": 5556, "path": "~/streamfader",         "repo": "papjamzzz/Stream-Fader",   "needs_env": False, "assets": "~/streamfader/static",                    "public_url": "https://stream.creativekonsoles.com/"},
     {"name": "TrackTracks", "slug": "tracktracks", "port": 5557, "path": "~/track_cpu_monitor",   "repo": "papjamzzz/Track-Tracks",   "needs_env": False, "assets": "~/track_cpu_monitor/assets"},
     {"name": "DAW Doctor",  "slug": "daw-doctor",  "port": 5558, "path": "~/ableton-diagnostics", "repo": "papjamzzz/Daw-Doctor",     "needs_env": False, "assets": "~/ableton-diagnostics/static"},
     {"name": "KK Trader",   "slug": "kk-trader",   "port": 5559, "path": "~/kalshi-trader",       "repo": "papjamzzz/kalshi-trader",  "needs_env": True,  "bw_item": "KK Trader — API Keys",  "assets": "~/kalshi-trader/static"},
-    {"name": "KodeKeeper",  "slug": "kodekeeper",  "port": 5560, "path": "~/kodekeeper",          "repo": None,                       "needs_env": False, "assets": "~/kodekeeper/kodekeeper/static"},
+    {"name": "KodeKeeper",  "slug": "kodekeeper",  "port": 5560, "path": "~/kodekeeper",          "repo": None,                       "needs_env": False, "assets": "~/kodekeeper/kodekeeper/static",           "public_url": "https://keeper.creativekonsoles.com/"},
     {"name": "Pipeline",    "slug": "pipeline",    "port": 5561, "path": "~/pipeline",            "repo": None,                       "needs_env": False, "assets": "~/pipeline/static"},
     {"name": "5i",          "slug": "5i",          "port": 5562, "path": "~/5i",                  "repo": "papjamzzz/5i",             "needs_env": True,  "bw_item": "5i — API Keys",          "assets": "~/5i/static"},
     {"name": "KK Konnektor","slug": "kk-konnektor","port": None, "path": "~/Documents/New project/Kalshi-Konnektor2", "repo": None, "needs_env": True, "process": "kalshi_bot.py", "log": "~/Documents/New project/Kalshi-Konnektor2/bot.log"},
