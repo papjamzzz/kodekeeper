@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="kodekeeper/static/logo.png" width="120" alt="Kode Keeper logo"/>
+  <img src="static/logo.png" width="120" alt="Kode Keeper logo"/>
 </p>
 
 # Kode Keeper — Mission Control
@@ -104,8 +104,8 @@ Kode Keeper is built for Claude Code power users running AI at scale.
 
 ---
 
-Built by [Creative Konsoles](https://creativekonsoles.com) — *tools built using thought.*
+Built by [Creative Konsoles](https://creativekonsoles.com) — tools built using thought.
 
-**[@papjamzzz](https://github.com/papjamzzz)** &nbsp;·&nbsp; support@creativekonsoles.com
+**[creativekonsoles.com](https://creativekonsoles.com)** &nbsp;·&nbsp; support@creativekonsoles.com
 
-<!-- repo maintenance: 2026-04-04 -->
+<!-- repo maintenance: 2026-04-10 -->
