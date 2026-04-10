@@ -6,3 +6,5 @@ __pycache__/
 *.egg-info/
 UNKNOWN.egg-info/
 dist/
+
+data/
