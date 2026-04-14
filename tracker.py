@@ -41,6 +41,8 @@ PROJECTS = [
     {"name": "5i",          "slug": "5i",          "port": 5562, "path": "~/5i",                  "repo": "papjamzzz/5i",             "needs_env": True},
     {"name": "Key Watcher", "slug": "key-watcher", "port": 5563, "path": "~/key-watcher",          "repo": "papjamzzz/key-watcher",    "needs_env": True},
     {"name": "WithYou",     "slug": "withyou",     "port": 5564, "path": "~/empathybot",            "repo": "papjamzzz/empathybot",     "needs_env": True},
+    {"name": "Memoir",      "slug": "memoir",      "port": 5563, "path": "~/memoir",                "repo": "papjamzzz/memoir",         "needs_env": True},
+    {"name": "YourSound",   "slug": "yoursound",   "port": 5570, "path": "~/YourSound",             "repo": "papjamzzz/yoursound",      "needs_env": False},
 ]
 
 
