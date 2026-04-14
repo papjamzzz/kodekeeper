@@ -39,6 +39,8 @@ PROJECTS = [
     {"name": "KodeKeeper",  "slug": "kodekeeper",  "port": 5560, "path": "~/kodekeeper",          "repo": None,                       "needs_env": False},
     {"name": "Pipeline",    "slug": "pipeline",    "port": 5561, "path": "~/pipeline",            "repo": None,                       "needs_env": False},
     {"name": "5i",          "slug": "5i",          "port": 5562, "path": "~/5i",                  "repo": "papjamzzz/5i",             "needs_env": True},
+    {"name": "Key Watcher", "slug": "key-watcher", "port": 5563, "path": "~/key-watcher",          "repo": "papjamzzz/key-watcher",    "needs_env": True},
+    {"name": "WithYou",     "slug": "withyou",     "port": 5564, "path": "~/empathybot",            "repo": "papjamzzz/empathybot",     "needs_env": True},
 ]
 
 
