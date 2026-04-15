@@ -526,5 +526,22 @@ def run():
     app.run(host="127.0.0.1", port=5560, debug=False)
 
 
+@app.route("/robots.txt")
+def robots():
+    return app.response_class(
+        "User-agent: *\nAllow: /\nSitemap: https://keeper.creativekonsoles.com/sitemap.xml\n",
+        mimetype="text/plain"
+    )
+
+@app.route("/sitemap.xml")
+def sitemap():
+    xml = ('<?xml version="1.0" encoding="UTF-8"?>'
+           '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
+           '<url><loc>https://keeper.creativekonsoles.com/</loc>'
+           '<changefreq>weekly</changefreq><priority>1.0</priority></url>'
+           '</urlset>')
+    return app.response_class(xml, mimetype="application/xml")
+
+
 if __name__ == "__main__":
     run()
