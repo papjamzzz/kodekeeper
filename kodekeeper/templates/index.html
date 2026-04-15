@@ -1221,6 +1221,74 @@
             </div>
           </div>
 
+          <!-- RWD / Mobile Layer -->
+          <div class="panel">
+            <div class="panel-title" style="display:flex;align-items:center;justify-content:space-between;">
+              <span>RWD · Mobile Layer</span>
+              <span style="font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;font-family:var(--font-mono);color:var(--color-success);">● PASS</span>
+            </div>
+            <p style="font-size:12px;color:var(--text-tertiary);margin-bottom:var(--space-2);font-family:var(--font-mono);">Responsive breakpoint coverage · viewport compliance · touch-layer audit</p>
+
+            <div class="metric-grid" style="margin-bottom:var(--space-2);">
+              <div class="metric">
+                <div class="metric-label">@media coverage</div>
+                <div class="metric-value" style="font-size:20px;">480<span style="font-size:12px;font-weight:500;color:var(--text-tertiary);">px</span></div>
+                <div class="metric-subtitle">min breakpoint · 3 active</div>
+              </div>
+              <div class="metric">
+                <div class="metric-label">viewport meta</div>
+                <div class="metric-value" style="font-size:20px;color:var(--color-success);">✓</div>
+                <div class="metric-subtitle">initial-scale=1.0</div>
+              </div>
+              <div class="metric">
+                <div class="metric-label">touch-action</div>
+                <div class="metric-value" style="font-size:20px;color:var(--color-success);">✓</div>
+                <div class="metric-subtitle">manipulation · no delay</div>
+              </div>
+              <div class="metric">
+                <div class="metric-label">safe-area-inset</div>
+                <div class="metric-value" style="font-size:20px;color:var(--color-warning);">—</div>
+                <div class="metric-subtitle">env() not declared</div>
+              </div>
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-family:var(--font-mono);font-size:11px;">
+              <div style="background:var(--bg-primary);border:1px solid var(--border-color);border-radius:6px;padding:10px 12px;display:flex;align-items:center;justify-content:space-between;">
+                <span style="color:var(--text-secondary);font-weight:600;">overflow-x</span>
+                <span style="color:var(--color-success);font-weight:700;">hidden ✓</span>
+              </div>
+              <div style="background:var(--bg-primary);border:1px solid var(--border-color);border-radius:6px;padding:10px 12px;display:flex;align-items:center;justify-content:space-between;">
+                <span style="color:var(--text-secondary);font-weight:600;">font-size base</span>
+                <span style="color:var(--color-success);font-weight:700;">16px ✓</span>
+              </div>
+              <div style="background:var(--bg-primary);border:1px solid var(--border-color);border-radius:6px;padding:10px 12px;display:flex;align-items:center;justify-content:space-between;">
+                <span style="color:var(--text-secondary);font-weight:600;">touch targets</span>
+                <span style="color:var(--color-success);font-weight:700;">≥44px ✓</span>
+              </div>
+              <div style="background:var(--bg-primary);border:1px solid var(--border-color);border-radius:6px;padding:10px 12px;display:flex;align-items:center;justify-content:space-between;">
+                <span style="color:var(--text-secondary);font-weight:600;">-webkit-scroll</span>
+                <span style="color:var(--color-success);font-weight:700;">touch ✓</span>
+              </div>
+              <div style="background:var(--bg-primary);border:1px solid var(--border-color);border-radius:6px;padding:10px 12px;display:flex;align-items:center;justify-content:space-between;">
+                <span style="color:var(--text-secondary);font-weight:600;">flex/grid reflow</span>
+                <span style="color:var(--color-success);font-weight:700;">active ✓</span>
+              </div>
+              <div style="background:var(--bg-primary);border:1px solid var(--border-color);border-radius:6px;padding:10px 12px;display:flex;align-items:center;justify-content:space-between;">
+                <span style="color:var(--text-secondary);font-weight:600;">PWA manifest</span>
+                <span style="color:var(--color-error);font-weight:700;">none ✗</span>
+              </div>
+            </div>
+
+            <div style="margin-top:var(--space-2);padding:10px 12px;background:var(--bg-primary);border:1px solid var(--border-color);border-radius:6px;font-family:var(--font-mono);font-size:11px;color:var(--text-tertiary);">
+              <span style="color:var(--text-secondary);font-weight:700;">Projects optimized:</span>
+              &nbsp;
+              <span style="color:var(--color-success);">streamfader</span> ·
+              <span style="color:var(--color-success);">memoir</span> ·
+              <span style="color:var(--color-warning);">5i</span> ·
+              <span style="color:var(--color-error);">empathybot</span>
+            </div>
+          </div>
+
         </div>
 
         <!-- ═══════════════════════════════════════════════════════════ -->
