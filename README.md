@@ -101,6 +101,9 @@ Kode Keeper is built for Claude Code power users running AI at scale.
 | [KK Trader](https://github.com/papjamzzz/kalshi-trader) | Autonomous trading bot | 5559 |
 | **Kode Keeper** | Claude Code mission control | 5560 |
 | [5i](https://github.com/papjamzzz/5i) | Parallel AI synthesis engine | 5562 |
+| [Key Watcher](https://github.com/papjamzzz/key-watcher) | API key health monitor | 5563 |
+| [Grail](https://github.com/papjamzzz/grail) | Biohacking dashboard — 40 biomarker orbs | 5566 |
+| [Memoir](https://github.com/papjamzzz/memoir) | Voice-to-story AI journaling | 5568 |
 
 ---
 
